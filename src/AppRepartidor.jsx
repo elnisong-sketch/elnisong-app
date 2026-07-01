@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { db } from "./firebase";
 import { doc, onSnapshot, setDoc } from "firebase/firestore";
 
@@ -78,7 +78,7 @@ export default function AppRepartidor() {
   const [vistaStats, setVistaStats] = useState(false);
   const [toastOk, setToastOk] = useState(false);
   const [cargando, setCargando] = useState(true);
-  const cerrandoPedido = { current: false };
+  const cerrandoPedido = useRef(false);
 
   // Escuchar datos de Firebase en tiempo real
   useEffect(() => {

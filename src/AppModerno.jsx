@@ -598,7 +598,10 @@ function ModuloClientes({ clientes, setClientes, pedidos, irInicio }) {
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
         <h2 style={{ color: ac, margin: 0 }}>👥 Clientes</h2>
-        <Btn accent={ac} onClick={() => setModal(true)}>+ Nuevo</Btn>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button onClick={irInicio} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer" }}>🏠</button>
+          <Btn accent={ac} onClick={() => setModal(true)}>+ Nuevo</Btn>
+        </div>
       </div>
       <Input placeholder="🔍 Buscar por nombre o teléfono..." value={buscar} onChange={e => setBuscar(e.target.value)} />
 
@@ -656,7 +659,10 @@ function ModuloInventario({ productos, setProductos, irInicio }) {
 
   return (
     <div>
-      <h2 style={{ color: ac, marginBottom: 16 }}>📊 Inventario & Precios</h2>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+        <h2 style={{ color: ac, margin: 0 }}>📊 Inventario & Precios</h2>
+        <button onClick={irInicio} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer" }}>🏠</button>
+      </div>
       {categorias.map(cat => (
         <div key={cat} style={{ marginBottom: 22 }}>
           <p style={{ color: "#777", fontSize: 12, fontWeight: 800, letterSpacing: 1, marginBottom: 8 }}>{cat.toUpperCase()}</p>
@@ -845,7 +851,7 @@ function ModuloPersonal({ repartidores, setRepartidores, trabajadoras, setTrabaj
 }
 
 // ─── MÓDULO: PROVEEDORES ─────────────────────────────────────────────────────
-function ModuloProveedores({ proveedores, setProveedores }) {
+function ModuloProveedores({ proveedores, setProveedores, irInicio }) {
   const ac = ACENTOS.proveedores;
   const [modal, setModal] = useState(false);
   const [editar, setEditar] = useState(null);
@@ -871,7 +877,10 @@ function ModuloProveedores({ proveedores, setProveedores }) {
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
         <h2 style={{ color: ac, margin: 0 }}>🚚 Proveedores</h2>
-        <Btn accent={ac} onClick={abrirNuevo}>+ Nuevo</Btn>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button onClick={irInicio} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer" }}>🏠</button>
+          <Btn accent={ac} onClick={abrirNuevo}>+ Nuevo</Btn>
+        </div>
       </div>
       <Input placeholder="🔍 Buscar por nombre o producto..." value={buscar} onChange={e => setBuscar(e.target.value)} />
 
@@ -945,7 +954,7 @@ function FormularioCompra({ proveedores, ingredientes, onGuardar, onCerrar }) {
   );
 }
 
-function ModuloCompras({ compras, setCompras, proveedores, ingredientes, setIngredientes }) {
+function ModuloCompras({ compras, setCompras, proveedores, ingredientes, setIngredientes, irInicio }) {
   const ac = ACENTOS.compras;
   const [modal, setModal] = useState(false);
   const [vista, setVista] = useState("stock");
@@ -971,7 +980,10 @@ function ModuloCompras({ compras, setCompras, proveedores, ingredientes, setIngr
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
         <h2 style={{ color: ac, margin: 0 }}>🧺 Compras / Materia Prima</h2>
-        <Btn accent={ac} onClick={() => setModal(true)}>+ Nueva</Btn>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button onClick={irInicio} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer" }}>🏠</button>
+          <Btn accent={ac} onClick={() => setModal(true)}>+ Nueva</Btn>
+        </div>
       </div>
 
       <Chips accent={ac} options={[{ value: "stock", label: "Stock actual" }, { value: "historial", label: "Historial" }]} value={vista} onChange={setVista} />
@@ -1057,7 +1069,10 @@ function ModuloGastos({ gastos, setGastos, irInicio }) {
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
         <h2 style={{ color: ac, margin: 0 }}>🧹 Gastos</h2>
-        <Btn accent={ac} onClick={abrirNuevo}>+ Nuevo</Btn>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button onClick={irInicio} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer" }}>🏠</button>
+          <Btn accent={ac} onClick={abrirNuevo}>+ Nuevo</Btn>
+        </div>
       </div>
       <p style={{ color: "#666", fontSize: 12, marginBottom: 16 }}>Limpieza u otros gastos no relacionados a la producción</p>
 
@@ -1109,7 +1124,7 @@ function ModuloGastos({ gastos, setGastos, irInicio }) {
 }
 
 // ─── MÓDULO: REPORTE HACIENDA ────────────────────────────────────────────────
-function ModuloReporte({ pedidos, compras, gastos }) {
+function ModuloReporte({ pedidos, compras, gastos, producciones, trabajadoras, irInicio }) {
   const ac = ACENTOS.reporte;
   const [desde, setDesde] = useState(inicioDeMes());
   const [hasta, setHasta] = useState(hoy());
@@ -1128,9 +1143,19 @@ function ModuloReporte({ pedidos, compras, gastos }) {
     categoria: cat, total: gastosRango.filter(g => g.categoria === cat).reduce((s, g) => s + (g.monto || 0), 0)
   })).filter(c => c.total > 0);
 
+  const produccionesRango = (producciones || []).filter(p => p.fecha >= desde && p.fecha <= hasta);
+  const totalProducido = produccionesRango.reduce((s, p) => s + p.items.reduce((ss, it) => ss + (it.cantidad || 0), 0), 0);
+  const statsPorTrab = (trabajadoras || []).map(t => ({
+    nombre: t.nombre,
+    total: produccionesRango.filter(p => p.trabajadoraId === t.id).reduce((s, p) => s + p.items.reduce((ss, it) => ss + (it.cantidad || 0), 0), 0)
+  })).filter(t => t.total > 0).sort((a, b) => b.total - a.total);
+
   return (
     <div>
-      <h2 style={{ color: ac, margin: "0 0 16px" }}>📈 Reporte Hacienda</h2>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+        <h2 style={{ color: ac, margin: 0 }}>📈 Reporte</h2>
+        <button onClick={irInicio} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer" }}>🏠</button>
+      </div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
         <Input label="Desde" type="date" value={desde} onChange={e => setDesde(e.target.value)} />
         <Input label="Hasta" type="date" value={hasta} onChange={e => setHasta(e.target.value)} />
@@ -1183,6 +1208,22 @@ function ModuloReporte({ pedidos, compras, gastos }) {
           </Card>
         </div>
       </div>
+
+      {totalProducido > 0 && (
+        <Card accent={ac}>
+          <p style={{ color: "#9a9aa2", fontSize: 12, fontWeight: 800, margin: "0 0 8px" }}>🏭 PRODUCCIÓN EN EL PERÍODO</p>
+          <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: "1px solid #25262f" }}>
+            <span style={{ color: "#9a9aa2", fontSize: 14 }}>Total unidades producidas</span>
+            <span style={{ color: ac, fontWeight: 800, fontSize: 14 }}>{totalProducido} uds</span>
+          </div>
+          {statsPorTrab.map(t => (
+            <div key={t.nombre} style={{ display: "flex", justifyContent: "space-between", padding: "4px 0" }}>
+              <span style={{ color: "#e6e6e6", fontSize: 13 }}>👩‍🍳 {t.nombre}</span>
+              <span style={{ color: "#e6e6e6", fontSize: 13 }}>{t.total} uds</span>
+            </div>
+          ))}
+        </Card>
+      )}
 
       <Btn accent={ac} onClick={() => window.print()} style={{ width: "100%", marginTop: 4 }}>🖨️ Imprimir / Exportar PDF</Btn>
     </div>
@@ -1525,7 +1566,7 @@ export default function AppModerno() {
         {tab === "proveedores" && <ModuloProveedores proveedores={proveedores} setProveedores={setProveedores} irInicio={irInicio} />}
         {tab === "compras" && <ModuloCompras compras={compras} setCompras={setCompras} proveedores={proveedores} ingredientes={ingredientes} setIngredientes={setIngredientes} irInicio={irInicio} />}
         {tab === "gastos" && <ModuloGastos gastos={gastos} setGastos={setGastos} irInicio={irInicio} />}
-        {tab === "reporte" && <ModuloReporte pedidos={pedidos} compras={compras} gastos={gastos} irInicio={irInicio} />}
+        {tab === "reporte" && <ModuloReporte pedidos={pedidos} compras={compras} gastos={gastos} producciones={producciones} trabajadoras={trabajadoras} irInicio={irInicio} />}
         {tab === "personal" && <ModuloPersonal repartidores={repartidores} setRepartidores={setRepartidores} trabajadoras={trabajadoras} setTrabajadoras={setTrabajadoras} irInicio={irInicio} />}
       </div>
 
