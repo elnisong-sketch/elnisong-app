@@ -720,56 +720,125 @@ function ModuloInventario({ productos, setProductos, irInicio }) {
 }
 
 // ─── MÓDULO: REPARTIDORES ────────────────────────────────────────────────────
-function ModuloRepartidores({ repartidores, setRepartidores, irInicio }) {
-  const ac = ACENTOS.repartidores;
-  const [modal, setModal] = useState(false);
-  const [editar, setEditar] = useState(null);
-  const vacio = { nombre: "", telefono: "" };
-  const [form, setForm] = useState(vacio);
+function ModuloPersonal({ repartidores, setRepartidores, trabajadoras, setTrabajadoras, irInicio }) {
+  const [seccion, setSeccion] = useState("repartidores");
 
-  const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
-  const abrirNuevo = () => { setEditar(null); setForm(vacio); setModal(true); };
-  const abrirEditar = (r) => { setEditar(r); setForm(r); setModal(true); };
-
-  const guardar = () => {
-    if (!form.nombre) return;
-    if (editar) setRepartidores(rs => rs.map(r => r.id === editar.id ? { ...r, ...form } : r));
-    else setRepartidores(rs => [...rs, { ...form, id: generarId() }]);
-    setModal(false); setEditar(null); setForm(vacio);
+  // ── Repartidores ──
+  const acR = ACENTOS.repartidores;
+  const [modalR, setModalR] = useState(false);
+  const [editarR, setEditarR] = useState(null);
+  const vacioR = { nombre: "", telefono: "" };
+  const [formR, setFormR] = useState(vacioR);
+  const setR = (k, v) => setFormR(f => ({ ...f, [k]: v }));
+  const abrirNuevoR = () => { setEditarR(null); setFormR(vacioR); setModalR(true); };
+  const abrirEditarR = (r) => { setEditarR(r); setFormR(r); setModalR(true); };
+  const guardarR = () => {
+    if (!formR.nombre) return;
+    if (editarR) setRepartidores(rs => rs.map(r => r.id === editarR.id ? { ...r, ...formR } : r));
+    else setRepartidores(rs => [...rs, { ...formR, id: generarId() }]);
+    setModalR(false); setEditarR(null); setFormR(vacioR);
   };
-  const eliminar = (id) => { if (confirm("¿Eliminar repartidor?")) setRepartidores(rs => rs.filter(r => r.id !== id)); };
+  const eliminarR = (id) => { if (confirm("¿Eliminar repartidor?")) setRepartidores(rs => rs.filter(r => r.id !== id)); };
+
+  // ── Trabajadoras ──
+  const acT = ACENTOS.produccion;
+  const [modalT, setModalT] = useState(false);
+  const [editarT, setEditarT] = useState(null);
+  const [nombreT, setNombreT] = useState("");
+  const abrirNuevoT = () => { setEditarT(null); setNombreT(""); setModalT(true); };
+  const abrirEditarT = (t) => { setEditarT(t.id); setNombreT(t.nombre); setModalT(true); };
+  const guardarT = () => {
+    if (!nombreT.trim()) return;
+    if (editarT) setTrabajadoras(ts => ts.map(t => t.id === editarT ? { ...t, nombre: nombreT.trim() } : t));
+    else setTrabajadoras(ts => [...ts, { id: generarId(), nombre: nombreT.trim() }]);
+    setModalT(false); setEditarT(null); setNombreT("");
+  };
+  const eliminarT = (id) => { if (confirm("¿Eliminar trabajadora?")) setTrabajadoras(ts => ts.filter(t => t.id !== id)); };
+
+  const acActivo = seccion === "repartidores" ? acR : acT;
 
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-        <h2 style={{ color: ac, margin: 0 }}>🛵 Repartidores</h2>
-        <Btn accent={ac} onClick={abrirNuevo}>+ Nuevo</Btn>
+        <h2 style={{ color: acActivo, margin: 0, fontSize: 18, fontWeight: 900 }}>👥 Personal</h2>
+        <button onClick={irInicio} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer" }}>🏠</button>
       </div>
-      {repartidores.map(r => (
-        <Card key={r.id} accent={ac}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <div>
-              <p style={{ color: "#e6e6e6", fontWeight: 800, margin: "0 0 4px" }}>{r.fijo ? "🏠" : "🛵"} {r.nombre}</p>
-              {r.telefono && <p style={{ color: "#9a9aa2", fontSize: 13, margin: 0 }}>📞 {r.telefono}</p>}
-            </div>
-            {!r.fijo && (
-              <div style={{ display: "flex", gap: 6 }}>
-                <Btn small variant="secondary" onClick={() => abrirEditar(r)}>✏️</Btn>
-                <Btn small variant="danger" onClick={() => eliminar(r.id)}>🗑️</Btn>
+
+      {/* Selector de sección */}
+      <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+        {[{ id: "repartidores", label: "🛵 Repartidores", ac: acR }, { id: "trabajadoras", label: "👩‍🍳 Trabajadoras", ac: acT }].map(s => (
+          <button key={s.id} onClick={() => setSeccion(s.id)} style={{
+            flex: 1, padding: "10px", borderRadius: 12, border: `2px solid ${seccion === s.id ? s.ac : "#2a2a3a"}`,
+            background: seccion === s.id ? s.ac + "22" : "#13141a", color: seccion === s.id ? s.ac : "#666",
+            fontWeight: 700, fontSize: 14, cursor: "pointer"
+          }}>{s.label}</button>
+        ))}
+      </div>
+
+      {/* ── Sección Repartidores ── */}
+      {seccion === "repartidores" && (
+        <div>
+          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}>
+            <Btn accent={acR} small onClick={abrirNuevoR}>+ Nuevo</Btn>
+          </div>
+          {repartidores.length === 0 && <p style={{ color: "#555", textAlign: "center", marginTop: 40 }}>No hay repartidores registrados.</p>}
+          {repartidores.map(r => (
+            <Card key={r.id} accent={acR}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div>
+                  <p style={{ color: "#e6e6e6", fontWeight: 800, margin: "0 0 4px" }}>{r.fijo ? "🏠" : "🛵"} {r.nombre}</p>
+                  {r.telefono && <p style={{ color: "#9a9aa2", fontSize: 13, margin: 0 }}>📞 {r.telefono}</p>}
+                </div>
+                {!r.fijo && (
+                  <div style={{ display: "flex", gap: 6 }}>
+                    <Btn small variant="secondary" onClick={() => abrirEditarR(r)}>✏️</Btn>
+                    <Btn small variant="danger" onClick={() => eliminarR(r.id)}>🗑️</Btn>
+                  </div>
+                )}
               </div>
-            )}
+            </Card>
+          ))}
+          {modalR && (
+            <Modal title={editarR ? "Editar Repartidor" : "Nuevo Repartidor"} accent={acR} onClose={() => { setModalR(false); setEditarR(null); }}>
+              <Input label="Nombre *" value={formR.nombre} onChange={e => setR("nombre", e.target.value)} placeholder="Ej: Juan Pérez" />
+              <Input label="Teléfono" value={formR.telefono} onChange={e => setR("telefono", e.target.value)} placeholder="+34 6XX XXX XXX" />
+              <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+                <Btn variant="secondary" onClick={() => { setModalR(false); setEditarR(null); }}>Cancelar</Btn>
+                <Btn accent={acR} onClick={guardarR}>Guardar</Btn>
+              </div>
+            </Modal>
+          )}
+        </div>
+      )}
+
+      {/* ── Sección Trabajadoras ── */}
+      {seccion === "trabajadoras" && (
+        <div>
+          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}>
+            <Btn accent={acT} small onClick={abrirNuevoT}>+ Nueva</Btn>
           </div>
-        </Card>
-      ))}
-      {modal && (
-        <Modal title={editar ? "Editar Repartidor" : "Nuevo Repartidor"} accent={ac} onClose={() => { setModal(false); setEditar(null); }}>
-          <Input label="Nombre *" value={form.nombre} onChange={e => set("nombre", e.target.value)} placeholder="Ej: Juan Pérez" />
-          <Input label="Teléfono" value={form.telefono} onChange={e => set("telefono", e.target.value)} placeholder="+34 6XX XXX XXX" />
-          <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
-            <Btn variant="secondary" onClick={() => { setModal(false); setEditar(null); }}>Cancelar</Btn>
-            <Btn accent={ac} onClick={guardar}>Guardar</Btn>
-          </div>
-        </Modal>
+          {trabajadoras.length === 0 && <p style={{ color: "#555", textAlign: "center", marginTop: 40 }}>No hay trabajadoras registradas.</p>}
+          {trabajadoras.map(t => (
+            <Card key={t.id} accent={acT}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <p style={{ color: "#e6e6e6", fontWeight: 800, margin: 0 }}>👩‍🍳 {t.nombre}</p>
+                <div style={{ display: "flex", gap: 6 }}>
+                  <Btn small variant="secondary" onClick={() => abrirEditarT(t)}>✏️</Btn>
+                  <Btn small variant="danger" onClick={() => eliminarT(t.id)}>🗑️</Btn>
+                </div>
+              </div>
+            </Card>
+          ))}
+          {modalT && (
+            <Modal title={editarT ? "Editar Trabajadora" : "Nueva Trabajadora"} accent={acT} onClose={() => { setModalT(false); setEditarT(null); setNombreT(""); }}>
+              <Input label="Nombre *" value={nombreT} onChange={e => setNombreT(e.target.value)} placeholder="Ej: María López" />
+              <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+                <Btn variant="secondary" onClick={() => { setModalT(false); setEditarT(null); setNombreT(""); }}>Cancelar</Btn>
+                <Btn accent={acT} onClick={guardarT}>Guardar</Btn>
+              </div>
+            </Modal>
+          )}
+        </div>
       )}
     </div>
   );
@@ -1345,7 +1414,7 @@ const TABS = [
   { id: "compras", label: "Compras", icon: "🧺" },
   { id: "gastos", label: "Gastos", icon: "🧹" },
   { id: "reporte", label: "Reporte", icon: "📈" },
-  { id: "repartidores", label: "Repart.", icon: "🛵" },
+  { id: "personal", label: "Personal", icon: "👥" },
 ];
 
 function cargarLS(key, fallback) {
@@ -1457,7 +1526,7 @@ export default function AppModerno() {
         {tab === "compras" && <ModuloCompras compras={compras} setCompras={setCompras} proveedores={proveedores} ingredientes={ingredientes} setIngredientes={setIngredientes} irInicio={irInicio} />}
         {tab === "gastos" && <ModuloGastos gastos={gastos} setGastos={setGastos} irInicio={irInicio} />}
         {tab === "reporte" && <ModuloReporte pedidos={pedidos} compras={compras} gastos={gastos} irInicio={irInicio} />}
-        {tab === "repartidores" && <ModuloRepartidores repartidores={repartidores} setRepartidores={setRepartidores} irInicio={irInicio} />}
+        {tab === "personal" && <ModuloPersonal repartidores={repartidores} setRepartidores={setRepartidores} trabajadoras={trabajadoras} setTrabajadoras={setTrabajadoras} irInicio={irInicio} />}
       </div>
 
       {/* Navegación inferior tipo botones grandes */}
