@@ -1414,7 +1414,7 @@ const TABS = [
   { id: "compras", label: "Compras", icon: "🧺" },
   { id: "gastos", label: "Gastos", icon: "🧹" },
   { id: "reporte", label: "Reporte", icon: "📈" },
-  { id: "personal", label: "Personal", icon: "🪪" },
+  { id: "personal", label: "Personal", icon: "🧑‍💼" },
 ];
 
 function cargarLS(key, fallback) {
