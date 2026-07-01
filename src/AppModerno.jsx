@@ -142,15 +142,8 @@ const Card = ({ children, accent, style = {} }) => (
 );
 
 const Modal = ({ title, accent = "#c8a84b", onClose, children }) => (
-  <div style={{
-    position: "fixed", inset: 0, background: "#000c", zIndex: 1000,
-    display: "flex", alignItems: "center", justifyContent: "center", padding: 16
-  }}>
-    <div style={{
-      background: "#141319", border: `1px solid ${accent}33`, borderRadius: 18,
-      width: "100%", maxWidth: 520, maxHeight: "90vh", overflowY: "auto", padding: 24,
-      boxShadow: `0 20px 60px ${accent}22`
-    }}>
+  <div className="modal-overlay">
+    <div className="modal-box" style={{ border: `1px solid ${accent}33`, boxShadow: `0 20px 60px ${accent}22` }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
         <h2 style={{ color: accent, margin: 0, fontSize: 19, fontWeight: 800 }}>{title}</h2>
         <button onClick={onClose} style={{ background: "#1f2028", border: "none", color: "#999", fontSize: 18, cursor: "pointer", borderRadius: 8, width: 32, height: 32 }}>✕</button>
@@ -1557,7 +1550,7 @@ export default function AppModerno() {
       </div>
 
       {/* Contenido */}
-      <div style={{ maxWidth: 760, margin: "0 auto", padding: "20px 16px 110px" }}>
+      <div className="main-content" style={{ maxWidth: 760, margin: "0 auto" }}>
         {tab === "pedidos" && <ModuloPedidos pedidos={pedidos} setPedidos={setPedidos} productos={productos} setProductos={setProductos} clientes={clientes} repartidores={repartidores} />}
         {tab === "clientes" && <ModuloClientes clientes={clientes} setClientes={setClientes} pedidos={pedidos} irInicio={irInicio} />}
         {tab === "inventario" && <ModuloInventario productos={productos} setProductos={setProductos} irInicio={irInicio} />}
@@ -1570,12 +1563,9 @@ export default function AppModerno() {
         {tab === "personal" && <ModuloPersonal repartidores={repartidores} setRepartidores={setRepartidores} trabajadoras={trabajadoras} setTrabajadoras={setTrabajadoras} irInicio={irInicio} />}
       </div>
 
-      {/* Navegación inferior tipo botones grandes */}
-      <div style={{
-        position: "fixed", bottom: 0, left: 0, right: 0, background: "#13141a",
-        borderTop: "1px solid #1d1e26", overflowX: "auto", zIndex: 50
-      }}>
-        <div style={{ maxWidth: 760, margin: "0 auto", display: "flex", padding: "8px 6px", gap: 4 }}>
+      {/* Navegación inferior */}
+      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#13141a", borderTop: "1px solid #1d1e26", zIndex: 50 }}>
+        <div className="nav-tabs" style={{ maxWidth: 760, margin: "0 auto" }}>
           {TABS.map(t => {
             const activo = tab === t.id;
             const color = ACENTOS[t.id];
