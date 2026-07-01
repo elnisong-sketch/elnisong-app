@@ -27,18 +27,26 @@ const hoy = () => new Date().toISOString().split("T")[0];
 const generarId = () => Date.now().toString(36) + Math.random().toString(36).slice(2);
 const inicioDeMes = () => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1).toISOString().split("T")[0]; };
 
+// ─── PALETA GLOBAL ───────────────────────────────────────────────────────────
+const BG_APP    = "#060d1f";   // azul marino muy oscuro
+const BG_CARD   = "#0d1628";   // azul marino tarjeta
+const BG_INPUT  = "#071020";   // azul marino input
+const BORDER    = "#1a2a4a";   // borde sutil azul
+const BORDER2   = "#243554";   // borde activo
+
 // ─── ACENTOS DE COLOR POR SECCIÓN ───────────────────────────────────────────
 const ACENTOS = {
-  pedidos: "#f59e0b",
-  clientes: "#06b6d4",
-  inventario: "#c8a84b",
-  stock: "#a78bfa",
-  produccion: "#34d399",
-  proveedores: "#10b981",
-  compras: "#ec4899",
-  gastos: "#ef4444",
-  reporte: "#14b8a6",
-  repartidores: "#f97316",
+  pedidos:    "#ffb800",   // amarillo venezolano
+  clientes:   "#38bdf8",   // celeste
+  inventario: "#fb923c",   // naranja
+  stock:      "#a78bfa",   // violeta
+  produccion: "#34d399",   // verde menta
+  proveedores:"#10b981",   // verde
+  compras:    "#f472b6",   // rosa
+  gastos:     "#f87171",   // rojo suave
+  reporte:    "#22d3ee",   // cyan
+  personal:   "#818cf8",   // indigo
+  admin:      "#94a3b8",   // gris azulado
 };
 
 // ─── HELPERS STOCK FIFO ──────────────────────────────────────────────────────
@@ -72,12 +80,12 @@ const Btn = ({ children, onClick, variant = "primary", small, accent, style = {}
     padding: small ? "8px 14px" : "12px 20px", fontSize: small ? 13 : 15,
     transition: "transform .12s, opacity .12s", ...style
   };
-  const ac = accent || "#c8a84b";
+  const ac = accent || "#ffb800";
   const variants = {
-    primary: { background: ac, color: "#0f0f0f", boxShadow: `0 4px 14px ${ac}33` },
-    secondary: { background: "#20212a", color: "#e6e6e6", border: "1px solid #33343f" },
-    danger: { background: "#ef444422", color: "#ef4444", border: "1px solid #ef444455" },
-    success: { background: "#10b98122", color: "#10b981", border: "1px solid #10b98155" },
+    primary: { background: ac, color: "#060d1f", boxShadow: `0 4px 14px ${ac}44` },
+    secondary: { background: BG_CARD, color: "#c8d4e8", border: `1px solid ${BORDER2}` },
+    danger: { background: "#f8717122", color: "#f87171", border: "1px solid #f8717144" },
+    success: { background: "#34d39922", color: "#34d399", border: "1px solid #34d39944" },
     ghost: { background: "transparent", color: ac, border: `1px solid ${ac}55` },
   };
   return (
@@ -88,10 +96,9 @@ const Btn = ({ children, onClick, variant = "primary", small, accent, style = {}
   );
 };
 
-// Grupo de botones tipo "chip" para reemplazar <select> en opciones cortas
-const Chips = ({ label, options, value, onChange, accent = "#c8a84b" }) => (
+const Chips = ({ label, options, value, onChange, accent = "#ffb800" }) => (
   <div style={{ marginBottom: 14 }}>
-    {label && <label style={{ display: "block", color: "#8a8a93", fontSize: 12, marginBottom: 6, fontWeight: 600 }}>{label}</label>}
+    {label && <label style={{ display: "block", color: "#6b82a8", fontSize: 12, marginBottom: 6, fontWeight: 600 }}>{label}</label>}
     <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
       {options.map(o => {
         const val = o.value ?? o;
@@ -99,9 +106,9 @@ const Chips = ({ label, options, value, onChange, accent = "#c8a84b" }) => (
         const activo = val === value;
         return (
           <button key={val} type="button" onClick={() => onChange(val)} style={{
-            border: activo ? `1px solid ${accent}` : "1px solid #2d2e38",
-            background: activo ? accent : "#1b1c24",
-            color: activo ? "#0f0f0f" : "#c9c9d1",
+            border: activo ? `1px solid ${accent}` : `1px solid ${BORDER}`,
+            background: activo ? accent : BG_CARD,
+            color: activo ? "#060d1f" : "#8da4cc",
             borderRadius: 10, padding: "8px 14px", fontSize: 13, fontWeight: 700,
             cursor: "pointer", transition: "all .15s"
           }}>{lbl}</button>
@@ -113,20 +120,20 @@ const Chips = ({ label, options, value, onChange, accent = "#c8a84b" }) => (
 
 const Input = ({ label, ...props }) => (
   <div style={{ marginBottom: 14 }}>
-    {label && <label style={{ display: "block", color: "#8a8a93", fontSize: 12, marginBottom: 6, fontWeight: 600 }}>{label}</label>}
+    {label && <label style={{ display: "block", color: "#6b82a8", fontSize: 12, marginBottom: 6, fontWeight: 600 }}>{label}</label>}
     <input style={{
-      width: "100%", background: "#1b1c24", border: "1px solid #2d2e38", borderRadius: 10,
-      color: "#e6e6e6", padding: "11px 14px", fontSize: 14, boxSizing: "border-box", outline: "none"
+      width: "100%", background: BG_INPUT, border: `1px solid ${BORDER}`, borderRadius: 10,
+      color: "#dce8f5", padding: "11px 14px", fontSize: 14, boxSizing: "border-box", outline: "none"
     }} {...props} />
   </div>
 );
 
 const Select = ({ label, options, ...props }) => (
   <div style={{ marginBottom: 14 }}>
-    {label && <label style={{ display: "block", color: "#8a8a93", fontSize: 12, marginBottom: 6, fontWeight: 600 }}>{label}</label>}
+    {label && <label style={{ display: "block", color: "#6b82a8", fontSize: 12, marginBottom: 6, fontWeight: 600 }}>{label}</label>}
     <select style={{
-      width: "100%", background: "#1b1c24", border: "1px solid #2d2e38", borderRadius: 10,
-      color: "#e6e6e6", padding: "11px 14px", fontSize: 14, boxSizing: "border-box", outline: "none"
+      width: "100%", background: BG_INPUT, border: `1px solid ${BORDER}`, borderRadius: 10,
+      color: "#dce8f5", padding: "11px 14px", fontSize: 14, boxSizing: "border-box", outline: "none"
     }} {...props}>
       {options.map(o => <option key={o.value ?? o} value={o.value ?? o}>{o.label ?? o}</option>)}
     </select>
@@ -135,18 +142,18 @@ const Select = ({ label, options, ...props }) => (
 
 const Card = ({ children, accent, style = {} }) => (
   <div style={{
-    background: "linear-gradient(180deg, #181922 0%, #15161d 100%)",
-    border: "1px solid #25262f", borderLeft: accent ? `3px solid ${accent}` : "1px solid #25262f",
+    background: BG_CARD,
+    border: `1px solid ${BORDER}`, borderLeft: accent ? `3px solid ${accent}` : `1px solid ${BORDER}`,
     borderRadius: 14, padding: 16, marginBottom: 12, ...style
   }}>{children}</div>
 );
 
-const Modal = ({ title, accent = "#c8a84b", onClose, children }) => (
+const Modal = ({ title, accent = "#ffb800", onClose, children }) => (
   <div className="modal-overlay">
-    <div className="modal-box" style={{ border: `1px solid ${accent}33`, boxShadow: `0 20px 60px ${accent}22` }}>
+    <div className="modal-box" style={{ background: BG_CARD, border: `1px solid ${accent}44`, boxShadow: `0 20px 60px ${accent}22` }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
         <h2 style={{ color: accent, margin: 0, fontSize: 19, fontWeight: 800 }}>{title}</h2>
-        <button onClick={onClose} style={{ background: "#1f2028", border: "none", color: "#999", fontSize: 18, cursor: "pointer", borderRadius: 8, width: 32, height: 32 }}>✕</button>
+        <button onClick={onClose} style={{ background: BG_INPUT, border: `1px solid ${BORDER}`, color: "#6b82a8", fontSize: 18, cursor: "pointer", borderRadius: 8, width: 32, height: 32 }}>✕</button>
       </div>
       {children}
     </div>
@@ -1377,17 +1384,13 @@ function ModuloProduccion({ producciones, setProducciones, trabajadoras, setTrab
       </button>
 
       {modalTrab && (
-        <div style={{ position: "fixed", inset: 0, background: "#000a", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
-          <div style={{ background: "#13141a", border: "1px solid #2a2a3a", borderRadius: 18, padding: 24, width: "100%", maxWidth: 360 }}>
-            <h3 style={{ color: ac, margin: "0 0 16px", fontSize: 16 }}>Nueva Trabajadora</h3>
-            <input autoFocus value={nombreTrab} onChange={e => setNombreTrab(e.target.value)} onKeyDown={e => e.key === "Enter" && guardarTrab()}
-              placeholder="Nombre completo" style={{ width: "100%", background: "#0c0c10", border: "1px solid #2a2a3a", borderRadius: 10, color: "#e6e6e6", padding: "12px", fontSize: 14, boxSizing: "border-box", marginBottom: 12 }} />
-            <div style={{ display: "flex", gap: 8 }}>
-              <button onClick={() => setModalTrab(false)} style={{ flex: 1, background: "#1a1a2a", border: "1px solid #2a2a3a", borderRadius: 10, color: "#888", padding: 12, cursor: "pointer" }}>Cancelar</button>
-              <button onClick={guardarTrab} style={{ flex: 1, background: ac, border: "none", borderRadius: 10, color: "#0c0c10", padding: 12, fontWeight: 800, cursor: "pointer" }}>Guardar</button>
-            </div>
+        <Modal title="Nueva Trabajadora" accent={ac} onClose={() => setModalTrab(false)}>
+          <Input autoFocus value={nombreTrab} onChange={e => setNombreTrab(e.target.value)} onKeyDown={e => e.key === "Enter" && guardarTrab()} placeholder="Nombre completo" />
+          <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+            <Btn variant="secondary" onClick={() => setModalTrab(false)}>Cancelar</Btn>
+            <Btn accent={ac} onClick={guardarTrab}>Guardar</Btn>
           </div>
-        </div>
+        </Modal>
       )}
     </div>
   );
@@ -1438,17 +1441,49 @@ function ModuloProduccion({ producciones, setProducciones, trabajadoras, setTrab
 }
 
 // ─── APP PRINCIPAL (DISEÑO MODERNO) ─────────────────────────────────────────
+function ModuloAdmin({ proveedores, setProveedores, compras, setCompras, gastos, setGastos, ingredientes, setIngredientes, pedidos, producciones, trabajadoras, irInicio }) {
+  const [sub, setSub] = useState("proveedores");
+  const ac = ACENTOS.admin;
+  return (
+    <div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+        <h2 style={{ color: ac, margin: 0, fontSize: 18, fontWeight: 900 }}>⚙️ Administración</h2>
+        <button onClick={irInicio} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer" }}>🏠</button>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 20 }}>
+        {TABS_ADMIN.map(t => (
+          <button key={t.id} onClick={() => setSub(t.id)} style={{
+            padding: "12px 8px", borderRadius: 12,
+            border: `2px solid ${sub === t.id ? ACENTOS[t.id] : BORDER}`,
+            background: sub === t.id ? ACENTOS[t.id] + "22" : BG_CARD,
+            color: sub === t.id ? ACENTOS[t.id] : "#6b82a8",
+            fontWeight: 700, fontSize: 13, cursor: "pointer", textAlign: "center"
+          }}>{t.icon} {t.label}</button>
+        ))}
+      </div>
+      {sub === "proveedores" && <ModuloProveedores proveedores={proveedores} setProveedores={setProveedores} irInicio={irInicio} />}
+      {sub === "compras" && <ModuloCompras compras={compras} setCompras={setCompras} proveedores={proveedores} ingredientes={ingredientes} setIngredientes={setIngredientes} irInicio={irInicio} />}
+      {sub === "gastos" && <ModuloGastos gastos={gastos} setGastos={setGastos} irInicio={irInicio} />}
+      {sub === "reporte" && <ModuloReporte pedidos={pedidos} compras={compras} gastos={gastos} producciones={producciones} trabajadoras={trabajadoras} irInicio={irInicio} />}
+    </div>
+  );
+}
+
 const TABS = [
-  { id: "pedidos", label: "Pedidos", icon: "📦" },
-  { id: "clientes", label: "Clientes", icon: "👥" },
+  { id: "pedidos",    label: "Pedidos",    icon: "📦" },
+  { id: "clientes",   label: "Clientes",   icon: "👥" },
   { id: "inventario", label: "Inventario", icon: "📊" },
-  { id: "stock", label: "Stock", icon: "🗃️" },
-  { id: "produccion", label: "Producc.", icon: "🏭" },
-  { id: "proveedores", label: "Proveed.", icon: "🚚" },
-  { id: "compras", label: "Compras", icon: "🧺" },
-  { id: "gastos", label: "Gastos", icon: "🧹" },
-  { id: "reporte", label: "Reporte", icon: "📈" },
-  { id: "personal", label: "Personal", icon: "🧑‍💼" },
+  { id: "stock",      label: "Stock",      icon: "🗃️" },
+  { id: "produccion", label: "Producción", icon: "🏭" },
+  { id: "personal",   label: "Personal",   icon: "🧑‍💼" },
+  { id: "admin",      label: "Admin",      icon: "⚙️" },
+];
+
+const TABS_ADMIN = [
+  { id: "proveedores", label: "Proveedores", icon: "🚚" },
+  { id: "compras",     label: "Compras",     icon: "🧺" },
+  { id: "gastos",      label: "Gastos",      icon: "🧹" },
+  { id: "reporte",     label: "Reporte",     icon: "📈" },
 ];
 
 function cargarLS(key, fallback) {
@@ -1522,27 +1557,27 @@ export default function AppModerno() {
   };
 
   return (
-    <div style={{ background: "#0c0c10", minHeight: "100vh", fontFamily: "'Inter', sans-serif", color: "#e6e6e6" }}>
+    <div style={{ background: BG_APP, minHeight: "100vh", fontFamily: "'Inter', sans-serif", color: "#dce8f5" }}>
       {/* Header */}
-      <div style={{ background: `linear-gradient(135deg, ${ac}22 0%, #0c0c10 70%)`, borderBottom: "1px solid #1d1e26", padding: "14px 20px" }}>
+      <div style={{ background: `linear-gradient(135deg, ${ac}18 0%, ${BG_APP} 60%)`, borderBottom: `1px solid ${BORDER}`, padding: "14px 20px" }}>
         <div style={{ maxWidth: 760, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <button onClick={irInicio} style={{ background: "none", border: "none", cursor: "pointer", textAlign: "left", padding: 0 }}>
-            <h1 style={{ color: ac, margin: 0, fontSize: 20, fontWeight: 900, letterSpacing: -0.5 }}>🫓 ELNISONG</h1>
-            <p style={{ color: "#666", fontSize: 11, margin: 0 }}>Toca para volver al inicio</p>
+            <h1 style={{ color: ac, margin: 0, fontSize: 22, fontWeight: 900, letterSpacing: -0.5 }}>🥟 ELNISONG</h1>
+            <p style={{ color: "#3d5580", fontSize: 11, margin: 0 }}>Toca para volver al inicio</p>
           </button>
           <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
             {pendientes > 0 && (
-              <div style={{ textAlign: "center", background: "#f59e0b18", borderRadius: 12, padding: "6px 12px" }}>
-                <p style={{ color: "#f59e0b", fontWeight: 800, fontSize: 18, margin: 0 }}>{pendientes}</p>
-                <p style={{ color: "#888", fontSize: 10, margin: 0 }}>Pendientes</p>
+              <div style={{ textAlign: "center", background: "#ffb80018", borderRadius: 12, padding: "6px 12px" }}>
+                <p style={{ color: "#ffb800", fontWeight: 800, fontSize: 18, margin: 0 }}>{pendientes}</p>
+                <p style={{ color: "#3d5580", fontSize: 10, margin: 0 }}>Pendientes</p>
               </div>
             )}
             <div style={{ textAlign: "center", background: `${ac}18`, borderRadius: 12, padding: "6px 12px" }}>
               <p style={{ color: ac, fontWeight: 800, fontSize: 18, margin: 0 }}>{hoyEntregas}</p>
-              <p style={{ color: "#888", fontSize: 10, margin: 0 }}>Hoy</p>
+              <p style={{ color: "#3d5580", fontSize: 10, margin: 0 }}>Hoy</p>
             </div>
             <button onClick={exportarDatos} title="Exportar backup"
-              style={{ background: "#1a1a2a", border: "1px solid #2a2a3a", borderRadius: 10, color: "#888", padding: "8px 10px", cursor: "pointer", fontSize: 16 }}>
+              style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 10, color: "#6b82a8", padding: "8px 10px", cursor: "pointer", fontSize: 16 }}>
               💾
             </button>
           </div>
@@ -1556,15 +1591,12 @@ export default function AppModerno() {
         {tab === "inventario" && <ModuloInventario productos={productos} setProductos={setProductos} irInicio={irInicio} />}
         {tab === "stock" && <ModuloStock productos={productos} irInicio={irInicio} />}
         {tab === "produccion" && <ModuloProduccion producciones={producciones} setProducciones={setProducciones} trabajadoras={trabajadoras} setTrabajadoras={setTrabajadoras} productos={productos} setProductos={setProductos} irInicio={irInicio} />}
-        {tab === "proveedores" && <ModuloProveedores proveedores={proveedores} setProveedores={setProveedores} irInicio={irInicio} />}
-        {tab === "compras" && <ModuloCompras compras={compras} setCompras={setCompras} proveedores={proveedores} ingredientes={ingredientes} setIngredientes={setIngredientes} irInicio={irInicio} />}
-        {tab === "gastos" && <ModuloGastos gastos={gastos} setGastos={setGastos} irInicio={irInicio} />}
-        {tab === "reporte" && <ModuloReporte pedidos={pedidos} compras={compras} gastos={gastos} producciones={producciones} trabajadoras={trabajadoras} irInicio={irInicio} />}
         {tab === "personal" && <ModuloPersonal repartidores={repartidores} setRepartidores={setRepartidores} trabajadoras={trabajadoras} setTrabajadoras={setTrabajadoras} irInicio={irInicio} />}
+        {tab === "admin" && <ModuloAdmin proveedores={proveedores} setProveedores={setProveedores} compras={compras} setCompras={setCompras} gastos={gastos} setGastos={setGastos} ingredientes={ingredientes} setIngredientes={setIngredientes} pedidos={pedidos} producciones={producciones} trabajadoras={trabajadoras} irInicio={irInicio} />}
       </div>
 
       {/* Navegación inferior */}
-      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#13141a", borderTop: "1px solid #1d1e26", zIndex: 50 }}>
+      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: BG_CARD, borderTop: `1px solid ${BORDER}`, zIndex: 50 }}>
         <div className="nav-tabs" style={{ maxWidth: 760, margin: "0 auto" }}>
           {TABS.map(t => {
             const activo = tab === t.id;
