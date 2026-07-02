@@ -418,7 +418,7 @@ function ModuloPedidos({ pedidos, setPedidos, productos, setProductos, clientes,
               <p style={{ color: TEXT_SUB, fontSize: 13, margin: "0 0 4px" }}>📅 {p.fecha} {p.rangoHorario && `· ⏰ ${p.rangoHorario}`}</p>
               <p style={{ color: TEXT_SUB, fontSize: 13, margin: "0 0 6px" }}>💳 {p.formaPago} · {p.tipoEntrega}</p>
               {p.items?.map((it, i) => (
-                <span key={i} style={{ fontSize: 12, background: "#1f2028", borderRadius: 8, padding: "3px 9px", marginRight: 4, color: TEXT_SUB }}>
+                <span key={i} style={{ fontSize: 12, background: BORDER, borderRadius: 8, padding: "3px 9px", marginRight: 4, marginBottom: 4, display: "inline-block", color: TEXT_MAIN }}>
                   {it.cantidad}x {it.nombreProducto} {it.presentacion} ({it.estado})
                 </span>
               ))}
