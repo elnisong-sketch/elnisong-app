@@ -1649,26 +1649,91 @@ function ModuloBienvenida({ setTab, pendientes, hoyEntregas }) {
   );
 }
 
+// ─── DATOS DE PRUEBA ────────────────────────────────────────────────────────
+const PRODUCTOS_DEMO = [
+  { id: 1, nombre: "Tequeños de Queso", categoria: "Tequeños", variantes: [{ presentacion: "Bandeja 25", precio: 18, stock: 40, lotes: [{ fecha: "2026-06-01", cantidad: 40 }] }, { presentacion: "Bandeja 50", precio: 32, stock: 20, lotes: [{ fecha: "2026-06-01", cantidad: 20 }] }] },
+  { id: 2, nombre: "Tequeños de Jamón", categoria: "Tequeños", variantes: [{ presentacion: "Bandeja 25", precio: 20, stock: 30, lotes: [{ fecha: "2026-06-02", cantidad: 30 }] }, { presentacion: "Bandeja 50", precio: 36, stock: 10, lotes: [{ fecha: "2026-06-02", cantidad: 10 }] }] },
+  { id: 3, nombre: "Empanadas de Carne", categoria: "Empanadas", variantes: [{ presentacion: "Bandeja 25", precio: 22, stock: 25, lotes: [{ fecha: "2026-06-03", cantidad: 25 }] }] },
+  { id: 4, nombre: "Pastelitos de Pollo", categoria: "Pastelitos", variantes: [{ presentacion: "Bandeja 25", precio: 20, stock: 15, lotes: [{ fecha: "2026-06-04", cantidad: 15 }] }] },
+  { id: 5, nombre: "Empanadas de Queso", categoria: "Empanadas", variantes: [{ presentacion: "Bandeja 25", precio: 20, stock: 20, lotes: [{ fecha: "2026-06-05", cantidad: 20 }] }, { presentacion: "Bandeja 50", precio: 36, stock: 8, lotes: [{ fecha: "2026-06-05", cantidad: 8 }] }] },
+];
+const CLIENTES_DEMO = [
+  { id: "c1", nombre: "María González", telefono: "612345678", direccion: "Calle Mayor 12, 3ºA", cp: "28001" },
+  { id: "c2", nombre: "Carlos Rodríguez", telefono: "623456789", direccion: "Av. España 45", cp: "28002" },
+  { id: "c3", nombre: "Ana Martínez", telefono: "634567890", direccion: "C/ Libertad 8, 1ºB", cp: "28003" },
+  { id: "c4", nombre: "Luis Pérez", telefono: "645678901", direccion: "Plaza del Sol 3", cp: "28004" },
+  { id: "c5", nombre: "Sofia López", telefono: "656789012", direccion: "C/ Colón 22, 2ºC", cp: "28005" },
+];
+const PEDIDOS_DEMO = [
+  { id: "p1", nombre: "María González", telefono: "612345678", direccion: "Calle Mayor 12, 3ºA", cp: "28001", tipoEntrega: "Domicilio", formaPago: "Bizum", repartidorId: "r1", rangoHorario: "11:00 a 12:00", fecha: hoy(), estado: "Pendiente", envio: 3, items: [{ id: "i1", productoId: "1", nombreProducto: "Tequeños de Queso", presentacion: "Bandeja 25", estado: "Congelado", cantidad: 2, precio: 18, subtotal: 36, comision: 0, recargoFrito: 0 }], total: 39 },
+  { id: "p2", nombre: "Carlos Rodríguez", telefono: "623456789", direccion: "Av. España 45", cp: "28002", tipoEntrega: "Domicilio", formaPago: "Efectivo", repartidorId: "r2", rangoHorario: "12:00 a 13:00", fecha: hoy(), estado: "Confirmado", envio: 0, items: [{ id: "i2", productoId: "3", nombreProducto: "Empanadas de Carne", presentacion: "Bandeja 25", estado: "Frito", cantidad: 1, precio: 22, subtotal: 22, comision: 0, recargoFrito: 5 }], total: 22 },
+  { id: "p3", nombre: "Ana Martínez", telefono: "634567890", direccion: "C/ Libertad 8, 1ºB", cp: "28003", tipoEntrega: "Recogida", formaPago: "Transferencia", repartidorId: "tienda", rangoHorario: "13:00 a 14:00", fecha: hoy(), estado: "En ruta", envio: 0, items: [{ id: "i3", productoId: "2", nombreProducto: "Tequeños de Jamón", presentacion: "Bandeja 50", estado: "Congelado", cantidad: 1, precio: 36, subtotal: 36, comision: 0, recargoFrito: 0 }], total: 36 },
+  { id: "p4", nombre: "Luis Pérez", telefono: "645678901", direccion: "Plaza del Sol 3", cp: "28004", tipoEntrega: "Domicilio", formaPago: "Tarjeta", repartidorId: "r1", rangoHorario: "17:00 a 18:00", fecha: hoy(), estado: "Entregado", envio: 5, items: [{ id: "i4", productoId: "4", nombreProducto: "Pastelitos de Pollo", presentacion: "Bandeja 25", estado: "Frito", cantidad: 2, precio: 20, subtotal: 40, comision: 0, recargoFrito: 5 }], total: 45 },
+  { id: "p5", nombre: "Sofia López", telefono: "656789012", direccion: "C/ Colón 22, 2ºC", cp: "28005", tipoEntrega: "Domicilio", formaPago: "Bizum", repartidorId: "r2", rangoHorario: "18:00 a 19:00", fecha: hoy(), estado: "Pendiente", envio: 3, items: [{ id: "i5", productoId: "5", nombreProducto: "Empanadas de Queso", presentacion: "Bandeja 25", estado: "Congelado", cantidad: 1, precio: 20, subtotal: 20, comision: 0, recargoFrito: 0 }], total: 23 },
+];
+const PROVEEDORES_DEMO = [
+  { id: "pr1", nombre: "Harinas del Sur", contacto: "Antonio Ruiz", telefono: "911234567", producto: "Harina de trigo" },
+  { id: "pr2", nombre: "Lácteos Frescos S.L.", contacto: "Carmen Vega", telefono: "922345678", producto: "Queso blanco" },
+  { id: "pr3", nombre: "Distribuciones López", contacto: "Pedro López", telefono: "933456789", producto: "Aceite de girasol" },
+  { id: "pr4", nombre: "Carnes Premium", contacto: "José García", telefono: "944567890", producto: "Carne molida" },
+  { id: "pr5", nombre: "Empaques y Más", contacto: "Laura Torres", telefono: "955678901", producto: "Bandejas y envases" },
+];
+const COMPRAS_DEMO = [
+  { id: "cp1", proveedorId: "pr1", ingredienteId: "ing1", nombre: "Harina de trigo", cantidad: 10, unidad: "kg", precioUnitario: 1.2, total: 12, fecha: hoy() },
+  { id: "cp2", proveedorId: "pr2", ingredienteId: "ing2", nombre: "Queso blanco", cantidad: 5, unidad: "kg", precioUnitario: 6, total: 30, fecha: hoy() },
+  { id: "cp3", proveedorId: "pr3", ingredienteId: "ing3", nombre: "Aceite de girasol", cantidad: 3, unidad: "litros", precioUnitario: 2.5, total: 7.5, fecha: hoy() },
+  { id: "cp4", proveedorId: "pr4", ingredienteId: "ing4", nombre: "Carne molida", cantidad: 4, unidad: "kg", precioUnitario: 8, total: 32, fecha: hoy() },
+  { id: "cp5", proveedorId: "pr5", ingredienteId: "ing5", nombre: "Bandejas x50", cantidad: 20, unidad: "unidades", precioUnitario: 0.5, total: 10, fecha: hoy() },
+];
+const GASTOS_DEMO = [
+  { id: "g1", descripcion: "Alquiler local julio", categoria: "Alquiler", monto: 400, fecha: hoy() },
+  { id: "g2", descripcion: "Limpieza semanal", categoria: "Limpieza", monto: 30, fecha: hoy() },
+  { id: "g3", descripcion: "Gasolina repartos", categoria: "Transporte", monto: 50, fecha: hoy() },
+  { id: "g4", descripcion: "Luz y agua", categoria: "Servicios", monto: 85, fecha: hoy() },
+  { id: "g5", descripcion: "Bolsas y papel", categoria: "Otros", monto: 15, fecha: hoy() },
+];
+const REPARTIDORES_DEMO = [
+  { id: "r1", nombre: "Miguel Sánchez", telefono: "611000001", fijo: false },
+  { id: "r2", nombre: "David Romero", telefono: "611000002", fijo: false },
+  { id: "r3", nombre: "Elena Castro", telefono: "611000003", fijo: false },
+  { id: "r4", nombre: "Pablo Jiménez", telefono: "611000004", fijo: false },
+  { id: "r5", nombre: "Laura Moreno", telefono: "611000005", fijo: false },
+];
+const TRABAJADORAS_DEMO = [
+  { id: "t1", nombre: "Gabriela Torres" },
+  { id: "t2", nombre: "Valentina Díaz" },
+  { id: "t3", nombre: "Isabel Fernández" },
+  { id: "t4", nombre: "Patricia Ruiz" },
+  { id: "t5", nombre: "Carmen Vázquez" },
+];
+const PRODUCCIONES_DEMO = [
+  { id: "pd1", trabajadoraId: "t1", fecha: hoy(), items: [{ productoId: "1", presentacion: "Bandeja 25", cantidad: 10 }, { productoId: "2", presentacion: "Bandeja 25", cantidad: 8 }] },
+  { id: "pd2", trabajadoraId: "t2", fecha: hoy(), items: [{ productoId: "3", presentacion: "Bandeja 25", cantidad: 12 }] },
+  { id: "pd3", trabajadoraId: "t3", fecha: hoy(), items: [{ productoId: "4", presentacion: "Bandeja 25", cantidad: 6 }, { productoId: "5", presentacion: "Bandeja 25", cantidad: 8 }] },
+  { id: "pd4", trabajadoraId: "t1", fecha: hoy(), items: [{ productoId: "1", presentacion: "Bandeja 50", cantidad: 4 }] },
+  { id: "pd5", trabajadoraId: "t4", fecha: hoy(), items: [{ productoId: "2", presentacion: "Bandeja 50", cantidad: 3 }, { productoId: "3", presentacion: "Bandeja 25", cantidad: 5 }] },
+];
+
 export default function AppModerno() {
   const [tab, setTab] = useState("inicio");
-  const [pedidos, setPedidos] = useState(() => cargarLS("pedidos", []));
-  const [clientes, setClientes] = useState(() => cargarLS("clientes", []));
+  const [pedidos, setPedidos] = useState(() => cargarLS("pedidos", PEDIDOS_DEMO));
+  const [clientes, setClientes] = useState(() => cargarLS("clientes", CLIENTES_DEMO));
   const [productos, setProductos] = useState(() => {
-    const g = cargarLS("productos", []);
+    const g = cargarLS("productos", PRODUCTOS_DEMO);
     return g.map(p => ({ ...p, variantes: p.variantes.map(v => ({ ...v, stock: v.stock ?? 0, lotes: v.lotes || [] })) }));
   });
-  const [proveedores, setProveedores] = useState(() => cargarLS("proveedores", []));
-  const [compras, setCompras] = useState(() => cargarLS("compras", []));
+  const [proveedores, setProveedores] = useState(() => cargarLS("proveedores", PROVEEDORES_DEMO));
+  const [compras, setCompras] = useState(() => cargarLS("compras", COMPRAS_DEMO));
   const [ingredientes, setIngredientes] = useState(() => cargarLS("ingredientes", []));
-  const [gastos, setGastos] = useState(() => cargarLS("gastos", []));
+  const [gastos, setGastos] = useState(() => cargarLS("gastos", GASTOS_DEMO));
   const [repartidores, setRepartidores] = useState(() => {
     const g = cargarLS("repartidores", null);
-    if (!g) return REPARTIDORES_INICIALES;
+    if (!g) return [...REPARTIDORES_INICIALES, ...REPARTIDORES_DEMO];
     const tieneFijo = g.some(r => r.id === REPARTIDOR_TIENDA_ID);
     return tieneFijo ? g : [...REPARTIDORES_INICIALES, ...g];
   });
-  const [producciones, setProducciones] = useState(() => cargarLS("producciones", []));
-  const [trabajadoras, setTrabajadoras] = useState(() => cargarLS("trabajadoras", []));
+  const [producciones, setProducciones] = useState(() => cargarLS("producciones", PRODUCCIONES_DEMO));
+  const [trabajadoras, setTrabajadoras] = useState(() => cargarLS("trabajadoras", TRABAJADORAS_DEMO));
 
   const [listo, setListo] = useState(false);
 
