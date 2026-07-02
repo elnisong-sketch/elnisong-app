@@ -1674,7 +1674,7 @@ function ModuloBienvenida({ setTab, pendientes, hoyEntregas }) {
       </div>
 
       {/* Botones grandes */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 12 }}>
         {secciones.map(s => (
           <button key={s.id} onClick={() => setTab(s.id)} style={{
             background: BG_CARD, border: `2px solid ${s.color}33`,
