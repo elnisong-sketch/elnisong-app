@@ -1655,42 +1655,51 @@ function ModuloBienvenida({ setTab, pendientes, hoyEntregas }) {
   ];
   return (
     <div>
-      <div style={{ textAlign: "center", padding: "28px 0 20px" }}>
-        <div style={{ fontSize: 52, marginBottom: 8 }}>🥟</div>
-        <h1 style={{ color: NAVY, margin: 0, fontSize: 28, fontWeight: 900 }}>ELNISONG</h1>
-        <p style={{ color: TEXT_SUB, margin: "6px 0 0", fontSize: 14 }}>Panel de gestión</p>
+      {/* Cabecera compacta */}
+      <div style={{ textAlign: "center", padding: "12px 0 10px" }}>
+        <div style={{ fontSize: 36, marginBottom: 4 }}>🥟</div>
+        <h1 style={{ color: NAVY, margin: 0, fontSize: 22, fontWeight: 900 }}>ELNISONG</h1>
       </div>
 
       {/* Resumen rápido */}
-      <div style={{ display: "flex", gap: 12, marginBottom: 28, justifyContent: "center" }}>
-        <div style={{ background: ORANGE + "18", border: `2px solid ${ORANGE}44`, borderRadius: 16, padding: "14px 24px", textAlign: "center", minWidth: 110 }}>
-          <div style={{ fontSize: 30, fontWeight: 900, color: ORANGE }}>{hoyEntregas}</div>
-          <div style={{ fontSize: 12, color: TEXT_SUB, fontWeight: 600 }}>Entregas hoy</div>
+      <div style={{ display: "flex", gap: 10, marginBottom: 14, justifyContent: "center" }}>
+        <div style={{ background: ORANGE + "18", border: `2px solid ${ORANGE}44`, borderRadius: 12, padding: "8px 20px", textAlign: "center" }}>
+          <div style={{ fontSize: 22, fontWeight: 900, color: ORANGE }}>{hoyEntregas}</div>
+          <div style={{ fontSize: 11, color: TEXT_SUB, fontWeight: 600 }}>Hoy</div>
         </div>
-        <div style={{ background: "#f59e0b18", border: `2px solid #f59e0b44`, borderRadius: 16, padding: "14px 24px", textAlign: "center", minWidth: 110 }}>
-          <div style={{ fontSize: 30, fontWeight: 900, color: "#f59e0b" }}>{pendientes}</div>
-          <div style={{ fontSize: 12, color: TEXT_SUB, fontWeight: 600 }}>Pendientes</div>
+        <div style={{ background: "#f59e0b18", border: `2px solid #f59e0b44`, borderRadius: 12, padding: "8px 20px", textAlign: "center" }}>
+          <div style={{ fontSize: 22, fontWeight: 900, color: "#f59e0b" }}>{pendientes}</div>
+          <div style={{ fontSize: 11, color: TEXT_SUB, fontWeight: 600 }}>Pendientes</div>
         </div>
       </div>
 
-      {/* Botones grandes */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 12 }}>
+      {/* Botones — 3 columnas, compactos */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
         {secciones.map(s => (
           <button key={s.id} onClick={() => setTab(s.id)} style={{
             background: BG_CARD, border: `2px solid ${s.color}33`,
-            borderRadius: 16, padding: "20px 14px",
+            borderRadius: 14, padding: "12px 6px",
             cursor: "pointer", textAlign: "center",
-            transition: "all .15s", boxShadow: "0 2px 8px #0001"
+            transition: "all .15s", boxShadow: "0 2px 6px #0001"
           }}
-          onMouseEnter={e => { e.currentTarget.style.borderColor = s.color; e.currentTarget.style.boxShadow = `0 4px 16px ${s.color}33`; }}
-          onMouseLeave={e => { e.currentTarget.style.borderColor = `${s.color}33`; e.currentTarget.style.boxShadow = "0 2px 8px #0001"; }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = s.color; e.currentTarget.style.boxShadow = `0 4px 12px ${s.color}33`; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = `${s.color}33`; e.currentTarget.style.boxShadow = "0 2px 6px #0001"; }}
           >
-            <div style={{ fontSize: 34, marginBottom: 8 }}>{s.icon}</div>
-            <div style={{ fontSize: 15, fontWeight: 800, color: s.color, marginBottom: 4 }}>{s.label}</div>
-            <div style={{ fontSize: 12, color: TEXT_SUB, lineHeight: 1.3 }}>{s.desc}</div>
+            <div style={{ fontSize: 26, marginBottom: 5 }}>{s.icon}</div>
+            <div style={{ fontSize: 12, fontWeight: 800, color: s.color, marginBottom: 2 }}>{s.label}</div>
+            <div style={{ fontSize: 10, color: TEXT_SUB, lineHeight: 1.3 }}>{s.desc}</div>
           </button>
         ))}
       </div>
+
+      {/* Acceso repartidor */}
+      <button onClick={() => window.location.href = "?repartidor"} style={{
+        width: "100%", marginTop: 12, background: NAVY, border: "none", borderRadius: 14,
+        color: "#fff", padding: "13px", fontSize: 14, fontWeight: 700, cursor: "pointer",
+        display: "flex", alignItems: "center", justifyContent: "center", gap: 8
+      }}>
+        🛵 Vista Repartidor
+      </button>
     </div>
   );
 }
