@@ -671,6 +671,12 @@ function ModuloClientes({ clientes, setClientes, pedidos, irInicio }) {
 // ─── MÓDULO: INVENTARIO ──────────────────────────────────────────────────────
 const CATEGORIAS_PRODUCTO = ["Tequeños", "Empanadas", "Pastelitos", "Otros"];
 
+// Extrae el número de unidades de una presentación (ej: "Bandeja 25" → 25, "Bandeja 50" → 50, "Unidad" → 1)
+function unidadesPorPresentacion(presentacion = "") {
+  const m = presentacion.match(/\d+/);
+  return m ? parseInt(m[0]) : 1;
+}
+
 function ModuloInventario({ productos, setProductos }) {
   const ac = ACENTOS.inventario;
   const [editandoPrecio, setEditandoPrecio] = useState(null);
@@ -760,7 +766,7 @@ function ModuloInventario({ productos, setProductos }) {
                       </div>
                       <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
                         <div style={{ textAlign: "center" }}>
-                          <p style={{ color: TEXT_SUB, fontSize: 10, margin: "0 0 2px" }}>STOCK</p>
+                          <p style={{ color: TEXT_SUB, fontSize: 10, margin: "0 0 2px" }}>BANDEJAS</p>
                           {editandoStock === claveP ? (
                             <input type="number" defaultValue={v.stock || 0}
                               style={{ width: 60, background: BG_INPUT, border: `1px solid ${ac}`, borderRadius: 8, color: TEXT_MAIN, padding: "3px 6px", fontSize: 13 }}
@@ -771,7 +777,13 @@ function ModuloInventario({ productos, setProductos }) {
                           )}
                         </div>
                         <div style={{ textAlign: "center" }}>
-                          <p style={{ color: TEXT_SUB, fontSize: 10, margin: "0 0 2px" }}>PRECIO/U</p>
+                          <p style={{ color: TEXT_SUB, fontSize: 10, margin: "0 0 2px" }}>UNIDADES</p>
+                          <span style={{ color: TEXT_MAIN, fontWeight: 800, fontSize: 14 }}>
+                            {(v.stock || 0) * unidadesPorPresentacion(v.presentacion)}
+                          </span>
+                        </div>
+                        <div style={{ textAlign: "center" }}>
+                          <p style={{ color: TEXT_SUB, fontSize: 10, margin: "0 0 2px" }}>PRECIO</p>
                           <span style={{ color: ac, fontWeight: 800, cursor: "pointer", fontSize: 14 }}
                             onClick={() => setEditandoPrecio(editandoPrecio === claveP ? null : claveP)}>
                             {v.precio > 0 ? `${v.precio.toFixed(2)}€` : "—"}
@@ -1522,17 +1534,24 @@ function ModuloProduccion({ producciones, setProducciones, trabajadoras, setTrab
           {agrupadas[dia].map(prod => {
             const trab = trabajadoras.find(t => t.id === prod.trabajadoraId);
             return (
-              <div key={prod.id} style={{ background: BG_CARD, border: "1px solid #1d1e26", borderRadius: 14, padding: 14, marginBottom: 8 }}>
+              <div key={prod.id} style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 14, padding: 14, marginBottom: 8 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
                   <span style={{ color: ac, fontWeight: 700, fontSize: 14 }}>👩‍🍳 {trab?.nombre || "—"}</span>
-                  <span style={{ color: "#555", fontSize: 12 }}>{prod.items?.length} producto{prod.items?.length !== 1 ? "s" : ""}</span>
+                  <span style={{ color: TEXT_SUB, fontSize: 12 }}>
+                    {prod.items?.reduce((s, it) => s + it.cantidad * unidadesPorPresentacion(it.presentacion), 0)} uds totales
+                  </span>
                 </div>
-                {prod.items?.map((it, i) => (
-                  <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "5px 0", borderTop: i > 0 ? "1px solid #1d1e26" : "none" }}>
-                    <span style={{ color: "#aaa", fontSize: 13 }}>{it.productoId ? (productos.find(p => p.id === parseInt(it.productoId))?.nombre || it.productoId) : "—"} · {it.presentacion}</span>
-                    <span style={{ color: TEXT_MAIN, fontWeight: 700, fontSize: 13 }}>{it.cantidad} uds</span>
-                  </div>
-                ))}
+                {prod.items?.map((it, i) => {
+                  const uds = it.cantidad * unidadesPorPresentacion(it.presentacion);
+                  return (
+                    <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "5px 0", borderTop: i > 0 ? `1px solid ${BORDER}` : "none" }}>
+                      <span style={{ color: TEXT_SUB, fontSize: 13 }}>{it.productoId ? (productos.find(p => p.id === parseInt(it.productoId))?.nombre || it.productoId) : "—"} · {it.presentacion}</span>
+                      <span style={{ color: TEXT_MAIN, fontWeight: 700, fontSize: 13 }}>
+                        {it.cantidad} band. = <span style={{ color: ac }}>{uds} uds</span>
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
             );
           })}
@@ -1799,6 +1818,9 @@ export default function AppModerno() {
               <p style={{ color: ORANGE, fontWeight: 800, fontSize: 18, margin: 0 }}>{hoyEntregas}</p>
               <p style={{ color: "#94b4d4", fontSize: 10, margin: 0 }}>Hoy</p>
             </div>
+            <button onClick={irInicio} style={{ background: "#ffffff22", border: "none", borderRadius: 10, color: "#fff", padding: "8px 14px", cursor: "pointer", fontSize: 13, fontWeight: 700 }}>
+              🏠 Inicio
+            </button>
           </div>
         </div>
       </div>
