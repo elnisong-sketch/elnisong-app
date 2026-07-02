@@ -651,16 +651,50 @@ function ModuloClientes({ clientes, setClientes, pedidos, irInicio }) {
 }
 
 // ─── MÓDULO: INVENTARIO ──────────────────────────────────────────────────────
-function ModuloInventario({ productos, setProductos, irInicio }) {
+const CATEGORIAS_PRODUCTO = ["Tequeños", "Empanadas", "Pastelitos", "Otros"];
+
+function ModuloInventario({ productos, setProductos }) {
   const ac = ACENTOS.inventario;
   const [editandoPrecio, setEditandoPrecio] = useState(null);
   const [editandoStock, setEditandoStock] = useState(null);
+  const [modalProd, setModalProd] = useState(false);
+  const [modalPres, setModalPres] = useState(null); // prodId
+  const [formProd, setFormProd] = useState({ nombre: "", categoria: "Tequeños" });
+  const [nuevaPres, setNuevaPres] = useState("");
 
   const actualizarPrecio = (prodId, presentacion, precio) => {
     setProductos(ps => ps.map(p => p.id === prodId ? { ...p, variantes: p.variantes.map(v => v.presentacion === presentacion ? { ...v, precio: parseFloat(precio) || 0 } : v) } : p));
   };
   const actualizarStock = (prodId, presentacion, stock) => {
     setProductos(ps => ps.map(p => p.id === prodId ? { ...p, variantes: p.variantes.map(v => v.presentacion === presentacion ? { ...v, stock: parseInt(stock) || 0 } : v) } : p));
+  };
+
+  const crearProducto = () => {
+    if (!formProd.nombre.trim()) return;
+    const nuevo = { id: generarId(), nombre: formProd.nombre.trim(), categoria: formProd.categoria, variantes: [] };
+    setProductos(ps => [...ps, nuevo]);
+    setFormProd({ nombre: "", categoria: "Tequeños" });
+    setModalProd(false);
+  };
+
+  const agregarPresentacion = (prodId) => {
+    if (!nuevaPres.trim()) return;
+    setProductos(ps => ps.map(p => p.id === prodId
+      ? { ...p, variantes: [...p.variantes, { presentacion: nuevaPres.trim(), precio: 0, stock: 0, lotes: [] }] }
+      : p
+    ));
+    setNuevaPres("");
+    setModalPres(null);
+  };
+
+  const eliminarPresentacion = (prodId, presentacion) => {
+    if (!confirm(`¿Eliminar presentación "${presentacion}"?`)) return;
+    setProductos(ps => ps.map(p => p.id === prodId ? { ...p, variantes: p.variantes.filter(v => v.presentacion !== presentacion) } : p));
+  };
+
+  const eliminarProducto = (prodId) => {
+    if (!confirm("¿Eliminar este producto?")) return;
+    setProductos(ps => ps.filter(p => p.id !== prodId));
   };
 
   const categorias = [...new Set(productos.map(p => p.categoria))];
@@ -670,24 +704,48 @@ function ModuloInventario({ productos, setProductos, irInicio }) {
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
         <h2 style={{ color: ac, margin: 0 }}>📊 Inventario & Precios</h2>
+        <Btn accent={ac} onClick={() => setModalProd(true)}>+ Nuevo Producto</Btn>
       </div>
+
+      {productos.length === 0 && <Empty texto="No hay productos. Crea el primero con + Nuevo Producto." />}
+
       {categorias.map(cat => (
         <div key={cat} style={{ marginBottom: 22 }}>
-          <p style={{ color: "#777", fontSize: 12, fontWeight: 800, letterSpacing: 1, marginBottom: 8 }}>{cat.toUpperCase()}</p>
+          <p style={{ color: TEXT_SUB, fontSize: 12, fontWeight: 800, letterSpacing: 1, marginBottom: 8 }}>{cat.toUpperCase()}</p>
           {productos.filter(p => p.categoria === cat).map(prod => (
             <Card key={prod.id} accent={ac}>
-              <p style={{ color: TEXT_MAIN, fontWeight: 700, margin: "0 0 10px" }}>{prod.nombre}</p>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                <p style={{ color: TEXT_MAIN, fontWeight: 700, margin: 0 }}>{prod.nombre}</p>
+                <div style={{ display: "flex", gap: 6 }}>
+                  <button onClick={() => { setModalPres(prod.id); setNuevaPres(""); }}
+                    style={{ background: ac + "18", border: `1px solid ${ac}44`, borderRadius: 8, color: ac, padding: "5px 10px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+                    + Presentación
+                  </button>
+                  <button onClick={() => eliminarProducto(prod.id)}
+                    style={{ background: "#fff", border: "1px solid #fca5a5", borderRadius: 8, color: "#ef4444", padding: "5px 10px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+                    🗑️
+                  </button>
+                </div>
+              </div>
+              {prod.variantes.length === 0 && (
+                <p style={{ color: TEXT_SUB, fontSize: 13, margin: 0 }}>Sin presentaciones — añade una con "+ Presentación"</p>
+              )}
               {prod.variantes.map(v => {
                 const claveP = `${prod.id}-${v.presentacion}`;
                 return (
-                  <div key={v.presentacion} style={{ padding: "8px 0", borderBottom: "1px solid #25262f" }}>
+                  <div key={v.presentacion} style={{ padding: "8px 0", borderBottom: `1px solid ${BORDER}` }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: editandoPrecio === claveP ? 8 : 0 }}>
-                      <span style={{ color: TEXT_SUB, fontSize: 13 }}>{v.presentacion}</span>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <span style={{ color: TEXT_SUB, fontSize: 13 }}>{v.presentacion}</span>
+                        <button onClick={() => eliminarPresentacion(prod.id, v.presentacion)}
+                          style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer", fontSize: 13, padding: 0 }}>✕</button>
+                      </div>
                       <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
                         <div style={{ textAlign: "center" }}>
-                          <p style={{ color: "#555", fontSize: 10, margin: "0 0 2px" }}>STOCK</p>
+                          <p style={{ color: TEXT_SUB, fontSize: 10, margin: "0 0 2px" }}>STOCK</p>
                           {editandoStock === claveP ? (
-                            <input type="number" defaultValue={v.stock || 0} style={{ width: 60, background: "#101015", border: `1px solid ${ac}`, borderRadius: 8, color: TEXT_MAIN, padding: "3px 6px", fontSize: 13 }}
+                            <input type="number" defaultValue={v.stock || 0}
+                              style={{ width: 60, background: BG_INPUT, border: `1px solid ${ac}`, borderRadius: 8, color: TEXT_MAIN, padding: "3px 6px", fontSize: 13 }}
                               onBlur={e => { actualizarStock(prod.id, v.presentacion, e.target.value); setEditandoStock(null); }} autoFocus />
                           ) : (
                             <span style={{ color: (v.stock || 0) < 5 ? "#ef4444" : "#10b981", fontWeight: 800, cursor: "pointer", fontSize: 14 }}
@@ -695,14 +753,14 @@ function ModuloInventario({ productos, setProductos, irInicio }) {
                           )}
                         </div>
                         <div style={{ textAlign: "center" }}>
-                          <p style={{ color: "#555", fontSize: 10, margin: "0 0 2px" }}>PRECIO/U</p>
+                          <p style={{ color: TEXT_SUB, fontSize: 10, margin: "0 0 2px" }}>PRECIO/U</p>
                           <span style={{ color: ac, fontWeight: 800, cursor: "pointer", fontSize: 14 }}
                             onClick={() => setEditandoPrecio(editandoPrecio === claveP ? null : claveP)}>
                             {v.precio > 0 ? `${v.precio.toFixed(2)}€` : "—"}
                           </span>
                         </div>
                         <div style={{ textAlign: "center" }}>
-                          <p style={{ color: "#555", fontSize: 10, margin: "0 0 2px" }}>TOTAL</p>
+                          <p style={{ color: TEXT_SUB, fontSize: 10, margin: "0 0 2px" }}>TOTAL</p>
                           <span style={{ color: TEXT_MAIN, fontWeight: 800, fontSize: 14 }}>
                             {v.precio > 0 ? `${((v.stock || 0) * v.precio).toFixed(2)}€` : "—"}
                           </span>
@@ -714,8 +772,8 @@ function ModuloInventario({ productos, setProductos, irInicio }) {
                         {PRECIOS_RAPIDOS.map(n => (
                           <button key={n} onClick={() => { actualizarPrecio(prod.id, v.presentacion, n); setEditandoPrecio(null); }}
                             style={{
-                              border: n === v.precio ? `1px solid ${ac}` : "1px solid #2d2e38",
-                              background: n === v.precio ? ac : BG_INPUT, color: n === v.precio ? "#0f0f0f" : TEXT_SUB,
+                              border: n === v.precio ? `1.5px solid ${ac}` : `1px solid ${BORDER}`,
+                              background: n === v.precio ? ac : BG_INPUT, color: n === v.precio ? "#fff" : TEXT_SUB,
                               borderRadius: 8, padding: "5px 10px", fontSize: 12, fontWeight: 700, cursor: "pointer"
                             }}>{n}€</button>
                         ))}
@@ -728,7 +786,33 @@ function ModuloInventario({ productos, setProductos, irInicio }) {
           ))}
         </div>
       ))}
-      <p style={{ color: "#555", fontSize: 12, textAlign: "center" }}>Toca el precio o stock para editarlo</p>
+
+      {/* Modal: nuevo producto */}
+      {modalProd && (
+        <Modal title="Nuevo Producto" accent={ac} onClose={() => setModalProd(false)}>
+          <Input label="Nombre del producto *" value={formProd.nombre} onChange={e => setFormProd(f => ({ ...f, nombre: e.target.value }))} placeholder="Ej: Tequeños de jamón" />
+          <Select label="Categoría" options={CATEGORIAS_PRODUCTO} value={formProd.categoria} onChange={e => setFormProd(f => ({ ...f, categoria: e.target.value }))} />
+          <p style={{ color: TEXT_SUB, fontSize: 12, margin: "0 0 16px" }}>Después de crear el producto, añade las presentaciones (Bandeja 25, Bandeja 50, etc.) desde el inventario.</p>
+          <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+            <Btn variant="secondary" onClick={() => setModalProd(false)}>Cancelar</Btn>
+            <Btn accent={ac} onClick={crearProducto}>Crear Producto</Btn>
+          </div>
+        </Modal>
+      )}
+
+      {/* Modal: nueva presentación */}
+      {modalPres && (
+        <Modal title="Nueva Presentación" accent={ac} onClose={() => setModalPres(null)}>
+          <p style={{ color: TEXT_SUB, fontSize: 13, margin: "0 0 14px" }}>
+            Escribe el nombre de la presentación, por ejemplo: <strong>Bandeja 25</strong>, <strong>Bandeja 50</strong>, <strong>Unidad</strong>, etc.
+          </p>
+          <Input label="Nombre de la presentación *" value={nuevaPres} onChange={e => setNuevaPres(e.target.value)} placeholder="Ej: Bandeja 25" />
+          <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+            <Btn variant="secondary" onClick={() => setModalPres(null)}>Cancelar</Btn>
+            <Btn accent={ac} onClick={() => agregarPresentacion(modalPres)}>Añadir</Btn>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }
