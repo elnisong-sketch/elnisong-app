@@ -156,29 +156,32 @@ export default function AppRepartidor() {
   // ── PANTALLA: BIENVENIDA / SELECCIÓN DE NOMBRE ───────────────────────────
   if (!repartidor) {
     return (
-      <div style={{ ...base, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "32px 20px", minHeight: "100vh" }}>
-        <div style={{ textAlign: "center", marginBottom: 32 }}>
-          <div style={{ fontSize: 52, marginBottom: 8 }}>🥟</div>
-          <h1 style={{ color: NAVY, fontSize: 26, fontWeight: 900, margin: "0 0 4px" }}>ELNISONG</h1>
-          <p style={{ color: TEXT_SUB, fontSize: 14, margin: 0 }}>Portal de Repartidores</p>
+      <div style={{ ...base }}>
+        {/* Header igual que app principal */}
+        <div style={{ background: NAVY, padding: "14px 20px", boxShadow: "0 2px 12px #0003" }}>
+          <div style={{ maxWidth: 480, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <h1 style={{ color: "#fff", margin: 0, fontSize: 22, fontWeight: 900, letterSpacing: -0.5 }}>🥟 ELNISONG</h1>
+            <span style={{ background: "#ffffff22", borderRadius: 10, color: "#94b4d4", padding: "6px 12px", fontSize: 12, fontWeight: 700 }}>🛵 Repartidores</span>
+          </div>
         </div>
 
-        {!seleccionado ? (
+        <div style={{ padding: "32px 20px", maxWidth: 480, margin: "0 auto" }}>
+          {!seleccionado ? (
           <>
-            <p style={{ color: TEXT_SUB, fontSize: 13, marginBottom: 16, textAlign: "center" }}>Selecciona tu nombre para continuar</p>
-            <div style={{ width: "100%", maxWidth: 360, display: "flex", flexDirection: "column", gap: 10 }}>
+            <p style={{ color: TEXT_SUB, fontSize: 14, marginBottom: 16 }}>Selecciona tu nombre para continuar</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {activos.length === 0 ? (
                 <p style={{ color: TEXT_SUB, textAlign: "center", fontSize: 14 }}>No hay repartidores registrados aún.</p>
               ) : activos.map(r => (
                 <button key={r.id} onClick={() => { setSeleccionado(r); setError(""); setTelefono(""); }}
                   style={{
-                    background: BG_CARD, border: `2px solid ${BORDER}`, borderRadius: 16,
+                    background: BG_CARD, border: `1px solid ${BORDER}`, borderLeft: `4px solid ${ORANGE}`, borderRadius: 16,
                     padding: "18px 22px", cursor: "pointer",
-                    display: "flex", alignItems: "center", gap: 14, transition: "border-color .2s",
-                    boxShadow: "0 2px 8px #0001"
+                    display: "flex", alignItems: "center", gap: 14,
+                    boxShadow: "0 2px 8px #0001", textAlign: "left"
                   }}
-                  onMouseOver={e => e.currentTarget.style.borderColor = ORANGE}
-                  onMouseOut={e => e.currentTarget.style.borderColor = BORDER}
+                  onMouseOver={e => e.currentTarget.style.boxShadow = `0 4px 16px ${ORANGE}22`}
+                  onMouseOut={e => e.currentTarget.style.boxShadow = "0 2px 8px #0001"}
                 >
                   <span style={{ fontSize: 28 }}>🛵</span>
                   <span style={{ color: TEXT_MAIN, fontSize: 17, fontWeight: 700 }}>{r.nombre}</span>
@@ -216,6 +219,7 @@ export default function AppRepartidor() {
             </div>
           </div>
         )}
+        </div>
       </div>
     );
   }
