@@ -1893,9 +1893,13 @@ export default function AppModerno() {
 
   const soloVista = new URLSearchParams(window.location.search).has("preview");
   const [toastVista, setToastVista] = useState(false);
+  const PALABRAS_ACCION = ["guardar", "nuevo", "eliminar", "borrar", "añadir", "agregar", "crear", "editar", "actualizar", "cargar", "exportar", "backup", "demo", "save", "delete", "+"];
   const bloquearClick = soloVista ? (e) => {
-    const tag = e.target.tagName;
-    if (tag === "BUTTON" || tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA") {
+    const btn = e.target.closest("button, input[type=submit]");
+    if (!btn) return;
+    const texto = (btn.textContent || "").toLowerCase().trim();
+    const esAccion = PALABRAS_ACCION.some(p => texto.includes(p)) || btn.querySelector("input, select, textarea");
+    if (esAccion) {
       e.stopPropagation();
       e.preventDefault();
       setToastVista(true);
