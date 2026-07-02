@@ -1589,8 +1589,9 @@ function ModuloProduccion({ producciones, setProducciones, trabajadoras, setTrab
 }
 
 // ─── APP PRINCIPAL (DISEÑO MODERNO) ─────────────────────────────────────────
-function ModuloAdmin({ proveedores, setProveedores, compras, setCompras, gastos, setGastos, ingredientes, setIngredientes, pedidos, producciones, trabajadoras, irInicio, exportarDatos }) {
+function ModuloAdmin({ proveedores, setProveedores, compras, setCompras, gastos, setGastos, ingredientes, setIngredientes, pedidos, producciones, trabajadoras, irInicio, exportarDatos, cargarDemo }) {
   const [sub, setSub] = useState("proveedores");
+  const [confirmDemo, setConfirmDemo] = useState(false);
   const ac = ACENTOS.admin;
   return (
     <div>
@@ -1600,8 +1601,23 @@ function ModuloAdmin({ proveedores, setProveedores, compras, setCompras, gastos,
       <button onClick={exportarDatos} style={{
         width: "100%", background: NAVY, border: "none", borderRadius: 12,
         color: "#fff", padding: "13px", fontSize: 15, fontWeight: 700,
-        cursor: "pointer", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "center", gap: 8
+        cursor: "pointer", marginBottom: 8, display: "flex", alignItems: "center", justifyContent: "center", gap: 8
       }}>📤 Exportar Backup</button>
+      {!confirmDemo ? (
+        <button onClick={() => setConfirmDemo(true)} style={{
+          width: "100%", background: BG_CARD, border: `1px dashed ${BORDER}`, borderRadius: 12,
+          color: TEXT_SUB, padding: "11px", fontSize: 13, fontWeight: 600,
+          cursor: "pointer", marginBottom: 16
+        }}>🧪 Cargar datos de prueba</button>
+      ) : (
+        <div style={{ background: "#fff3cd", border: "1px solid #ffc107", borderRadius: 12, padding: 14, marginBottom: 16 }}>
+          <p style={{ margin: "0 0 10px", fontSize: 13, fontWeight: 700, color: "#856404" }}>⚠️ Esto reemplazará todos los datos actuales con datos ficticios.</p>
+          <div style={{ display: "flex", gap: 8 }}>
+            <button onClick={() => { cargarDemo(); setConfirmDemo(false); }} style={{ flex: 1, background: ORANGE, border: "none", borderRadius: 10, color: "#fff", padding: "10px", fontWeight: 700, cursor: "pointer", fontSize: 13 }}>Sí, cargar demo</button>
+            <button onClick={() => setConfirmDemo(false)} style={{ flex: 1, background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 10, color: TEXT_SUB, padding: "10px", fontWeight: 700, cursor: "pointer", fontSize: 13 }}>Cancelar</button>
+          </div>
+        </div>
+      )}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 20 }}>
         {TABS_ADMIN.map(t => (
           <button key={t.id} onClick={() => setSub(t.id)} style={{
@@ -1854,6 +1870,18 @@ export default function AppModerno() {
   const hoyEntregas = pedidos.filter(p => p.fecha === hoy() && p.estado !== "Cancelado").length;
   const irInicio = () => setTab("inicio");
 
+  const cargarDemo = () => {
+    setPedidos(PEDIDOS_DEMO);
+    setClientes(CLIENTES_DEMO);
+    setProductos(PRODUCTOS_DEMO.map(p => ({ ...p, variantes: p.variantes.map(v => ({ ...v, stock: v.stock ?? 0, lotes: v.lotes || [] })) })));
+    setProveedores(PROVEEDORES_DEMO);
+    setCompras(COMPRAS_DEMO);
+    setGastos(GASTOS_DEMO);
+    setRepartidores([...REPARTIDORES_INICIALES, ...REPARTIDORES_DEMO]);
+    setProducciones(PRODUCCIONES_DEMO);
+    setTrabajadoras(TRABAJADORAS_DEMO);
+  };
+
   const exportarDatos = () => {
     const datos = { pedidos, clientes, productos, proveedores, compras, ingredientes, gastos, repartidores, producciones, trabajadoras, exportado: new Date().toISOString() };
     const blob = new Blob([JSON.stringify(datos, null, 2)], { type: "application/json" });
@@ -1920,7 +1948,7 @@ export default function AppModerno() {
         {tab === "stock" && <ModuloStock productos={productos} />}
         {tab === "produccion" && <ModuloProduccion producciones={producciones} setProducciones={setProducciones} trabajadoras={trabajadoras} setTrabajadoras={setTrabajadoras} productos={productos} setProductos={setProductos} />}
         {tab === "personal" && <ModuloPersonal repartidores={repartidores} setRepartidores={setRepartidores} trabajadoras={trabajadoras} setTrabajadoras={setTrabajadoras} />}
-        {tab === "admin" && <ModuloAdmin proveedores={proveedores} setProveedores={setProveedores} compras={compras} setCompras={setCompras} gastos={gastos} setGastos={setGastos} ingredientes={ingredientes} setIngredientes={setIngredientes} pedidos={pedidos} producciones={producciones} trabajadoras={trabajadoras} exportarDatos={exportarDatos} />}
+        {tab === "admin" && <ModuloAdmin proveedores={proveedores} setProveedores={setProveedores} compras={compras} setCompras={setCompras} gastos={gastos} setGastos={setGastos} ingredientes={ingredientes} setIngredientes={setIngredientes} pedidos={pedidos} producciones={producciones} trabajadoras={trabajadoras} exportarDatos={exportarDatos} cargarDemo={cargarDemo} />}
       </div>
 
       {/* Navegación inferior */}
