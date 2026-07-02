@@ -1692,14 +1692,6 @@ function ModuloBienvenida({ setTab, pendientes, hoyEntregas }) {
         ))}
       </div>
 
-      {/* Acceso repartidor */}
-      <button onClick={() => window.location.href = "?repartidor"} style={{
-        width: "100%", marginTop: 12, background: NAVY, border: "none", borderRadius: 14,
-        color: "#fff", padding: "13px", fontSize: 14, fontWeight: 700, cursor: "pointer",
-        display: "flex", alignItems: "center", justifyContent: "center", gap: 8
-      }}>
-        🛵 Vista Repartidor
-      </button>
     </div>
   );
 }
@@ -1774,6 +1766,8 @@ const REPARTIDORES_DEMO = [
   { id: "r3", nombre: "Elena Castro", telefono: "611000003", fijo: false },
   { id: "r4", nombre: "Pablo Jiménez", telefono: "611000004", fijo: false },
   { id: "r5", nombre: "Laura Moreno", telefono: "611000005", fijo: false },
+  { id: "r6", nombre: "Elnison", telefono: "658083047", fijo: false },
+  { id: "r7", nombre: "Saul", telefono: "722765314", fijo: false },
 ];
 const TRABAJADORAS_DEMO = [
   { id: "t1", numero: 1, nombre: "Gabriela Torres" },
@@ -1869,8 +1863,30 @@ export default function AppModerno() {
     a.click();
   };
 
+  const soloVista = new URLSearchParams(window.location.search).has("preview");
+  const [toastVista, setToastVista] = useState(false);
+  const bloquearClick = soloVista ? (e) => {
+    const tag = e.target.tagName;
+    if (tag === "BUTTON" || tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA") {
+      e.stopPropagation();
+      e.preventDefault();
+      setToastVista(true);
+      setTimeout(() => setToastVista(false), 2000);
+    }
+  } : undefined;
+
   return (
     <div style={{ background: BG_APP, minHeight: "100vh", fontFamily: "'Inter', sans-serif", color: TEXT_MAIN }}>
+      {soloVista && (
+        <div style={{ background: ORANGE, color: "#fff", textAlign: "center", padding: "8px 16px", fontSize: 13, fontWeight: 700, position: "sticky", top: 0, zIndex: 200 }}>
+          👁 Modo Vista — Solo lectura
+        </div>
+      )}
+      {toastVista && (
+        <div style={{ position: "fixed", top: soloVista ? 80 : 16, left: "50%", transform: "translateX(-50%)", background: NAVY, color: "#fff", borderRadius: 12, padding: "10px 20px", fontWeight: 700, fontSize: 14, zIndex: 999, boxShadow: "0 4px 20px #0003" }}>
+          🔒 Solo puedes ver, no hacer cambios
+        </div>
+      )}
       {/* Header azul marino */}
       <div style={{ background: NAVY, padding: "14px 20px", boxShadow: "0 2px 12px #0003" }}>
         <div style={{ maxWidth: 760, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -1896,7 +1912,7 @@ export default function AppModerno() {
       </div>
 
       {/* Contenido */}
-      <div className="main-content" style={{ maxWidth: 760, margin: "0 auto" }}>
+      <div className="main-content" style={{ maxWidth: 760, margin: "0 auto" }} onClickCapture={bloquearClick}>
         {tab === "inicio" && <ModuloBienvenida setTab={setTab} pendientes={pendientes} hoyEntregas={hoyEntregas} />}
         {tab === "pedidos" && <ModuloPedidos pedidos={pedidos} setPedidos={setPedidos} productos={productos} setProductos={setProductos} clientes={clientes} repartidores={repartidores} />}
         {tab === "clientes" && <ModuloClientes clientes={clientes} setClientes={setClientes} pedidos={pedidos} />}
