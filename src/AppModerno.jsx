@@ -1392,13 +1392,14 @@ function ModuloStock({ productos, irInicio }) {
 }
 
 // ─── MÓDULO PRODUCCIÓN ───────────────────────────────────────────────────────
-function ModuloProduccion({ producciones, setProducciones, trabajadoras, setTrabajadoras, productos, setProductos, irInicio }) {
+function ModuloProduccion({ producciones, setProducciones, trabajadoras, setTrabajadoras, productos, setProductos }) {
   const ac = ACENTOS.produccion;
   const [vista, setVista] = useState("lista");
   const FORM_VACIO = { fecha: hoy(), trabajadoraId: "", items: [{ productoId: "", presentacion: "", cantidad: 1 }] };
   const [form, setForm] = useState(FORM_VACIO);
   const [modalTrab, setModalTrab] = useState(false);
   const [nombreTrab, setNombreTrab] = useState("");
+  const [filtroFecha, setFiltroFecha] = useState("");
 
   const setF = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
@@ -1510,7 +1511,8 @@ function ModuloProduccion({ producciones, setProducciones, trabajadoras, setTrab
     </div>
   );
 
-  const agrupadas = producciones.reduce((acc, p) => {
+  const produccionesFiltradas = filtroFecha ? producciones.filter(p => p.fecha === filtroFecha) : producciones;
+  const agrupadas = produccionesFiltradas.reduce((acc, p) => {
     const dia = p.fecha || "Sin fecha";
     acc[dia] = acc[dia] || [];
     acc[dia].push(p);
@@ -1522,12 +1524,16 @@ function ModuloProduccion({ producciones, setProducciones, trabajadoras, setTrab
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
         <h2 style={{ color: ac, margin: 0, fontSize: 18, fontWeight: 900 }}>🏭 Producción</h2>
-        <div style={{ display: "flex", gap: 8 }}>
-            <Btn accent={ac} onClick={() => setVista("nueva")}>+ Nueva</Btn>
-        </div>
+        <Btn accent={ac} onClick={() => setVista("nueva")}>+ Nueva</Btn>
       </div>
 
-      {dias.length === 0 && <p style={{ color: "#555", textAlign: "center", marginTop: 40 }}>No hay registros de producción aún.</p>}
+      <div style={{ display: "flex", gap: 8, marginBottom: 16, alignItems: "center" }}>
+        <input type="date" value={filtroFecha} onChange={e => setFiltroFecha(e.target.value)}
+          style={{ background: BG_INPUT, border: `1.5px solid ${BORDER}`, color: TEXT_MAIN, borderRadius: 10, padding: "9px 12px", fontSize: 13 }} />
+        {filtroFecha && <Btn small variant="secondary" onClick={() => setFiltroFecha("")}>✕ Ver todo</Btn>}
+      </div>
+
+      {dias.length === 0 && <Empty texto={filtroFecha ? "Sin producción en esta fecha" : "No hay registros de producción aún."} />}
       {dias.map(dia => (
         <div key={dia} style={{ marginBottom: 16 }}>
           <p style={{ color: "#555", fontSize: 12, fontWeight: 700, textTransform: "uppercase", margin: "0 0 8px" }}>📅 {dia}</p>
@@ -1669,12 +1675,28 @@ function ModuloBienvenida({ setTab, pendientes, hoyEntregas }) {
 }
 
 // ─── DATOS DE PRUEBA ────────────────────────────────────────────────────────
+// Fechas pasadas para demo
+const d = (n) => { const f = new Date(); f.setDate(f.getDate() - n); return f.toISOString().split("T")[0]; };
+
 const PRODUCTOS_DEMO = [
-  { id: 1, nombre: "Tequeños de Queso", categoria: "Tequeños", variantes: [{ presentacion: "Bandeja 25", precio: 18, stock: 40, lotes: [{ fecha: "2026-06-01", cantidad: 40 }] }, { presentacion: "Bandeja 50", precio: 32, stock: 20, lotes: [{ fecha: "2026-06-01", cantidad: 20 }] }] },
-  { id: 2, nombre: "Tequeños de Jamón", categoria: "Tequeños", variantes: [{ presentacion: "Bandeja 25", precio: 20, stock: 30, lotes: [{ fecha: "2026-06-02", cantidad: 30 }] }, { presentacion: "Bandeja 50", precio: 36, stock: 10, lotes: [{ fecha: "2026-06-02", cantidad: 10 }] }] },
-  { id: 3, nombre: "Empanadas de Carne", categoria: "Empanadas", variantes: [{ presentacion: "Bandeja 25", precio: 22, stock: 25, lotes: [{ fecha: "2026-06-03", cantidad: 25 }] }] },
-  { id: 4, nombre: "Pastelitos de Pollo", categoria: "Pastelitos", variantes: [{ presentacion: "Bandeja 25", precio: 20, stock: 15, lotes: [{ fecha: "2026-06-04", cantidad: 15 }] }] },
-  { id: 5, nombre: "Empanadas de Queso", categoria: "Empanadas", variantes: [{ presentacion: "Bandeja 25", precio: 20, stock: 20, lotes: [{ fecha: "2026-06-05", cantidad: 20 }] }, { presentacion: "Bandeja 50", precio: 36, stock: 8, lotes: [{ fecha: "2026-06-05", cantidad: 8 }] }] },
+  { id: 1, nombre: "Tequeños de Queso", categoria: "Tequeños", variantes: [
+    { presentacion: "Bandeja 25", precio: 18, stock: 12, lotes: [{ fecha: d(5), cantidad: 8 }, { fecha: d(2), cantidad: 4 }] },
+    { presentacion: "Bandeja 50", precio: 32, stock: 6, lotes: [{ fecha: d(5), cantidad: 4 }, { fecha: d(2), cantidad: 2 }] }
+  ]},
+  { id: 2, nombre: "Tequeños de Jamón", categoria: "Tequeños", variantes: [
+    { presentacion: "Bandeja 25", precio: 20, stock: 8, lotes: [{ fecha: d(5), cantidad: 5 }, { fecha: d(1), cantidad: 3 }] },
+    { presentacion: "Bandeja 50", precio: 36, stock: 4, lotes: [{ fecha: d(5), cantidad: 4 }] }
+  ]},
+  { id: 3, nombre: "Empanadas de Carne", categoria: "Empanadas", variantes: [
+    { presentacion: "Bandeja 25", precio: 22, stock: 10, lotes: [{ fecha: d(4), cantidad: 6 }, { fecha: d(1), cantidad: 4 }] }
+  ]},
+  { id: 4, nombre: "Pastelitos de Pollo", categoria: "Pastelitos", variantes: [
+    { presentacion: "Bandeja 25", precio: 20, stock: 7, lotes: [{ fecha: d(3), cantidad: 4 }, { fecha: d(1), cantidad: 3 }] }
+  ]},
+  { id: 5, nombre: "Empanadas de Queso", categoria: "Empanadas", variantes: [
+    { presentacion: "Bandeja 25", precio: 20, stock: 9, lotes: [{ fecha: d(4), cantidad: 5 }, { fecha: d(1), cantidad: 4 }] },
+    { presentacion: "Bandeja 50", precio: 36, stock: 3, lotes: [{ fecha: d(3), cantidad: 3 }] }
+  ]},
 ];
 const CLIENTES_DEMO = [
   { id: "c1", nombre: "María González", telefono: "612345678", direccion: "Calle Mayor 12, 3ºA", cp: "28001" },
@@ -1726,11 +1748,11 @@ const TRABAJADORAS_DEMO = [
   { id: "t5", nombre: "Carmen Vázquez" },
 ];
 const PRODUCCIONES_DEMO = [
-  { id: "pd1", trabajadoraId: "t1", fecha: hoy(), items: [{ productoId: "1", presentacion: "Bandeja 25", cantidad: 10 }, { productoId: "2", presentacion: "Bandeja 25", cantidad: 8 }] },
-  { id: "pd2", trabajadoraId: "t2", fecha: hoy(), items: [{ productoId: "3", presentacion: "Bandeja 25", cantidad: 12 }] },
-  { id: "pd3", trabajadoraId: "t3", fecha: hoy(), items: [{ productoId: "4", presentacion: "Bandeja 25", cantidad: 6 }, { productoId: "5", presentacion: "Bandeja 25", cantidad: 8 }] },
-  { id: "pd4", trabajadoraId: "t1", fecha: hoy(), items: [{ productoId: "1", presentacion: "Bandeja 50", cantidad: 4 }] },
-  { id: "pd5", trabajadoraId: "t4", fecha: hoy(), items: [{ productoId: "2", presentacion: "Bandeja 50", cantidad: 3 }, { productoId: "3", presentacion: "Bandeja 25", cantidad: 5 }] },
+  { id: "pd1", trabajadoraId: "t1", fecha: d(5), items: [{ productoId: "1", presentacion: "Bandeja 25", cantidad: 8 }, { productoId: "1", presentacion: "Bandeja 50", cantidad: 4 }, { productoId: "2", presentacion: "Bandeja 25", cantidad: 5 }, { productoId: "2", presentacion: "Bandeja 50", cantidad: 4 }] },
+  { id: "pd2", trabajadoraId: "t2", fecha: d(4), items: [{ productoId: "3", presentacion: "Bandeja 25", cantidad: 6 }, { productoId: "5", presentacion: "Bandeja 25", cantidad: 5 }] },
+  { id: "pd3", trabajadoraId: "t3", fecha: d(3), items: [{ productoId: "4", presentacion: "Bandeja 25", cantidad: 4 }, { productoId: "5", presentacion: "Bandeja 50", cantidad: 3 }] },
+  { id: "pd4", trabajadoraId: "t1", fecha: d(2), items: [{ productoId: "1", presentacion: "Bandeja 25", cantidad: 4 }, { productoId: "1", presentacion: "Bandeja 50", cantidad: 2 }] },
+  { id: "pd5", trabajadoraId: "t4", fecha: d(1), items: [{ productoId: "2", presentacion: "Bandeja 25", cantidad: 3 }, { productoId: "3", presentacion: "Bandeja 25", cantidad: 4 }, { productoId: "4", presentacion: "Bandeja 25", cantidad: 3 }] },
 ];
 
 export default function AppModerno() {
