@@ -390,7 +390,13 @@ function ModuloPedidos({ pedidos, setPedidos, productos, setProductos, clientes,
     setModal(false); setEditar(null);
   };
   const eliminar = (id) => { if (confirm("¿Eliminar pedido?")) setPedidos(p => p.filter(x => x.id !== id)); };
-  const cambiarEstado = (id, estado) => setPedidos(p => p.map(x => x.id === id ? { ...x, estado } : x));
+  const [estadoPendiente, setEstadoPendiente] = useState(null); // { id, estado }
+  const cambiarEstado = (id, estado) => setEstadoPendiente({ id, estado });
+  const confirmarEstado = () => {
+    if (!estadoPendiente) return;
+    setPedidos(p => p.map(x => x.id === estadoPendiente.id ? { ...x, estado: estadoPendiente.estado } : x));
+    setEstadoPendiente(null);
+  };
 
   const filtrados = pedidos.filter(p => (filtroEstado === "Todos" || p.estado === filtroEstado) && (!filtroFecha || p.fecha === filtroFecha));
 
@@ -446,6 +452,18 @@ function ModuloPedidos({ pedidos, setPedidos, productos, setProductos, clientes,
           onGuardar={guardar} onCerrar={() => { setModal(false); setEditar(null); }} pedidoEditar={editar} />
       )}
       {facturaPedido && <FacturaPedido pedido={facturaPedido} onCerrar={() => setFacturaPedido(null)} />}
+
+      {estadoPendiente && (
+        <Modal title="Confirmar cambio de estado" accent={ac} onClose={() => setEstadoPendiente(null)}>
+          <p style={{ color: TEXT_MAIN, fontSize: 15, margin: "0 0 20px" }}>
+            ¿Cambiar el estado a <strong style={{ color: ESTADO_COLORS[estadoPendiente.estado] }}>{estadoPendiente.estado}</strong>?
+          </p>
+          <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+            <Btn variant="secondary" onClick={() => setEstadoPendiente(null)}>Cancelar</Btn>
+            <Btn accent={ESTADO_COLORS[estadoPendiente.estado]} onClick={confirmarEstado}>Guardar</Btn>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }
