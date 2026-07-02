@@ -872,14 +872,15 @@ function ModuloPersonal({ repartidores, setRepartidores, trabajadoras, setTrabaj
   const acT = ACENTOS.produccion;
   const [modalT, setModalT] = useState(false);
   const [editarT, setEditarT] = useState(null);
-  const [nombreT, setNombreT] = useState("");
-  const abrirNuevoT = () => { setEditarT(null); setNombreT(""); setModalT(true); };
-  const abrirEditarT = (t) => { setEditarT(t.id); setNombreT(t.nombre); setModalT(true); };
+  const [formT, setFormT] = useState({ nombre: "", numero: "" });
+  const proximoNumero = trabajadoras.length > 0 ? Math.max(...trabajadoras.map(t => t.numero || 0)) + 1 : 1;
+  const abrirNuevoT = () => { setEditarT(null); setFormT({ nombre: "", numero: proximoNumero }); setModalT(true); };
+  const abrirEditarT = (t) => { setEditarT(t.id); setFormT({ nombre: t.nombre, numero: t.numero || "" }); setModalT(true); };
   const guardarT = () => {
-    if (!nombreT.trim()) return;
-    if (editarT) setTrabajadoras(ts => ts.map(t => t.id === editarT ? { ...t, nombre: nombreT.trim() } : t));
-    else setTrabajadoras(ts => [...ts, { id: generarId(), nombre: nombreT.trim() }]);
-    setModalT(false); setEditarT(null); setNombreT("");
+    if (!formT.nombre.trim()) return;
+    if (editarT) setTrabajadoras(ts => ts.map(t => t.id === editarT ? { ...t, nombre: formT.nombre.trim(), numero: parseInt(formT.numero) || t.numero } : t));
+    else setTrabajadoras(ts => [...ts, { id: generarId(), nombre: formT.nombre.trim(), numero: parseInt(formT.numero) || proximoNumero }]);
+    setModalT(false); setEditarT(null); setFormT({ nombre: "", numero: "" });
   };
   const eliminarT = (id) => { if (confirm("¿Eliminar trabajadora?")) setTrabajadoras(ts => ts.filter(t => t.id !== id)); };
 
@@ -948,7 +949,12 @@ function ModuloPersonal({ repartidores, setRepartidores, trabajadoras, setTrabaj
           {trabajadoras.map(t => (
             <Card key={t.id} accent={acT}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <p style={{ color: TEXT_MAIN, fontWeight: 800, margin: 0 }}>👩‍🍳 {t.nombre}</p>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <span style={{ background: acT, color: "#fff", borderRadius: "50%", width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: 14, flexShrink: 0 }}>
+                    #{t.numero || "?"}
+                  </span>
+                  <p style={{ color: TEXT_MAIN, fontWeight: 800, margin: 0 }}>👩‍🍳 {t.nombre}</p>
+                </div>
                 <div style={{ display: "flex", gap: 6 }}>
                   <Btn small variant="secondary" onClick={() => abrirEditarT(t)}>✏️</Btn>
                   <Btn small variant="danger" onClick={() => eliminarT(t.id)}>🗑️</Btn>
@@ -957,10 +963,18 @@ function ModuloPersonal({ repartidores, setRepartidores, trabajadoras, setTrabaj
             </Card>
           ))}
           {modalT && (
-            <Modal title={editarT ? "Editar Trabajadora" : "Nueva Trabajadora"} accent={acT} onClose={() => { setModalT(false); setEditarT(null); setNombreT(""); }}>
-              <Input label="Nombre *" value={nombreT} onChange={e => setNombreT(e.target.value)} placeholder="Ej: María López" />
+            <Modal title={editarT ? "Editar Trabajadora" : "Nueva Trabajadora"} accent={acT} onClose={() => { setModalT(false); setEditarT(null); setFormT({ nombre: "", numero: "" }); }}>
+              <div style={{ display: "flex", gap: 8 }}>
+                <div style={{ width: 80 }}>
+                  <Input label="Nº" type="number" min="1" value={formT.numero} onChange={e => setFormT(f => ({ ...f, numero: e.target.value }))} placeholder="1" />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <Input label="Nombre *" value={formT.nombre} onChange={e => setFormT(f => ({ ...f, nombre: e.target.value }))} placeholder="Ej: María López" />
+                </div>
+              </div>
+              <p style={{ color: TEXT_SUB, fontSize: 12, margin: "-8px 0 16px" }}>El número identifica su trabajo en cada bandeja</p>
               <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
-                <Btn variant="secondary" onClick={() => { setModalT(false); setEditarT(null); setNombreT(""); }}>Cancelar</Btn>
+                <Btn variant="secondary" onClick={() => { setModalT(false); setEditarT(null); setFormT({ nombre: "", numero: "" }); }}>Cancelar</Btn>
                 <Btn accent={acT} onClick={guardarT}>Guardar</Btn>
               </div>
             </Modal>
@@ -1542,7 +1556,14 @@ function ModuloProduccion({ producciones, setProducciones, trabajadoras, setTrab
             return (
               <div key={prod.id} style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 14, padding: 14, marginBottom: 8 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-                  <span style={{ color: ac, fontWeight: 700, fontSize: 14 }}>👩‍🍳 {trab?.nombre || "—"}</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    {trab?.numero && (
+                      <span style={{ background: ac, color: "#fff", borderRadius: "50%", width: 26, height: 26, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: 13 }}>
+                        #{trab.numero}
+                      </span>
+                    )}
+                    <span style={{ color: ac, fontWeight: 700, fontSize: 14 }}>👩‍🍳 {trab?.nombre || "—"}</span>
+                  </div>
                   <span style={{ color: TEXT_SUB, fontSize: 12 }}>
                     {prod.items?.reduce((s, it) => s + it.cantidad * unidadesPorPresentacion(it.presentacion), 0)} uds totales
                   </span>
@@ -1679,23 +1700,28 @@ function ModuloBienvenida({ setTab, pendientes, hoyEntregas }) {
 const d = (n) => { const f = new Date(); f.setDate(f.getDate() - n); return f.toISOString().split("T")[0]; };
 
 const PRODUCTOS_DEMO = [
+  // Tequeños de Queso B25: d5=8, d3=4, d1=5+4=9 → 21 bandejas. B50: d5=4, d3=2, d1=3 → 9 bandejas
   { id: 1, nombre: "Tequeños de Queso", categoria: "Tequeños", variantes: [
-    { presentacion: "Bandeja 25", precio: 18, stock: 12, lotes: [{ fecha: d(5), cantidad: 8 }, { fecha: d(2), cantidad: 4 }] },
-    { presentacion: "Bandeja 50", precio: 32, stock: 6, lotes: [{ fecha: d(5), cantidad: 4 }, { fecha: d(2), cantidad: 2 }] }
+    { presentacion: "Bandeja 25", precio: 18, stock: 21, lotes: [{ fecha: d(5), cantidad: 8 }, { fecha: d(3), cantidad: 4 }, { fecha: d(1), cantidad: 9 }] },
+    { presentacion: "Bandeja 50", precio: 32, stock: 9,  lotes: [{ fecha: d(5), cantidad: 4 }, { fecha: d(3), cantidad: 2 }, { fecha: d(1), cantidad: 3 }] },
   ]},
+  // Tequeños de Jamón B25: d5=5, d3=3, d1=3 → 11. B50: d5=4, d3=0, d1=2 → 6
   { id: 2, nombre: "Tequeños de Jamón", categoria: "Tequeños", variantes: [
-    { presentacion: "Bandeja 25", precio: 20, stock: 8, lotes: [{ fecha: d(5), cantidad: 5 }, { fecha: d(1), cantidad: 3 }] },
-    { presentacion: "Bandeja 50", precio: 36, stock: 4, lotes: [{ fecha: d(5), cantidad: 4 }] }
+    { presentacion: "Bandeja 25", precio: 20, stock: 11, lotes: [{ fecha: d(5), cantidad: 5 }, { fecha: d(3), cantidad: 3 }, { fecha: d(1), cantidad: 3 }] },
+    { presentacion: "Bandeja 50", precio: 36, stock: 6,  lotes: [{ fecha: d(5), cantidad: 4 }, { fecha: d(1), cantidad: 2 }] },
   ]},
+  // Empanadas de Carne B25: d5=6, d3=4+4=8, d1=4+3=7 → 21
   { id: 3, nombre: "Empanadas de Carne", categoria: "Empanadas", variantes: [
-    { presentacion: "Bandeja 25", precio: 22, stock: 10, lotes: [{ fecha: d(4), cantidad: 6 }, { fecha: d(1), cantidad: 4 }] }
+    { presentacion: "Bandeja 25", precio: 22, stock: 21, lotes: [{ fecha: d(5), cantidad: 6 }, { fecha: d(3), cantidad: 8 }, { fecha: d(1), cantidad: 7 }] },
   ]},
+  // Pastelitos de Pollo B25: d5=4, d3=3, d1=3+3=6 → 13
   { id: 4, nombre: "Pastelitos de Pollo", categoria: "Pastelitos", variantes: [
-    { presentacion: "Bandeja 25", precio: 20, stock: 7, lotes: [{ fecha: d(3), cantidad: 4 }, { fecha: d(1), cantidad: 3 }] }
+    { presentacion: "Bandeja 25", precio: 20, stock: 13, lotes: [{ fecha: d(5), cantidad: 4 }, { fecha: d(3), cantidad: 3 }, { fecha: d(1), cantidad: 6 }] },
   ]},
+  // Empanadas de Queso B25: d5=5, d3=4, d1=4 → 13. B50: d3=3, d1=2+2=4 → 7
   { id: 5, nombre: "Empanadas de Queso", categoria: "Empanadas", variantes: [
-    { presentacion: "Bandeja 25", precio: 20, stock: 9, lotes: [{ fecha: d(4), cantidad: 5 }, { fecha: d(1), cantidad: 4 }] },
-    { presentacion: "Bandeja 50", precio: 36, stock: 3, lotes: [{ fecha: d(3), cantidad: 3 }] }
+    { presentacion: "Bandeja 25", precio: 20, stock: 13, lotes: [{ fecha: d(5), cantidad: 5 }, { fecha: d(3), cantidad: 4 }, { fecha: d(1), cantidad: 4 }] },
+    { presentacion: "Bandeja 50", precio: 36, stock: 7,  lotes: [{ fecha: d(3), cantidad: 3 }, { fecha: d(1), cantidad: 4 }] },
   ]},
 ];
 const CLIENTES_DEMO = [
@@ -1741,18 +1767,31 @@ const REPARTIDORES_DEMO = [
   { id: "r5", nombre: "Laura Moreno", telefono: "611000005", fijo: false },
 ];
 const TRABAJADORAS_DEMO = [
-  { id: "t1", nombre: "Gabriela Torres" },
-  { id: "t2", nombre: "Valentina Díaz" },
-  { id: "t3", nombre: "Isabel Fernández" },
-  { id: "t4", nombre: "Patricia Ruiz" },
-  { id: "t5", nombre: "Carmen Vázquez" },
+  { id: "t1", numero: 1, nombre: "Gabriela Torres" },
+  { id: "t2", numero: 2, nombre: "Valentina Díaz" },
+  { id: "t3", numero: 3, nombre: "Isabel Fernández" },
+  { id: "t4", numero: 4, nombre: "Patricia Ruiz" },
+  { id: "t5", numero: 5, nombre: "Carmen Vázquez" },
 ];
 const PRODUCCIONES_DEMO = [
-  { id: "pd1", trabajadoraId: "t1", fecha: d(5), items: [{ productoId: "1", presentacion: "Bandeja 25", cantidad: 8 }, { productoId: "1", presentacion: "Bandeja 50", cantidad: 4 }, { productoId: "2", presentacion: "Bandeja 25", cantidad: 5 }, { productoId: "2", presentacion: "Bandeja 50", cantidad: 4 }] },
-  { id: "pd2", trabajadoraId: "t2", fecha: d(4), items: [{ productoId: "3", presentacion: "Bandeja 25", cantidad: 6 }, { productoId: "5", presentacion: "Bandeja 25", cantidad: 5 }] },
-  { id: "pd3", trabajadoraId: "t3", fecha: d(3), items: [{ productoId: "4", presentacion: "Bandeja 25", cantidad: 4 }, { productoId: "5", presentacion: "Bandeja 50", cantidad: 3 }] },
-  { id: "pd4", trabajadoraId: "t1", fecha: d(2), items: [{ productoId: "1", presentacion: "Bandeja 25", cantidad: 4 }, { productoId: "1", presentacion: "Bandeja 50", cantidad: 2 }] },
-  { id: "pd5", trabajadoraId: "t4", fecha: d(1), items: [{ productoId: "2", presentacion: "Bandeja 25", cantidad: 3 }, { productoId: "3", presentacion: "Bandeja 25", cantidad: 4 }, { productoId: "4", presentacion: "Bandeja 25", cantidad: 3 }] },
+  // Hace 5 días — todas producen
+  { id: "pd1",  trabajadoraId: "t1", fecha: d(5), items: [{ productoId: "1", presentacion: "Bandeja 25", cantidad: 8 }, { productoId: "1", presentacion: "Bandeja 50", cantidad: 4 }] },
+  { id: "pd2",  trabajadoraId: "t2", fecha: d(5), items: [{ productoId: "2", presentacion: "Bandeja 25", cantidad: 5 }, { productoId: "2", presentacion: "Bandeja 50", cantidad: 4 }] },
+  { id: "pd3",  trabajadoraId: "t3", fecha: d(5), items: [{ productoId: "3", presentacion: "Bandeja 25", cantidad: 6 }] },
+  { id: "pd4",  trabajadoraId: "t4", fecha: d(5), items: [{ productoId: "4", presentacion: "Bandeja 25", cantidad: 4 }] },
+  { id: "pd5",  trabajadoraId: "t5", fecha: d(5), items: [{ productoId: "5", presentacion: "Bandeja 25", cantidad: 5 }] },
+  // Hace 3 días — todas producen
+  { id: "pd6",  trabajadoraId: "t1", fecha: d(3), items: [{ productoId: "1", presentacion: "Bandeja 25", cantidad: 4 }, { productoId: "1", presentacion: "Bandeja 50", cantidad: 2 }] },
+  { id: "pd7",  trabajadoraId: "t2", fecha: d(3), items: [{ productoId: "2", presentacion: "Bandeja 25", cantidad: 3 }, { productoId: "3", presentacion: "Bandeja 25", cantidad: 4 }] },
+  { id: "pd8",  trabajadoraId: "t3", fecha: d(3), items: [{ productoId: "4", presentacion: "Bandeja 25", cantidad: 3 }, { productoId: "5", presentacion: "Bandeja 50", cantidad: 3 }] },
+  { id: "pd9",  trabajadoraId: "t4", fecha: d(3), items: [{ productoId: "5", presentacion: "Bandeja 25", cantidad: 4 }] },
+  { id: "pd10", trabajadoraId: "t5", fecha: d(3), items: [{ productoId: "3", presentacion: "Bandeja 25", cantidad: 4 }, { productoId: "1", presentacion: "Bandeja 25", cantidad: 4 }] },
+  // Ayer — todas producen
+  { id: "pd11", trabajadoraId: "t1", fecha: d(1), items: [{ productoId: "1", presentacion: "Bandeja 25", cantidad: 5 }, { productoId: "2", presentacion: "Bandeja 25", cantidad: 3 }] },
+  { id: "pd12", trabajadoraId: "t2", fecha: d(1), items: [{ productoId: "3", presentacion: "Bandeja 25", cantidad: 4 }, { productoId: "4", presentacion: "Bandeja 25", cantidad: 3 }] },
+  { id: "pd13", trabajadoraId: "t3", fecha: d(1), items: [{ productoId: "5", presentacion: "Bandeja 25", cantidad: 4 }, { productoId: "2", presentacion: "Bandeja 50", cantidad: 2 }] },
+  { id: "pd14", trabajadoraId: "t4", fecha: d(1), items: [{ productoId: "1", presentacion: "Bandeja 50", cantidad: 3 }, { productoId: "3", presentacion: "Bandeja 25", cantidad: 3 }] },
+  { id: "pd15", trabajadoraId: "t5", fecha: d(1), items: [{ productoId: "4", presentacion: "Bandeja 25", cantidad: 3 }, { productoId: "5", presentacion: "Bandeja 50", cantidad: 2 }] },
 ];
 
 export default function AppModerno() {
