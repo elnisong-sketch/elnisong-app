@@ -27,26 +27,30 @@ const hoy = () => new Date().toISOString().split("T")[0];
 const generarId = () => Date.now().toString(36) + Math.random().toString(36).slice(2);
 const inicioDeMes = () => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1).toISOString().split("T")[0]; };
 
-// ─── PALETA GLOBAL ───────────────────────────────────────────────────────────
-const BG_APP    = "#060d1f";   // azul marino muy oscuro
-const BG_CARD   = "#0d1628";   // azul marino tarjeta
-const BG_INPUT  = "#071020";   // azul marino input
-const BORDER    = "#1a2a4a";   // borde sutil azul
-const BORDER2   = "#243554";   // borde activo
+// ─── PALETA GLOBAL (modo claro, estilo profesional) ─────────────────────────
+const BG_APP    = "#f0f4f8";   // gris azulado muy suave
+const BG_CARD   = "#ffffff";   // blanco
+const BG_INPUT  = "#f8fafc";   // blanco suave
+const BORDER    = "#e2e8f0";   // gris claro
+const BORDER2   = "#cbd5e1";   // gris medio
+const NAVY      = "#1e3a5f";   // azul marino header
+const ORANGE    = "#f97316";   // naranja acento
+const TEXT_MAIN = "#1e293b";   // texto principal
+const TEXT_SUB  = "#64748b";   // texto secundario
 
 // ─── ACENTOS DE COLOR POR SECCIÓN ───────────────────────────────────────────
 const ACENTOS = {
-  pedidos:    "#ffb800",   // amarillo venezolano
-  clientes:   "#38bdf8",   // celeste
-  inventario: "#fb923c",   // naranja
-  stock:      "#a78bfa",   // violeta
-  produccion: "#34d399",   // verde menta
-  proveedores:"#10b981",   // verde
-  compras:    "#f472b6",   // rosa
-  gastos:     "#f87171",   // rojo suave
-  reporte:    "#22d3ee",   // cyan
-  personal:   "#818cf8",   // indigo
-  admin:      "#94a3b8",   // gris azulado
+  pedidos:    "#f97316",   // naranja
+  clientes:   "#3b82f6",   // azul
+  inventario: "#8b5cf6",   // violeta
+  stock:      "#06b6d4",   // cyan
+  produccion: "#10b981",   // verde
+  proveedores:"#14b8a6",   // teal
+  compras:    "#ec4899",   // rosa
+  gastos:     "#ef4444",   // rojo
+  reporte:    "#6366f1",   // indigo
+  personal:   "#f59e0b",   // ámbar
+  admin:      "#64748b",   // gris
 };
 
 // ─── HELPERS STOCK FIFO ──────────────────────────────────────────────────────
@@ -68,25 +72,25 @@ function stockTotal(lotes = []) {
 // ─── COMPONENTES UI BASE ─────────────────────────────────────────────────────
 const Badge = ({ estado }) => (
   <span style={{
-    background: ESTADO_COLORS[estado] + "22", color: ESTADO_COLORS[estado],
-    border: `1px solid ${ESTADO_COLORS[estado]}55`, borderRadius: 20, padding: "3px 12px",
-    fontSize: 12, fontWeight: 700
+    background: ESTADO_COLORS[estado] + "18", color: ESTADO_COLORS[estado],
+    border: `1.5px solid ${ESTADO_COLORS[estado]}44`, borderRadius: 20, padding: "4px 12px",
+    fontSize: 12, fontWeight: 700, letterSpacing: .3
   }}>{estado}</span>
 );
 
 const Btn = ({ children, onClick, variant = "primary", small, accent, style = {} }) => {
   const base = {
-    border: "none", borderRadius: 12, cursor: "pointer", fontWeight: 700,
-    padding: small ? "8px 14px" : "12px 20px", fontSize: small ? 13 : 15,
-    transition: "transform .12s, opacity .12s", ...style
+    border: "none", borderRadius: 10, cursor: "pointer", fontWeight: 700,
+    padding: small ? "7px 14px" : "11px 20px", fontSize: small ? 13 : 15,
+    transition: "transform .12s, box-shadow .12s", ...style
   };
-  const ac = accent || "#ffb800";
+  const ac = accent || ORANGE;
   const variants = {
-    primary: { background: ac, color: "#060d1f", boxShadow: `0 4px 14px ${ac}44` },
-    secondary: { background: BG_CARD, color: "#c8d4e8", border: `1px solid ${BORDER2}` },
-    danger: { background: "#f8717122", color: "#f87171", border: "1px solid #f8717144" },
-    success: { background: "#34d39922", color: "#34d399", border: "1px solid #34d39944" },
-    ghost: { background: "transparent", color: ac, border: `1px solid ${ac}55` },
+    primary: { background: ac, color: "#fff", boxShadow: `0 4px 12px ${ac}55` },
+    secondary: { background: BG_CARD, color: TEXT_MAIN, border: `1px solid ${BORDER}`, boxShadow: "0 1px 3px #0001" },
+    danger: { background: "#fff", color: "#ef4444", border: "1px solid #fca5a5" },
+    success: { background: "#f0fdf4", color: "#16a34a", border: "1px solid #86efac" },
+    ghost: { background: "transparent", color: ac, border: `1px solid ${ac}88` },
   };
   return (
     <button
@@ -96,9 +100,9 @@ const Btn = ({ children, onClick, variant = "primary", small, accent, style = {}
   );
 };
 
-const Chips = ({ label, options, value, onChange, accent = "#ffb800" }) => (
+const Chips = ({ label, options, value, onChange, accent = ORANGE }) => (
   <div style={{ marginBottom: 14 }}>
-    {label && <label style={{ display: "block", color: "#6b82a8", fontSize: 12, marginBottom: 6, fontWeight: 600 }}>{label}</label>}
+    {label && <label style={{ display: "block", color: TEXT_SUB, fontSize: 12, marginBottom: 6, fontWeight: 600, textTransform: "uppercase", letterSpacing: .5 }}>{label}</label>}
     <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
       {options.map(o => {
         const val = o.value ?? o;
@@ -106,11 +110,12 @@ const Chips = ({ label, options, value, onChange, accent = "#ffb800" }) => (
         const activo = val === value;
         return (
           <button key={val} type="button" onClick={() => onChange(val)} style={{
-            border: activo ? `1px solid ${accent}` : `1px solid ${BORDER}`,
+            border: activo ? `1.5px solid ${accent}` : `1px solid ${BORDER}`,
             background: activo ? accent : BG_CARD,
-            color: activo ? "#060d1f" : "#8da4cc",
-            borderRadius: 10, padding: "8px 14px", fontSize: 13, fontWeight: 700,
-            cursor: "pointer", transition: "all .15s"
+            color: activo ? "#fff" : TEXT_SUB,
+            borderRadius: 20, padding: "7px 16px", fontSize: 13, fontWeight: 600,
+            cursor: "pointer", transition: "all .15s",
+            boxShadow: activo ? `0 2px 8px ${accent}44` : "none"
           }}>{lbl}</button>
         );
       })}
@@ -120,20 +125,21 @@ const Chips = ({ label, options, value, onChange, accent = "#ffb800" }) => (
 
 const Input = ({ label, ...props }) => (
   <div style={{ marginBottom: 14 }}>
-    {label && <label style={{ display: "block", color: "#6b82a8", fontSize: 12, marginBottom: 6, fontWeight: 600 }}>{label}</label>}
+    {label && <label style={{ display: "block", color: TEXT_SUB, fontSize: 12, marginBottom: 6, fontWeight: 600, textTransform: "uppercase", letterSpacing: .5 }}>{label}</label>}
     <input style={{
-      width: "100%", background: BG_INPUT, border: `1px solid ${BORDER}`, borderRadius: 10,
-      color: "#dce8f5", padding: "11px 14px", fontSize: 14, boxSizing: "border-box", outline: "none"
+      width: "100%", background: BG_INPUT, border: `1.5px solid ${BORDER}`, borderRadius: 10,
+      color: TEXT_MAIN, padding: "11px 14px", fontSize: 15, boxSizing: "border-box", outline: "none",
+      boxShadow: "inset 0 1px 3px #0005"
     }} {...props} />
   </div>
 );
 
 const Select = ({ label, options, ...props }) => (
   <div style={{ marginBottom: 14 }}>
-    {label && <label style={{ display: "block", color: "#6b82a8", fontSize: 12, marginBottom: 6, fontWeight: 600 }}>{label}</label>}
+    {label && <label style={{ display: "block", color: TEXT_SUB, fontSize: 12, marginBottom: 6, fontWeight: 600, textTransform: "uppercase", letterSpacing: .5 }}>{label}</label>}
     <select style={{
-      width: "100%", background: BG_INPUT, border: `1px solid ${BORDER}`, borderRadius: 10,
-      color: "#dce8f5", padding: "11px 14px", fontSize: 14, boxSizing: "border-box", outline: "none"
+      width: "100%", background: BG_INPUT, border: `1.5px solid ${BORDER}`, borderRadius: 10,
+      color: TEXT_MAIN, padding: "11px 14px", fontSize: 15, boxSizing: "border-box", outline: "none"
     }} {...props}>
       {options.map(o => <option key={o.value ?? o} value={o.value ?? o}>{o.label ?? o}</option>)}
     </select>
@@ -143,17 +149,19 @@ const Select = ({ label, options, ...props }) => (
 const Card = ({ children, accent, style = {} }) => (
   <div style={{
     background: BG_CARD,
-    border: `1px solid ${BORDER}`, borderLeft: accent ? `3px solid ${accent}` : `1px solid ${BORDER}`,
-    borderRadius: 14, padding: 16, marginBottom: 12, ...style
+    border: `1px solid ${BORDER}`,
+    borderLeft: accent ? `4px solid ${accent}` : `1px solid ${BORDER}`,
+    borderRadius: 14, padding: 16, marginBottom: 12,
+    boxShadow: "0 1px 4px #0000000d", ...style
   }}>{children}</div>
 );
 
-const Modal = ({ title, accent = "#ffb800", onClose, children }) => (
+const Modal = ({ title, accent = ORANGE, onClose, children }) => (
   <div className="modal-overlay">
-    <div className="modal-box" style={{ background: BG_CARD, border: `1px solid ${accent}44`, boxShadow: `0 20px 60px ${accent}22` }}>
+    <div className="modal-box" style={{ background: BG_CARD, border: `1px solid ${BORDER}`, boxShadow: "0 20px 60px #0003" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-        <h2 style={{ color: accent, margin: 0, fontSize: 19, fontWeight: 800 }}>{title}</h2>
-        <button onClick={onClose} style={{ background: BG_INPUT, border: `1px solid ${BORDER}`, color: "#6b82a8", fontSize: 18, cursor: "pointer", borderRadius: 8, width: 32, height: 32 }}>✕</button>
+        <h2 style={{ color: NAVY, margin: 0, fontSize: 19, fontWeight: 800 }}>{title}</h2>
+        <button onClick={onClose} style={{ background: BG_APP, border: `1px solid ${BORDER}`, color: TEXT_SUB, fontSize: 16, cursor: "pointer", borderRadius: 8, width: 32, height: 32 }}>✕</button>
       </div>
       {children}
     </div>
@@ -161,7 +169,9 @@ const Modal = ({ title, accent = "#ffb800", onClose, children }) => (
 );
 
 const Empty = ({ texto }) => (
-  <Card><p style={{ color: "#555", textAlign: "center", margin: 0 }}>{texto}</p></Card>
+  <div style={{ textAlign: "center", padding: "40px 20px", color: TEXT_SUB, fontSize: 14 }}>
+    <p style={{ margin: 0 }}>{texto}</p>
+  </div>
 );
 
 // ─── MÓDULO: PEDIDOS ────────────────────────────────────────────────────────
@@ -230,14 +240,14 @@ function FormularioPedido({ productos, clientes, repartidores, onGuardar, onCerr
         <div style={{ marginBottom: 12 }}>
           <label style={{ display: "block", color: "#888", fontSize: 12, marginBottom: 4 }}>Rango horario</label>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <select style={{ flex: 1, background: BG_INPUT, border: "1px solid #2d2e38", borderRadius: 10, color: "#8da4cc", padding: "9px 8px", fontSize: 13, outline: "none" }}
+            <select style={{ flex: 1, background: BG_INPUT, border: "1px solid #2d2e38", borderRadius: 10, color: TEXT_SUB, padding: "9px 8px", fontSize: 13, outline: "none" }}
               value={form.rangoHorario?.split(" a ")[0] || ""}
               onChange={e => { const fin = form.rangoHorario?.split(" a ")[1] || ""; set("rangoHorario", e.target.value + " a " + fin); }}>
               <option value="">--</option>
               {HORAS_RANGO.map(h => <option key={h} value={h}>{h}</option>)}
             </select>
             <span style={{ color: "#888", fontSize: 13, whiteSpace: "nowrap" }}>a</span>
-            <select style={{ flex: 1, background: BG_INPUT, border: "1px solid #2d2e38", borderRadius: 10, color: "#8da4cc", padding: "9px 8px", fontSize: 13, outline: "none" }}
+            <select style={{ flex: 1, background: BG_INPUT, border: "1px solid #2d2e38", borderRadius: 10, color: TEXT_SUB, padding: "9px 8px", fontSize: 13, outline: "none" }}
               value={form.rangoHorario?.split(" a ")[1] || ""}
               onChange={e => { const ini = form.rangoHorario?.split(" a ")[0] || ""; set("rangoHorario", ini + " a " + e.target.value); }}>
               <option value="">--</option>
@@ -268,7 +278,7 @@ function FormularioPedido({ productos, clientes, repartidores, onGuardar, onCerr
         {item.productoId && (() => {
           const precioUnit = precioFinalItem(item, productos);
           return (
-            <p style={{ color: "#6b82a8", fontSize: 12, margin: "0 0 10px" }}>
+            <p style={{ color: TEXT_SUB, fontSize: 12, margin: "0 0 10px" }}>
               {precioUnit > 0
                 ? `Precio unitario final: ${precioUnit.toFixed(2)}€ · Total: ${(precioUnit * item.cantidad).toFixed(2)}€`
                 : "Sin precio asignado para esta presentación (poné el precio en Inventario)"}
@@ -280,11 +290,11 @@ function FormularioPedido({ productos, clientes, repartidores, onGuardar, onCerr
 
       {form.items.length > 0 && (
         <div style={{ marginBottom: 14 }}>
-          <p style={{ color: "#6b82a8", fontSize: 12, marginBottom: 6, fontWeight: 700 }}>PRODUCTOS EN EL PEDIDO</p>
+          <p style={{ color: TEXT_SUB, fontSize: 12, marginBottom: 6, fontWeight: 700 }}>PRODUCTOS EN EL PEDIDO</p>
           {form.items.map((it, idx) => (
             <div key={it.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid #25262f" }}>
               <div>
-                <span style={{ color: "#dce8f5", fontSize: 13 }}>{it.cantidad}x {it.nombreProducto} · {it.presentacion} · {it.estado}</span>
+                <span style={{ color: TEXT_MAIN, fontSize: 13 }}>{it.cantidad}x {it.nombreProducto} · {it.presentacion} · {it.estado}</span>
                 <div style={{ color: "#666", fontSize: 12, marginTop: 2 }}>
                   {it.precio > 0 ? `Precio unitario: ${it.precio.toFixed(2)}€` : "Precio unitario: — (sin precio en Inventario)"}
                 </div>
@@ -297,7 +307,7 @@ function FormularioPedido({ productos, clientes, repartidores, onGuardar, onCerr
             </div>
           ))}
           {(parseFloat(form.envio) || 0) > 0 && (
-            <p style={{ color: "#6b82a8", fontSize: 13, textAlign: "right", margin: "8px 0 0" }}>
+            <p style={{ color: TEXT_SUB, fontSize: 13, textAlign: "right", margin: "8px 0 0" }}>
               Subtotal: {subtotalProductos.toFixed(2)}€ + Envío: {(parseFloat(form.envio) || 0).toFixed(2)}€
             </p>
           )}
@@ -326,20 +336,20 @@ function FacturaPedido({ pedido, onCerrar }) {
   return (
     <Modal title="🧾 Factura" accent={ac} onClose={onCerrar}>
       <div id="factura-imprimible">
-        <p style={{ color: "#dce8f5", fontWeight: 800, margin: "0 0 4px", fontSize: 16 }}>{pedido.nombre}</p>
-        <p style={{ color: "#6b82a8", fontSize: 13, margin: "0 0 2px" }}>📞 {pedido.telefono}</p>
-        {pedido.tipoEntrega === "Domicilio" && <p style={{ color: "#6b82a8", fontSize: 13, margin: "0 0 2px" }}>📍 {pedido.direccion} {pedido.cp}</p>}
-        <p style={{ color: "#6b82a8", fontSize: 13, margin: "0 0 12px" }}>📅 {pedido.fecha} · 💳 {pedido.formaPago}</p>
+        <p style={{ color: TEXT_MAIN, fontWeight: 800, margin: "0 0 4px", fontSize: 16 }}>{pedido.nombre}</p>
+        <p style={{ color: TEXT_SUB, fontSize: 13, margin: "0 0 2px" }}>📞 {pedido.telefono}</p>
+        {pedido.tipoEntrega === "Domicilio" && <p style={{ color: TEXT_SUB, fontSize: 13, margin: "0 0 2px" }}>📍 {pedido.direccion} {pedido.cp}</p>}
+        <p style={{ color: TEXT_SUB, fontSize: 13, margin: "0 0 12px" }}>📅 {pedido.fecha} · 💳 {pedido.formaPago}</p>
         {pedido.items?.map((it, i) => (
           <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid #25262f" }}>
-            <span style={{ color: "#dce8f5", fontSize: 14 }}>{it.cantidad}x {lineaFactura(it)}</span>
-            <span style={{ color: "#dce8f5", fontSize: 14, fontWeight: 700 }}>{(it.subtotal || 0).toFixed(2)}€</span>
+            <span style={{ color: TEXT_MAIN, fontSize: 14 }}>{it.cantidad}x {lineaFactura(it)}</span>
+            <span style={{ color: TEXT_MAIN, fontSize: 14, fontWeight: 700 }}>{(it.subtotal || 0).toFixed(2)}€</span>
           </div>
         ))}
         {envio > 0 && (
           <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid #25262f" }}>
-            <span style={{ color: "#dce8f5", fontSize: 14 }}>Envío</span>
-            <span style={{ color: "#dce8f5", fontSize: 14, fontWeight: 700 }}>{envio.toFixed(2)}€</span>
+            <span style={{ color: TEXT_MAIN, fontSize: 14 }}>Envío</span>
+            <span style={{ color: TEXT_MAIN, fontSize: 14, fontWeight: 700 }}>{envio.toFixed(2)}€</span>
           </div>
         )}
         <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 0 0" }}>
@@ -393,7 +403,7 @@ function ModuloPedidos({ pedidos, setPedidos, productos, setProductos, clientes,
 
       <Chips accent={ac} options={["Todos", ...ESTADOS_PEDIDO]} value={filtroEstado} onChange={setFiltroEstado} />
       <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
-        <input type="date" style={{ background: BG_INPUT, border: "1px solid #2d2e38", color: "#dce8f5", borderRadius: 10, padding: "9px 12px", fontSize: 13 }}
+        <input type="date" style={{ background: BG_INPUT, border: "1px solid #2d2e38", color: TEXT_MAIN, borderRadius: 10, padding: "9px 12px", fontSize: 13 }}
           value={filtroFecha} onChange={e => setFiltroFecha(e.target.value)} />
         {filtroFecha && <Btn small variant="secondary" onClick={() => setFiltroFecha("")}>✕ Limpiar fecha</Btn>}
       </div>
@@ -402,13 +412,13 @@ function ModuloPedidos({ pedidos, setPedidos, productos, setProductos, clientes,
         <Card key={p.id} accent={ESTADO_COLORS[p.estado]}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 8 }}>
             <div>
-              <p style={{ color: "#dce8f5", fontWeight: 800, margin: "0 0 4px" }}>{p.nombre}</p>
-              <p style={{ color: "#6b82a8", fontSize: 13, margin: "0 0 4px" }}>📞 {p.telefono}</p>
-              {p.tipoEntrega === "Domicilio" && <p style={{ color: "#6b82a8", fontSize: 13, margin: "0 0 4px" }}>📍 {p.direccion} {p.cp}</p>}
-              <p style={{ color: "#6b82a8", fontSize: 13, margin: "0 0 4px" }}>📅 {p.fecha} {p.rangoHorario && `· ⏰ ${p.rangoHorario}`}</p>
-              <p style={{ color: "#6b82a8", fontSize: 13, margin: "0 0 6px" }}>💳 {p.formaPago} · {p.tipoEntrega}</p>
+              <p style={{ color: TEXT_MAIN, fontWeight: 800, margin: "0 0 4px" }}>{p.nombre}</p>
+              <p style={{ color: TEXT_SUB, fontSize: 13, margin: "0 0 4px" }}>📞 {p.telefono}</p>
+              {p.tipoEntrega === "Domicilio" && <p style={{ color: TEXT_SUB, fontSize: 13, margin: "0 0 4px" }}>📍 {p.direccion} {p.cp}</p>}
+              <p style={{ color: TEXT_SUB, fontSize: 13, margin: "0 0 4px" }}>📅 {p.fecha} {p.rangoHorario && `· ⏰ ${p.rangoHorario}`}</p>
+              <p style={{ color: TEXT_SUB, fontSize: 13, margin: "0 0 6px" }}>💳 {p.formaPago} · {p.tipoEntrega}</p>
               {p.items?.map((it, i) => (
-                <span key={i} style={{ fontSize: 12, background: "#1f2028", borderRadius: 8, padding: "3px 9px", marginRight: 4, color: "#8da4cc" }}>
+                <span key={i} style={{ fontSize: 12, background: "#1f2028", borderRadius: 8, padding: "3px 9px", marginRight: 4, color: TEXT_SUB }}>
                   {it.cantidad}x {it.nombreProducto} {it.presentacion} ({it.estado})
                 </span>
               ))}
@@ -465,7 +475,7 @@ function ModuloCalendario({ pedidos }) {
         <h2 style={{ color: ac, margin: 0 }}>📅 Calendario</h2>
         <div style={{ display: "flex", gap: 8 }}>
           <Btn small variant="secondary" onClick={() => setMesActual(new Date(año, mes - 1, 1))}>‹</Btn>
-          <span style={{ color: "#dce8f5", fontWeight: 700, padding: "6px 12px" }}>{meses[mes]} {año}</span>
+          <span style={{ color: TEXT_MAIN, fontWeight: 700, padding: "6px 12px" }}>{meses[mes]} {año}</span>
           <Btn small variant="secondary" onClick={() => setMesActual(new Date(año, mes + 1, 1))}>›</Btn>
         </div>
       </div>
@@ -485,9 +495,9 @@ function ModuloCalendario({ pedidos }) {
                 border: `1px solid ${seleccionado ? ac : esHoy ? ac + "55" : BORDER}`,
                 borderRadius: 10, padding: "8px 4px", textAlign: "center", cursor: "pointer", minHeight: 54, transition: "all .15s"
               }}>
-              <div style={{ color: esHoy ? ac : "#dce8f5", fontSize: 13, fontWeight: esHoy ? 800 : 400 }}>{dia}</div>
+              <div style={{ color: esHoy ? ac : TEXT_MAIN, fontSize: 13, fontWeight: esHoy ? 800 : 400 }}>{dia}</div>
               {pp.length > 0 && (
-                <span style={{ background: ac, color: "#060d1f", borderRadius: 10, padding: "1px 6px", fontSize: 11, fontWeight: 800 }}>{pp.length}</span>
+                <span style={{ background: ac, color: "#fff", borderRadius: 10, padding: "1px 6px", fontSize: 11, fontWeight: 800 }}>{pp.length}</span>
               )}
             </div>
           );
@@ -496,14 +506,14 @@ function ModuloCalendario({ pedidos }) {
 
       {diaSeleccionado && (
         <div>
-          <p style={{ color: "#6b82a8", fontSize: 13, marginBottom: 8 }}>Pedidos para el {diaSeleccionado} de {meses[mes]}</p>
+          <p style={{ color: TEXT_SUB, fontSize: 13, marginBottom: 8 }}>Pedidos para el {diaSeleccionado} de {meses[mes]}</p>
           {pedidosDia.length === 0 ? <Empty texto="Sin pedidos este día" /> : pedidosDia.map(p => (
             <Card key={p.id} accent={ESTADO_COLORS[p.estado]}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div>
-                  <p style={{ color: "#dce8f5", fontWeight: 800, margin: "0 0 4px" }}>{p.nombre}</p>
-                  <p style={{ color: "#6b82a8", fontSize: 13, margin: 0 }}>⏰ {p.rangoHorario || "Sin horario"} · 💳 {p.formaPago}</p>
-                  {p.tipoEntrega === "Domicilio" && <p style={{ color: "#6b82a8", fontSize: 13, margin: "2px 0 0" }}>📍 {p.direccion}</p>}
+                  <p style={{ color: TEXT_MAIN, fontWeight: 800, margin: "0 0 4px" }}>{p.nombre}</p>
+                  <p style={{ color: TEXT_SUB, fontSize: 13, margin: 0 }}>⏰ {p.rangoHorario || "Sin horario"} · 💳 {p.formaPago}</p>
+                  {p.tipoEntrega === "Domicilio" && <p style={{ color: TEXT_SUB, fontSize: 13, margin: "2px 0 0" }}>📍 {p.direccion}</p>}
                 </div>
                 <Badge estado={p.estado} />
               </div>
@@ -550,13 +560,13 @@ function ModuloRutas({ pedidos }) {
           {pedidosDia.map((p, idx) => (
             <Card key={p.id} accent={ac}>
               <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-                <div style={{ background: ac, color: "#060d1f", borderRadius: "50%", width: 30, height: 30, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 13, flexShrink: 0 }}>{idx + 1}</div>
+                <div style={{ background: ac, color: "#fff", borderRadius: "50%", width: 30, height: 30, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 13, flexShrink: 0 }}>{idx + 1}</div>
                 <div style={{ flex: 1 }}>
-                  <p style={{ color: "#dce8f5", fontWeight: 800, margin: "0 0 4px" }}>{p.nombre}</p>
-                  <p style={{ color: "#6b82a8", fontSize: 13, margin: "0 0 2px" }}>📍 {p.direccion}, {p.cp}</p>
-                  <p style={{ color: "#6b82a8", fontSize: 13, margin: "0 0 4px" }}>⏰ {p.rangoHorario || "Sin horario"} · 💳 {p.formaPago}</p>
+                  <p style={{ color: TEXT_MAIN, fontWeight: 800, margin: "0 0 4px" }}>{p.nombre}</p>
+                  <p style={{ color: TEXT_SUB, fontSize: 13, margin: "0 0 2px" }}>📍 {p.direccion}, {p.cp}</p>
+                  <p style={{ color: TEXT_SUB, fontSize: 13, margin: "0 0 4px" }}>⏰ {p.rangoHorario || "Sin horario"} · 💳 {p.formaPago}</p>
                   {p.items?.map((it, i) => (
-                    <span key={i} style={{ fontSize: 11, background: "#1f2028", borderRadius: 8, padding: "2px 7px", marginRight: 4, color: "#8da4cc" }}>
+                    <span key={i} style={{ fontSize: 11, background: "#1f2028", borderRadius: 8, padding: "2px 7px", marginRight: 4, color: TEXT_SUB }}>
                       {it.cantidad}x {it.nombreProducto} ({it.estado})
                     </span>
                   ))}
@@ -612,9 +622,9 @@ function ModuloClientes({ clientes, setClientes, pedidos, irInicio }) {
           <Card key={c.id} accent={ac}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
               <div>
-                <p style={{ color: "#dce8f5", fontWeight: 800, margin: "0 0 4px" }}>{c.nombre}</p>
-                <p style={{ color: "#6b82a8", fontSize: 13, margin: "0 0 2px" }}>📞 {c.telefono}</p>
-                {c.direccion && <p style={{ color: "#6b82a8", fontSize: 13, margin: "0 0 2px" }}>📍 {c.direccion} {c.cp}</p>}
+                <p style={{ color: TEXT_MAIN, fontWeight: 800, margin: "0 0 4px" }}>{c.nombre}</p>
+                <p style={{ color: TEXT_SUB, fontSize: 13, margin: "0 0 2px" }}>📞 {c.telefono}</p>
+                {c.direccion && <p style={{ color: TEXT_SUB, fontSize: 13, margin: "0 0 2px" }}>📍 {c.direccion} {c.cp}</p>}
                 <p style={{ color: "#666", fontSize: 12, margin: "4px 0 0" }}>
                   {historial.length} pedido{historial.length !== 1 ? "s" : ""}{totalGastado > 0 && ` · ${totalGastado.toFixed(2)}€ total`}
                 </p>
@@ -668,18 +678,18 @@ function ModuloInventario({ productos, setProductos, irInicio }) {
           <p style={{ color: "#777", fontSize: 12, fontWeight: 800, letterSpacing: 1, marginBottom: 8 }}>{cat.toUpperCase()}</p>
           {productos.filter(p => p.categoria === cat).map(prod => (
             <Card key={prod.id} accent={ac}>
-              <p style={{ color: "#dce8f5", fontWeight: 700, margin: "0 0 10px" }}>{prod.nombre}</p>
+              <p style={{ color: TEXT_MAIN, fontWeight: 700, margin: "0 0 10px" }}>{prod.nombre}</p>
               {prod.variantes.map(v => {
                 const claveP = `${prod.id}-${v.presentacion}`;
                 return (
                   <div key={v.presentacion} style={{ padding: "8px 0", borderBottom: "1px solid #25262f" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: editandoPrecio === claveP ? 8 : 0 }}>
-                      <span style={{ color: "#6b82a8", fontSize: 13 }}>{v.presentacion}</span>
+                      <span style={{ color: TEXT_SUB, fontSize: 13 }}>{v.presentacion}</span>
                       <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
                         <div style={{ textAlign: "center" }}>
                           <p style={{ color: "#555", fontSize: 10, margin: "0 0 2px" }}>STOCK</p>
                           {editandoStock === claveP ? (
-                            <input type="number" defaultValue={v.stock || 0} style={{ width: 60, background: "#101015", border: `1px solid ${ac}`, borderRadius: 8, color: "#dce8f5", padding: "3px 6px", fontSize: 13 }}
+                            <input type="number" defaultValue={v.stock || 0} style={{ width: 60, background: "#101015", border: `1px solid ${ac}`, borderRadius: 8, color: TEXT_MAIN, padding: "3px 6px", fontSize: 13 }}
                               onBlur={e => { actualizarStock(prod.id, v.presentacion, e.target.value); setEditandoStock(null); }} autoFocus />
                           ) : (
                             <span style={{ color: (v.stock || 0) < 5 ? "#ef4444" : "#10b981", fontWeight: 800, cursor: "pointer", fontSize: 14 }}
@@ -695,7 +705,7 @@ function ModuloInventario({ productos, setProductos, irInicio }) {
                         </div>
                         <div style={{ textAlign: "center" }}>
                           <p style={{ color: "#555", fontSize: 10, margin: "0 0 2px" }}>TOTAL</p>
-                          <span style={{ color: "#dce8f5", fontWeight: 800, fontSize: 14 }}>
+                          <span style={{ color: TEXT_MAIN, fontWeight: 800, fontSize: 14 }}>
                             {v.precio > 0 ? `${((v.stock || 0) * v.precio).toFixed(2)}€` : "—"}
                           </span>
                         </div>
@@ -707,7 +717,7 @@ function ModuloInventario({ productos, setProductos, irInicio }) {
                           <button key={n} onClick={() => { actualizarPrecio(prod.id, v.presentacion, n); setEditandoPrecio(null); }}
                             style={{
                               border: n === v.precio ? `1px solid ${ac}` : "1px solid #2d2e38",
-                              background: n === v.precio ? ac : BG_INPUT, color: n === v.precio ? "#0f0f0f" : "#8da4cc",
+                              background: n === v.precio ? ac : BG_INPUT, color: n === v.precio ? "#0f0f0f" : TEXT_SUB,
                               borderRadius: 8, padding: "5px 10px", fontSize: 12, fontWeight: 700, cursor: "pointer"
                             }}>{n}€</button>
                         ))}
@@ -792,8 +802,8 @@ function ModuloPersonal({ repartidores, setRepartidores, trabajadoras, setTrabaj
             <Card key={r.id} accent={acR}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div>
-                  <p style={{ color: "#dce8f5", fontWeight: 800, margin: "0 0 4px" }}>{r.fijo ? "🏠" : "🛵"} {r.nombre}</p>
-                  {r.telefono && <p style={{ color: "#6b82a8", fontSize: 13, margin: 0 }}>📞 {r.telefono}</p>}
+                  <p style={{ color: TEXT_MAIN, fontWeight: 800, margin: "0 0 4px" }}>{r.fijo ? "🏠" : "🛵"} {r.nombre}</p>
+                  {r.telefono && <p style={{ color: TEXT_SUB, fontSize: 13, margin: 0 }}>📞 {r.telefono}</p>}
                 </div>
                 {!r.fijo && (
                   <div style={{ display: "flex", gap: 6 }}>
@@ -827,7 +837,7 @@ function ModuloPersonal({ repartidores, setRepartidores, trabajadoras, setTrabaj
           {trabajadoras.map(t => (
             <Card key={t.id} accent={acT}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <p style={{ color: "#dce8f5", fontWeight: 800, margin: 0 }}>👩‍🍳 {t.nombre}</p>
+                <p style={{ color: TEXT_MAIN, fontWeight: 800, margin: 0 }}>👩‍🍳 {t.nombre}</p>
                 <div style={{ display: "flex", gap: 6 }}>
                   <Btn small variant="secondary" onClick={() => abrirEditarT(t)}>✏️</Btn>
                   <Btn small variant="danger" onClick={() => eliminarT(t.id)}>🗑️</Btn>
@@ -888,9 +898,9 @@ function ModuloProveedores({ proveedores, setProveedores, irInicio }) {
         <Card key={p.id} accent={ac}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
             <div>
-              <p style={{ color: "#dce8f5", fontWeight: 800, margin: "0 0 4px" }}>{p.nombre}</p>
-              <p style={{ color: "#6b82a8", fontSize: 13, margin: "0 0 2px" }}>📞 {p.telefono}</p>
-              {p.email && <p style={{ color: "#6b82a8", fontSize: 13, margin: "0 0 2px" }}>✉️ {p.email}</p>}
+              <p style={{ color: TEXT_MAIN, fontWeight: 800, margin: "0 0 4px" }}>{p.nombre}</p>
+              <p style={{ color: TEXT_SUB, fontSize: 13, margin: "0 0 2px" }}>📞 {p.telefono}</p>
+              {p.email && <p style={{ color: TEXT_SUB, fontSize: 13, margin: "0 0 2px" }}>✉️ {p.email}</p>}
               {p.producto && <p style={{ color: "#666", fontSize: 12, margin: "4px 0 0" }}>📦 Suministra: {p.producto}</p>}
             </div>
             <div style={{ display: "flex", gap: 6 }}>
@@ -995,7 +1005,7 @@ function ModuloCompras({ compras, setCompras, proveedores, ingredientes, setIngr
             <Card key={i.id} accent={bajo ? "#ef4444" : ac}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div>
-                  <p style={{ color: "#dce8f5", fontWeight: 800, margin: "0 0 4px" }}>{i.nombre}</p>
+                  <p style={{ color: TEXT_MAIN, fontWeight: 800, margin: "0 0 4px" }}>{i.nombre}</p>
                   {bajo && <span style={{ color: "#ef4444", fontSize: 12, fontWeight: 700 }}>⚠️ Stock bajo</span>}
                 </div>
                 <p style={{ color: bajo ? "#ef4444" : "#10b981", fontWeight: 800, fontSize: 18, margin: 0 }}>{i.stock} {i.unidad}</p>
@@ -1008,9 +1018,9 @@ function ModuloCompras({ compras, setCompras, proveedores, ingredientes, setIngr
       {vista === "historial" && (
         <>
           <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
-            <input type="date" style={{ background: BG_INPUT, border: "1px solid #2d2e38", color: "#dce8f5", borderRadius: 10, padding: "9px 12px", fontSize: 13 }}
+            <input type="date" style={{ background: BG_INPUT, border: "1px solid #2d2e38", color: TEXT_MAIN, borderRadius: 10, padding: "9px 12px", fontSize: 13 }}
               value={filtroFecha} onChange={e => setFiltroFecha(e.target.value)} />
-            <select style={{ background: BG_INPUT, border: "1px solid #2d2e38", color: "#dce8f5", borderRadius: 10, padding: "9px 12px", fontSize: 13 }}
+            <select style={{ background: BG_INPUT, border: "1px solid #2d2e38", color: TEXT_MAIN, borderRadius: 10, padding: "9px 12px", fontSize: 13 }}
               value={filtroProveedor} onChange={e => setFiltroProveedor(e.target.value)}>
               <option value="">Todos los proveedores</option>
               {proveedores.map(p => <option key={p.id} value={p.id}>{p.nombre}</option>)}
@@ -1022,10 +1032,10 @@ function ModuloCompras({ compras, setCompras, proveedores, ingredientes, setIngr
             <Card key={c.id} accent={ac}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                 <div>
-                  <p style={{ color: "#dce8f5", fontWeight: 800, margin: "0 0 4px" }}>{c.ingredienteNombre}</p>
-                  <p style={{ color: "#6b82a8", fontSize: 13, margin: "0 0 2px" }}>🚚 {nombreProveedor(c.proveedorId)}</p>
-                  <p style={{ color: "#6b82a8", fontSize: 13, margin: "0 0 2px" }}>📅 {c.fecha}</p>
-                  <p style={{ color: "#6b82a8", fontSize: 13, margin: 0 }}>{c.cantidad} {c.unidad}{c.precio > 0 && ` · ${c.precio.toFixed(2)}€`}</p>
+                  <p style={{ color: TEXT_MAIN, fontWeight: 800, margin: "0 0 4px" }}>{c.ingredienteNombre}</p>
+                  <p style={{ color: TEXT_SUB, fontSize: 13, margin: "0 0 2px" }}>🚚 {nombreProveedor(c.proveedorId)}</p>
+                  <p style={{ color: TEXT_SUB, fontSize: 13, margin: "0 0 2px" }}>📅 {c.fecha}</p>
+                  <p style={{ color: TEXT_SUB, fontSize: 13, margin: 0 }}>{c.cantidad} {c.unidad}{c.precio > 0 && ` · ${c.precio.toFixed(2)}€`}</p>
                 </div>
                 <Btn small variant="danger" onClick={() => eliminarCompra(c.id)}>🗑️</Btn>
               </div>
@@ -1078,7 +1088,7 @@ function ModuloGastos({ gastos, setGastos, irInicio }) {
 
       <Chips accent={ac} options={["Todas", ...CATEGORIAS_GASTO]} value={filtroCategoria} onChange={setFiltroCategoria} />
       <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
-        <input type="date" style={{ background: BG_INPUT, border: "1px solid #2d2e38", color: "#dce8f5", borderRadius: 10, padding: "9px 12px", fontSize: 13 }}
+        <input type="date" style={{ background: BG_INPUT, border: "1px solid #2d2e38", color: TEXT_MAIN, borderRadius: 10, padding: "9px 12px", fontSize: 13 }}
           value={filtroFecha} onChange={e => setFiltroFecha(e.target.value)} />
         {(filtroFecha || filtroCategoria !== "Todas") && <Btn small variant="secondary" onClick={() => { setFiltroFecha(""); setFiltroCategoria("Todas"); }}>✕ Limpiar</Btn>}
       </div>
@@ -1089,9 +1099,9 @@ function ModuloGastos({ gastos, setGastos, irInicio }) {
             <Card key={g.id} accent={ac}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                 <div>
-                  <p style={{ color: "#dce8f5", fontWeight: 800, margin: "0 0 4px" }}>{g.concepto}</p>
-                  <p style={{ color: "#6b82a8", fontSize: 13, margin: "0 0 2px" }}>🏷️ {g.categoria}</p>
-                  <p style={{ color: "#6b82a8", fontSize: 13, margin: 0 }}>📅 {g.fecha}</p>
+                  <p style={{ color: TEXT_MAIN, fontWeight: 800, margin: "0 0 4px" }}>{g.concepto}</p>
+                  <p style={{ color: TEXT_SUB, fontSize: 13, margin: "0 0 2px" }}>🏷️ {g.categoria}</p>
+                  <p style={{ color: TEXT_SUB, fontSize: 13, margin: 0 }}>📅 {g.fecha}</p>
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "flex-end" }}>
                   <p style={{ color: ac, fontWeight: 800, fontSize: 16, margin: 0 }}>{g.monto.toFixed(2)}€</p>
@@ -1103,7 +1113,7 @@ function ModuloGastos({ gastos, setGastos, irInicio }) {
               </div>
             </Card>
           ))}
-          <p style={{ color: "#6b82a8", textAlign: "right", fontWeight: 800, fontSize: 14 }}>Total: {totalFiltrado.toFixed(2)}€</p>
+          <p style={{ color: TEXT_SUB, textAlign: "right", fontWeight: 800, fontSize: 14 }}>Total: {totalFiltrado.toFixed(2)}€</p>
         </>
       )}
 
@@ -1164,15 +1174,15 @@ function ModuloReporte({ pedidos, compras, gastos, producciones, trabajadoras, i
       <div id="reporte-imprimible">
         <Card accent={ac}>
           <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: "1px solid #25262f" }}>
-            <span style={{ color: "#6b82a8", fontSize: 14 }}>Ingresos (ventas)</span>
+            <span style={{ color: TEXT_SUB, fontSize: 14 }}>Ingresos (ventas)</span>
             <span style={{ color: "#10b981", fontWeight: 800, fontSize: 14 }}>{ingresos.toFixed(2)}€</span>
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: "1px solid #25262f" }}>
-            <span style={{ color: "#6b82a8", fontSize: 14 }}>Costo de materia prima</span>
+            <span style={{ color: TEXT_SUB, fontSize: 14 }}>Costo de materia prima</span>
             <span style={{ color: "#ef4444", fontWeight: 800, fontSize: 14 }}>-{costoMateriaPrima.toFixed(2)}€</span>
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: "1px solid #25262f" }}>
-            <span style={{ color: "#6b82a8", fontSize: 14 }}>Otros gastos</span>
+            <span style={{ color: TEXT_SUB, fontSize: 14 }}>Otros gastos</span>
             <span style={{ color: "#ef4444", fontWeight: 800, fontSize: 14 }}>-{otrosGastos.toFixed(2)}€</span>
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 0 0" }}>
@@ -1183,11 +1193,11 @@ function ModuloReporte({ pedidos, compras, gastos, producciones, trabajadoras, i
 
         {gastosPorCategoria.length > 0 && (
           <Card accent={ac}>
-            <p style={{ color: "#6b82a8", fontSize: 12, fontWeight: 800, margin: "0 0 8px" }}>OTROS GASTOS POR CATEGORÍA</p>
+            <p style={{ color: TEXT_SUB, fontSize: 12, fontWeight: 800, margin: "0 0 8px" }}>OTROS GASTOS POR CATEGORÍA</p>
             {gastosPorCategoria.map(c => (
               <div key={c.categoria} style={{ display: "flex", justifyContent: "space-between", padding: "4px 0" }}>
-                <span style={{ color: "#dce8f5", fontSize: 13 }}>{c.categoria}</span>
-                <span style={{ color: "#dce8f5", fontSize: 13 }}>{c.total.toFixed(2)}€</span>
+                <span style={{ color: TEXT_MAIN, fontSize: 13 }}>{c.categoria}</span>
+                <span style={{ color: TEXT_MAIN, fontSize: 13 }}>{c.total.toFixed(2)}€</span>
               </div>
             ))}
           </Card>
@@ -1196,30 +1206,30 @@ function ModuloReporte({ pedidos, compras, gastos, producciones, trabajadoras, i
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
           <Card accent={ac} style={{ textAlign: "center", padding: 14 }}>
             <p style={{ color: "#666", fontSize: 11, margin: "0 0 4px" }}>PEDIDOS</p>
-            <p style={{ color: "#dce8f5", fontWeight: 800, fontSize: 18, margin: 0 }}>{pedidosRango.length}</p>
+            <p style={{ color: TEXT_MAIN, fontWeight: 800, fontSize: 18, margin: 0 }}>{pedidosRango.length}</p>
           </Card>
           <Card accent={ac} style={{ textAlign: "center", padding: 14 }}>
             <p style={{ color: "#666", fontSize: 11, margin: "0 0 4px" }}>COMPRAS</p>
-            <p style={{ color: "#dce8f5", fontWeight: 800, fontSize: 18, margin: 0 }}>{comprasRango.length}</p>
+            <p style={{ color: TEXT_MAIN, fontWeight: 800, fontSize: 18, margin: 0 }}>{comprasRango.length}</p>
           </Card>
           <Card accent={ac} style={{ textAlign: "center", padding: 14 }}>
             <p style={{ color: "#666", fontSize: 11, margin: "0 0 4px" }}>GASTOS</p>
-            <p style={{ color: "#dce8f5", fontWeight: 800, fontSize: 18, margin: 0 }}>{gastosRango.length}</p>
+            <p style={{ color: TEXT_MAIN, fontWeight: 800, fontSize: 18, margin: 0 }}>{gastosRango.length}</p>
           </Card>
         </div>
       </div>
 
       {totalProducido > 0 && (
         <Card accent={ac}>
-          <p style={{ color: "#6b82a8", fontSize: 12, fontWeight: 800, margin: "0 0 8px" }}>🏭 PRODUCCIÓN EN EL PERÍODO</p>
+          <p style={{ color: TEXT_SUB, fontSize: 12, fontWeight: 800, margin: "0 0 8px" }}>🏭 PRODUCCIÓN EN EL PERÍODO</p>
           <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: "1px solid #25262f" }}>
-            <span style={{ color: "#6b82a8", fontSize: 14 }}>Total unidades producidas</span>
+            <span style={{ color: TEXT_SUB, fontSize: 14 }}>Total unidades producidas</span>
             <span style={{ color: ac, fontWeight: 800, fontSize: 14 }}>{totalProducido} uds</span>
           </div>
           {statsPorTrab.map(t => (
             <div key={t.nombre} style={{ display: "flex", justifyContent: "space-between", padding: "4px 0" }}>
-              <span style={{ color: "#dce8f5", fontSize: 13 }}>👩‍🍳 {t.nombre}</span>
-              <span style={{ color: "#dce8f5", fontSize: 13 }}>{t.total} uds</span>
+              <span style={{ color: TEXT_MAIN, fontSize: 13 }}>👩‍🍳 {t.nombre}</span>
+              <span style={{ color: TEXT_MAIN, fontSize: 13 }}>{t.total} uds</span>
             </div>
           ))}
         </Card>
@@ -1260,7 +1270,7 @@ function ModuloStock({ productos, irInicio }) {
                     {lotes.map((l, j) => (
                       <div key={j} style={{ display: "flex", justifyContent: "space-between", background: BG_INPUT, borderRadius: 8, padding: "5px 10px" }}>
                         <span style={{ color: "#666", fontSize: 12 }}>📅 {l.fecha}</span>
-                        <span style={{ color: "#dce8f5", fontSize: 12, fontWeight: 600 }}>{l.cantidad} uds</span>
+                        <span style={{ color: TEXT_MAIN, fontSize: 12, fontWeight: 600 }}>{l.cantidad} uds</span>
                       </div>
                     ))}
                   </div>
@@ -1331,7 +1341,7 @@ function ModuloProduccion({ producciones, setProducciones, trabajadoras, setTrab
       <div style={{ background: BG_CARD, border: "1px solid #1d1e26", borderRadius: 14, padding: 16, marginBottom: 12 }}>
         <label style={{ color: "#666", fontSize: 12, fontWeight: 700, textTransform: "uppercase", display: "block", marginBottom: 6 }}>Fecha de producción</label>
         <input type="date" value={form.fecha} onChange={e => setF("fecha", e.target.value)}
-          style={{ width: "100%", background: BG_INPUT, border: "1px solid #2a2a3a", borderRadius: 10, color: "#dce8f5", padding: "10px 12px", fontSize: 14, boxSizing: "border-box" }} />
+          style={{ width: "100%", background: BG_INPUT, border: "1px solid #2a2a3a", borderRadius: 10, color: TEXT_MAIN, padding: "10px 12px", fontSize: 14, boxSizing: "border-box" }} />
       </div>
 
       <div style={{ background: BG_CARD, border: "1px solid #1d1e26", borderRadius: 14, padding: 16, marginBottom: 12 }}>
@@ -1340,7 +1350,7 @@ function ModuloProduccion({ producciones, setProducciones, trabajadoras, setTrab
           <button onClick={() => setModalTrab(true)} style={{ background: "none", border: "none", color: ac, fontSize: 12, cursor: "pointer", fontWeight: 700 }}>+ Nueva</button>
         </div>
         <select value={form.trabajadoraId} onChange={e => setF("trabajadoraId", e.target.value)}
-          style={{ width: "100%", background: BG_INPUT, border: "1px solid #2a2a3a", borderRadius: 10, color: form.trabajadoraId ? "#dce8f5" : "#555", padding: "10px 12px", fontSize: 14, boxSizing: "border-box" }}>
+          style={{ width: "100%", background: BG_INPUT, border: "1px solid #2a2a3a", borderRadius: 10, color: form.trabajadoraId ? TEXT_MAIN : "#555", padding: "10px 12px", fontSize: 14, boxSizing: "border-box" }}>
           <option value="">Seleccionar trabajadora...</option>
           {trabajadoras.map(t => <option key={t.id} value={t.id}>{t.nombre}</option>)}
         </select>
@@ -1354,7 +1364,7 @@ function ModuloProduccion({ producciones, setProducciones, trabajadoras, setTrab
             <div key={i} style={{ background: BG_INPUT, borderRadius: 10, padding: 12, marginBottom: 8 }}>
               <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
                 <select value={it.productoId} onChange={e => setItem(i, "productoId", e.target.value)}
-                  style={{ flex: 2, background: BG_CARD, border: "1px solid #2a2a3a", borderRadius: 8, color: it.productoId ? "#dce8f5" : "#555", padding: "8px 10px", fontSize: 13 }}>
+                  style={{ flex: 2, background: BG_CARD, border: "1px solid #2a2a3a", borderRadius: 8, color: it.productoId ? TEXT_MAIN : "#555", padding: "8px 10px", fontSize: 13 }}>
                   <option value="">Producto...</option>
                   {productos.map(p => <option key={p.id} value={p.id}>{p.nombre}</option>)}
                 </select>
@@ -1364,12 +1374,12 @@ function ModuloProduccion({ producciones, setProducciones, trabajadoras, setTrab
               </div>
               <div style={{ display: "flex", gap: 8 }}>
                 <select value={it.presentacion} onChange={e => setItem(i, "presentacion", e.target.value)}
-                  style={{ flex: 2, background: BG_CARD, border: "1px solid #2a2a3a", borderRadius: 8, color: it.presentacion ? "#dce8f5" : "#555", padding: "8px 10px", fontSize: 13 }}>
+                  style={{ flex: 2, background: BG_CARD, border: "1px solid #2a2a3a", borderRadius: 8, color: it.presentacion ? TEXT_MAIN : "#555", padding: "8px 10px", fontSize: 13 }}>
                   <option value="">Presentación...</option>
                   {prod?.variantes.map(v => <option key={v.presentacion} value={v.presentacion}>{v.presentacion}</option>)}
                 </select>
                 <input type="number" min="1" value={it.cantidad} onChange={e => setItem(i, "cantidad", e.target.value)}
-                  placeholder="Cant." style={{ flex: 1, background: BG_CARD, border: "1px solid #2a2a3a", borderRadius: 8, color: "#dce8f5", padding: "8px 10px", fontSize: 13, minWidth: 0 }} />
+                  placeholder="Cant." style={{ flex: 1, background: BG_CARD, border: "1px solid #2a2a3a", borderRadius: 8, color: TEXT_MAIN, padding: "8px 10px", fontSize: 13, minWidth: 0 }} />
               </div>
             </div>
           );
@@ -1428,7 +1438,7 @@ function ModuloProduccion({ producciones, setProducciones, trabajadoras, setTrab
                 {prod.items?.map((it, i) => (
                   <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "5px 0", borderTop: i > 0 ? "1px solid #1d1e26" : "none" }}>
                     <span style={{ color: "#aaa", fontSize: 13 }}>{it.productoId ? (productos.find(p => p.id === parseInt(it.productoId))?.nombre || it.productoId) : "—"} · {it.presentacion}</span>
-                    <span style={{ color: "#dce8f5", fontWeight: 700, fontSize: 13 }}>{it.cantidad} uds</span>
+                    <span style={{ color: TEXT_MAIN, fontWeight: 700, fontSize: 13 }}>{it.cantidad} uds</span>
                   </div>
                 ))}
               </div>
@@ -1456,7 +1466,7 @@ function ModuloAdmin({ proveedores, setProveedores, compras, setCompras, gastos,
             padding: "12px 8px", borderRadius: 12,
             border: `2px solid ${sub === t.id ? ACENTOS[t.id] : BORDER}`,
             background: sub === t.id ? ACENTOS[t.id] + "22" : BG_CARD,
-            color: sub === t.id ? ACENTOS[t.id] : "#6b82a8",
+            color: sub === t.id ? ACENTOS[t.id] : TEXT_SUB,
             fontWeight: 700, fontSize: 13, cursor: "pointer", textAlign: "center"
           }}>{t.icon} {t.label}</button>
         ))}
@@ -1557,27 +1567,27 @@ export default function AppModerno() {
   };
 
   return (
-    <div style={{ background: BG_APP, minHeight: "100vh", fontFamily: "'Inter', sans-serif", color: "#dce8f5" }}>
-      {/* Header */}
-      <div style={{ background: `linear-gradient(135deg, ${ac}18 0%, ${BG_APP} 60%)`, borderBottom: `1px solid ${BORDER}`, padding: "14px 20px" }}>
+    <div style={{ background: BG_APP, minHeight: "100vh", fontFamily: "'Inter', sans-serif", color: TEXT_MAIN }}>
+      {/* Header azul marino */}
+      <div style={{ background: NAVY, padding: "14px 20px", boxShadow: "0 2px 12px #0003" }}>
         <div style={{ maxWidth: 760, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <button onClick={irInicio} style={{ background: "none", border: "none", cursor: "pointer", textAlign: "left", padding: 0 }}>
-            <h1 style={{ color: ac, margin: 0, fontSize: 22, fontWeight: 900, letterSpacing: -0.5 }}>🥟 ELNISONG</h1>
-            <p style={{ color: "#3d5580", fontSize: 11, margin: 0 }}>Toca para volver al inicio</p>
+            <h1 style={{ color: "#fff", margin: 0, fontSize: 22, fontWeight: 900, letterSpacing: -0.5 }}>🥟 ELNISONG</h1>
+            <p style={{ color: "#94b4d4", fontSize: 11, margin: 0 }}>Toca para volver al inicio</p>
           </button>
           <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
             {pendientes > 0 && (
-              <div style={{ textAlign: "center", background: "#ffb80018", borderRadius: 12, padding: "6px 12px" }}>
-                <p style={{ color: "#ffb800", fontWeight: 800, fontSize: 18, margin: 0 }}>{pendientes}</p>
-                <p style={{ color: "#3d5580", fontSize: 10, margin: 0 }}>Pendientes</p>
+              <div style={{ textAlign: "center", background: "#ffffff22", borderRadius: 12, padding: "6px 12px" }}>
+                <p style={{ color: "#fff", fontWeight: 800, fontSize: 18, margin: 0 }}>{pendientes}</p>
+                <p style={{ color: "#94b4d4", fontSize: 10, margin: 0 }}>Pendientes</p>
               </div>
             )}
-            <div style={{ textAlign: "center", background: `${ac}18`, borderRadius: 12, padding: "6px 12px" }}>
-              <p style={{ color: ac, fontWeight: 800, fontSize: 18, margin: 0 }}>{hoyEntregas}</p>
-              <p style={{ color: "#3d5580", fontSize: 10, margin: 0 }}>Hoy</p>
+            <div style={{ textAlign: "center", background: ORANGE + "33", borderRadius: 12, padding: "6px 12px" }}>
+              <p style={{ color: ORANGE, fontWeight: 800, fontSize: 18, margin: 0 }}>{hoyEntregas}</p>
+              <p style={{ color: "#94b4d4", fontSize: 10, margin: 0 }}>Hoy</p>
             </div>
             <button onClick={exportarDatos} title="Exportar backup"
-              style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 10, color: "#6b82a8", padding: "8px 10px", cursor: "pointer", fontSize: 16 }}>
+              style={{ background: "#ffffff22", border: "none", borderRadius: 10, color: "#fff", padding: "8px 10px", cursor: "pointer", fontSize: 16 }}>
               💾
             </button>
           </div>
@@ -1596,19 +1606,21 @@ export default function AppModerno() {
       </div>
 
       {/* Navegación inferior */}
-      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: BG_CARD, borderTop: `1px solid ${BORDER}`, zIndex: 50 }}>
+      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: NAVY, zIndex: 50, boxShadow: "0 -2px 12px #0003" }}>
         <div className="nav-tabs" style={{ maxWidth: 760, margin: "0 auto" }}>
           {TABS.map(t => {
             const activo = tab === t.id;
             const color = ACENTOS[t.id];
             return (
               <button key={t.id} onClick={() => setTab(t.id)} style={{
-                flex: "1 0 auto", minWidth: 64, display: "flex", flexDirection: "column", alignItems: "center", gap: 2,
-                background: activo ? `${color}22` : "transparent", border: activo ? `1px solid ${color}55` : "1px solid transparent",
-                borderRadius: 12, padding: "8px 6px", cursor: "pointer", transition: "all .15s"
+                flex: "1 0 auto", minWidth: 60, display: "flex", flexDirection: "column", alignItems: "center", gap: 2,
+                background: activo ? "#ffffff22" : "transparent",
+                border: "none",
+                borderTop: activo ? `3px solid ${color}` : "3px solid transparent",
+                borderRadius: 0, padding: "8px 6px", cursor: "pointer", transition: "all .15s"
               }}>
                 <span style={{ fontSize: 18 }}>{t.icon}</span>
-                <span style={{ fontSize: 10, fontWeight: 700, color: activo ? color : "#777" }}>{t.label}</span>
+                <span style={{ fontSize: 10, fontWeight: 700, color: activo ? color : "#94b4d4" }}>{t.label}</span>
               </button>
             );
           })}

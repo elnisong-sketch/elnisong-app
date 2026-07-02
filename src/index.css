@@ -6,6 +6,7 @@
 body {
   margin: 0;
   overscroll-behavior-y: contain;
+  background: #f0f4f8;
 }
 
 /* Evita zoom en inputs en iOS */
