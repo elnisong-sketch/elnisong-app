@@ -30,8 +30,7 @@ function Landing({ onPedir }) {
         <div style={{ fontSize: 64, marginBottom: 16 }}>👨‍🍳</div>
         <h2 style={{ color: "#fff", fontSize: 28, fontWeight: 900, margin: "0 0 12px" }}>Tequeños, Empanadas y Pastelitos</h2>
         <p style={{ color: "#94b4d4", fontSize: 16, margin: "0 0 32px", maxWidth: 380, marginLeft: "auto", marginRight: "auto" }}>
-          {/* 📝 AQUÍ: eslogan o descripción corta del negocio */}
-          Auténtica comida venezolana elaborada con ingredientes frescos. ¡Pedidos a domicilio y recogida en tienda!
+          Auténtica comida venezolana hecha con amor. Tequeños, empanadas y pastelitos a tu puerta en Madrid.
         </p>
         <button onClick={onPedir} style={{ background: ORANGE, border: "none", borderRadius: 50, color: "#fff", padding: "16px 40px", fontSize: 18, fontWeight: 800, cursor: "pointer", boxShadow: "0 4px 20px #f9731655" }}>
           🛒 Haz tu pedido
@@ -41,9 +40,9 @@ function Landing({ onPedir }) {
       {/* Info rápida */}
       <div style={{ display: "flex", justifyContent: "center", gap: 12, padding: "24px 16px", flexWrap: "wrap" }}>
         {[
-          { icon: "📍", titulo: "Dónde estamos", texto: "📝 AQUÍ: dirección del local o zona de reparto" },
-          { icon: "⏰", titulo: "Horario", texto: "📝 AQUÍ: horario de atención (ej: L-V 10:00-14:00 / 17:00-21:00)" },
-          { icon: "🚚", titulo: "Reparto", texto: "📝 AQUÍ: zonas de reparto o coste de envío" },
+          { icon: "📍", titulo: "Dónde estamos", texto: "Repartimos por toda la Comunidad de Madrid" },
+          { icon: "⏰", titulo: "Horario", texto: "Lun–Vie 10:00–14:00 y 17:00–21:00 · Sáb 10:00–15:00" },
+          { icon: "🚚", titulo: "Reparto", texto: "Envío a domicilio · Recogida en tienda disponible" },
         ].map(c => (
           <div key={c.titulo} style={{ background: "#fff", borderRadius: 16, padding: "20px 24px", minWidth: 200, maxWidth: 260, flex: 1, boxShadow: "0 1px 8px #0001", textAlign: "center" }}>
             <div style={{ fontSize: 28, marginBottom: 8 }}>{c.icon}</div>
@@ -76,26 +75,21 @@ function Landing({ onPedir }) {
       <div style={{ background: NAVY, padding: "32px 24px", textAlign: "center" }}>
         <h3 style={{ color: "#fff", fontWeight: 800, fontSize: 18, marginBottom: 20 }}>Contáctanos</h3>
         <div style={{ display: "flex", justifyContent: "center", gap: 24, flexWrap: "wrap", marginBottom: 24 }}>
-          <a href="https://wa.me/34XXXXXXXXX" style={{ color: "#4ade80", textDecoration: "none", fontWeight: 700, fontSize: 15 }}>
-            {/* 📝 AQUÍ: sustituye XXXXXXXXX por el número de WhatsApp con prefijo país (ej: 34658083047) */}
+          <a href="https://wa.me/34600111222" style={{ color: "#4ade80", textDecoration: "none", fontWeight: 700, fontSize: 15 }}>
             📱 WhatsApp
           </a>
-          <a href="https://instagram.com/AQUI_USUARIO" style={{ color: "#f9a8d4", textDecoration: "none", fontWeight: 700, fontSize: 15 }}>
-            {/* 📝 AQUÍ: usuario de Instagram */}
+          <a href="https://instagram.com/donpepesabor" style={{ color: "#f9a8d4", textDecoration: "none", fontWeight: 700, fontSize: 15 }}>
             📸 Instagram
           </a>
-          <a href="https://facebook.com/AQUI_PAGINA" style={{ color: "#93c5fd", textDecoration: "none", fontWeight: 700, fontSize: 15 }}>
-            {/* 📝 AQUÍ: página de Facebook */}
+          <a href="https://facebook.com/donpepesabor" style={{ color: "#93c5fd", textDecoration: "none", fontWeight: 700, fontSize: 15 }}>
             👥 Facebook
           </a>
-          <a href="tel:+34XXXXXXXXX" style={{ color: "#fde68a", textDecoration: "none", fontWeight: 700, fontSize: 15 }}>
-            {/* 📝 AQUÍ: número de teléfono */}
-            📞 Llamar
+          <a href="tel:+34600111222" style={{ color: "#fde68a", textDecoration: "none", fontWeight: 700, fontSize: 15 }}>
+            📞 600 111 222
           </a>
         </div>
         <p style={{ color: "#475569", fontSize: 12, margin: 0 }}>
-          {/* 📝 AQUÍ: ciudad/provincia donde operáis */}
-          © 2025 Don Pepe Sabor · [Ciudad, España]
+          © 2025 Don Pepe Sabor · Madrid, España
         </p>
       </div>
 
