@@ -1589,7 +1589,7 @@ function ModuloProduccion({ producciones, setProducciones, trabajadoras, setTrab
 }
 
 // ─── APP PRINCIPAL (DISEÑO MODERNO) ─────────────────────────────────────────
-function ModuloAdmin({ proveedores, setProveedores, compras, setCompras, gastos, setGastos, ingredientes, setIngredientes, pedidos, producciones, trabajadoras, irInicio, exportarDatos, cargarDemo }) {
+function ModuloAdmin({ proveedores, setProveedores, compras, setCompras, gastos, setGastos, ingredientes, setIngredientes, pedidos, producciones, trabajadoras, irInicio, exportarDatos, exportarExcel, cargarDemo }) {
   const [sub, setSub] = useState("proveedores");
   const [confirmDemo, setConfirmDemo] = useState(false);
   const ac = ACENTOS.admin;
@@ -1603,6 +1603,11 @@ function ModuloAdmin({ proveedores, setProveedores, compras, setCompras, gastos,
         color: "#fff", padding: "13px", fontSize: 15, fontWeight: 700,
         cursor: "pointer", marginBottom: 8, display: "flex", alignItems: "center", justifyContent: "center", gap: 8
       }}>📤 Exportar Backup</button>
+      <button onClick={exportarExcel} style={{
+        width: "100%", background: "#217346", border: "none", borderRadius: 12,
+        color: "#fff", padding: "13px", fontSize: 15, fontWeight: 700,
+        cursor: "pointer", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "center", gap: 8
+      }}>📊 Exportar Excel</button>
       {!confirmDemo ? (
         <button onClick={() => setConfirmDemo(true)} style={{
           width: "100%", background: BG_CARD, border: `1px dashed ${BORDER}`, borderRadius: 12,
@@ -1891,6 +1896,63 @@ export default function AppModerno() {
     a.click();
   };
 
+  const exportarExcel = async () => {
+    const XLSX = await import("xlsx");
+    const wb = XLSX.utils.book_new();
+
+    // Hoja Pedidos
+    const filaPedidos = pedidos.map(p => ({
+      Fecha: p.fecha,
+      Cliente: p.nombre,
+      Teléfono: p.telefono,
+      Dirección: p.direccion || "",
+      CP: p.cp || "",
+      Estado: p.estado,
+      "Tipo entrega": p.tipoEntrega || "",
+      "Forma pago": p.formaPago || "",
+      "Rango horario": p.rangoHorario || "",
+      Repartidor: repartidores.find(r => r.id === p.repartidorId)?.nombre || "",
+      Productos: (p.items || []).map(i => `${i.nombreProducto} ${i.presentacion} ×${i.cantidad}`).join(" | "),
+      "Envío (€)": p.envio || 0,
+      "Total (€)": (p.items || []).reduce((s, i) => s + (i.subtotal || 0), 0) + (parseFloat(p.envio) || 0),
+      Notas: p.notas || "",
+    }));
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(filaPedidos), "Pedidos");
+
+    // Hoja Clientes
+    const filaClientes = clientes.map(c => ({
+      Nombre: c.nombre,
+      Teléfono: c.telefono,
+      Dirección: c.direccion || "",
+      CP: c.cp || "",
+      Email: c.email || "",
+      Notas: c.notas || "",
+    }));
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(filaClientes), "Clientes");
+
+    // Hoja Producción
+    const filaProduccion = producciones.map(p => ({
+      Fecha: p.fecha,
+      Trabajadora: trabajadoras.find(t => t.id === p.trabajadoraId)?.nombre || "",
+      Número: trabajadoras.find(t => t.id === p.trabajadoraId)?.numero || "",
+      Producto: p.nombreProducto || "",
+      Presentación: p.presentacion || "",
+      Bandejas: p.cantidad || 0,
+    }));
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(filaProduccion), "Producción");
+
+    // Hoja Gastos
+    const filaGastos = gastos.map(g => ({
+      Fecha: g.fecha,
+      Descripción: g.descripcion || "",
+      Categoría: g.categoria || "",
+      "Importe (€)": g.importe || 0,
+    }));
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(filaGastos), "Gastos");
+
+    XLSX.writeFile(wb, `elnisong-${hoy()}.xlsx`);
+  };
+
   const soloVista = new URLSearchParams(window.location.search).has("preview");
   const [toastVista, setToastVista] = useState(false);
   const PALABRAS_ACCION = ["guardar", "nuevo", "eliminar", "borrar", "añadir", "agregar", "crear", "editar", "actualizar", "cargar", "exportar", "backup", "demo", "save", "delete", "+"];
@@ -1952,7 +2014,7 @@ export default function AppModerno() {
         {tab === "stock" && <ModuloStock productos={productos} />}
         {tab === "produccion" && <ModuloProduccion producciones={producciones} setProducciones={setProducciones} trabajadoras={trabajadoras} setTrabajadoras={setTrabajadoras} productos={productos} setProductos={setProductos} />}
         {tab === "personal" && <ModuloPersonal repartidores={repartidores} setRepartidores={setRepartidores} trabajadoras={trabajadoras} setTrabajadoras={setTrabajadoras} />}
-        {tab === "admin" && <ModuloAdmin proveedores={proveedores} setProveedores={setProveedores} compras={compras} setCompras={setCompras} gastos={gastos} setGastos={setGastos} ingredientes={ingredientes} setIngredientes={setIngredientes} pedidos={pedidos} producciones={producciones} trabajadoras={trabajadoras} exportarDatos={exportarDatos} cargarDemo={cargarDemo} />}
+        {tab === "admin" && <ModuloAdmin proveedores={proveedores} setProveedores={setProveedores} compras={compras} setCompras={setCompras} gastos={gastos} setGastos={setGastos} ingredientes={ingredientes} setIngredientes={setIngredientes} pedidos={pedidos} producciones={producciones} trabajadoras={trabajadoras} exportarDatos={exportarDatos} exportarExcel={exportarExcel} cargarDemo={cargarDemo} />}
       </div>
 
       {/* Navegación inferior */}
