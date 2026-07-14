@@ -1679,7 +1679,7 @@ function ModuloBienvenida({ setTab, pendientes, hoyEntregas }) {
       {/* Cabecera compacta */}
       <div style={{ textAlign: "center", padding: "12px 0 10px" }}>
         <div style={{ fontSize: 36, marginBottom: 4 }}>🥟</div>
-        <h1 style={{ color: NAVY, margin: 0, fontSize: 22, fontWeight: 900 }}>ELNISONG</h1>
+        <h1 style={{ color: NAVY, margin: 0, fontSize: 22, fontWeight: 900 }}>Don Pepe Sabor</h1>
       </div>
 
       {/* Resumen rápido */}
@@ -1722,101 +1722,43 @@ function ModuloBienvenida({ setTab, pendientes, hoyEntregas }) {
 const d = (n) => { const f = new Date(); f.setDate(f.getDate() - n); return f.toISOString().split("T")[0]; };
 
 const PRODUCTOS_DEMO = [
-  // Tequeños de Queso B25: d5=8, d3=4, d1=5+4=9 → 21 bandejas. B50: d5=4, d3=2, d1=3 → 9 bandejas
-  { id: 1, nombre: "Tequeños de Queso", categoria: "Tequeños", variantes: [
-    { presentacion: "Bandeja 25", precio: 18, stock: 21, lotes: [{ fecha: d(5), cantidad: 8 }, { fecha: d(3), cantidad: 4 }, { fecha: d(1), cantidad: 9 }] },
-    { presentacion: "Bandeja 50", precio: 32, stock: 9,  lotes: [{ fecha: d(5), cantidad: 4 }, { fecha: d(3), cantidad: 2 }, { fecha: d(1), cantidad: 3 }] },
+  // ── TEQUEÑOS ──
+  { id: "p1",  nombre: "Tequeños Tradicionales",       categoria: "Tequeños",   variantes: [
+    { presentacion: "Bandeja 25", precio: 12, stock: 0, lotes: [] },
+    { presentacion: "Bandeja 50", precio: 22, stock: 0, lotes: [] },
   ]},
-  // Tequeños de Jamón B25: d5=5, d3=3, d1=3 → 11. B50: d5=4, d3=0, d1=2 → 6
-  { id: 2, nombre: "Tequeños de Jamón", categoria: "Tequeños", variantes: [
-    { presentacion: "Bandeja 25", precio: 20, stock: 11, lotes: [{ fecha: d(5), cantidad: 5 }, { fecha: d(3), cantidad: 3 }, { fecha: d(1), cantidad: 3 }] },
-    { presentacion: "Bandeja 50", precio: 36, stock: 6,  lotes: [{ fecha: d(5), cantidad: 4 }, { fecha: d(1), cantidad: 2 }] },
-  ]},
-  // Empanadas de Carne B25: d5=6, d3=4+4=8, d1=4+3=7 → 21
-  { id: 3, nombre: "Empanadas de Carne", categoria: "Empanadas", variantes: [
-    { presentacion: "Bandeja 25", precio: 22, stock: 21, lotes: [{ fecha: d(5), cantidad: 6 }, { fecha: d(3), cantidad: 8 }, { fecha: d(1), cantidad: 7 }] },
-  ]},
-  // Pastelitos de Pollo B25: d5=4, d3=3, d1=3+3=6 → 13
-  { id: 4, nombre: "Pastelitos de Pollo", categoria: "Pastelitos", variantes: [
-    { presentacion: "Bandeja 25", precio: 20, stock: 13, lotes: [{ fecha: d(5), cantidad: 4 }, { fecha: d(3), cantidad: 3 }, { fecha: d(1), cantidad: 6 }] },
-  ]},
-  // Empanadas de Queso B25: d5=5, d3=4, d1=4 → 13. B50: d3=3, d1=2+2=4 → 7
-  { id: 5, nombre: "Empanadas de Queso", categoria: "Empanadas", variantes: [
-    { presentacion: "Bandeja 25", precio: 20, stock: 13, lotes: [{ fecha: d(5), cantidad: 5 }, { fecha: d(3), cantidad: 4 }, { fecha: d(1), cantidad: 4 }] },
-    { presentacion: "Bandeja 50", precio: 36, stock: 7,  lotes: [{ fecha: d(3), cantidad: 3 }, { fecha: d(1), cantidad: 4 }] },
-  ]},
+  { id: "p2",  nombre: "Tequeños de Guayaba y Queso",  categoria: "Tequeños",   variantes: [{ presentacion: "Bandeja 25", precio: 22, stock: 0, lotes: [] }] },
+  { id: "p3",  nombre: "Tequeños de Salchicha",         categoria: "Tequeños",   variantes: [{ presentacion: "Bandeja 25", precio: 20, stock: 0, lotes: [] }] },
+  { id: "p4",  nombre: "Tequeños de Plátano con Queso", categoria: "Tequeños",   variantes: [{ presentacion: "Bandeja 25", precio: 20, stock: 0, lotes: [] }] },
+  { id: "p5",  nombre: "Tequeños de Jamón y Queso",     categoria: "Tequeños",   variantes: [{ presentacion: "Bandeja 25", precio: 22, stock: 0, lotes: [] }] },
+  { id: "p6",  nombre: "Tequeños de Chocolate",         categoria: "Tequeños",   variantes: [{ presentacion: "Bandeja 24", precio: 22, stock: 0, lotes: [] }] },
+  // ── PASTELITOS ──
+  { id: "p7",  nombre: "Pastelito de Pollo",                          categoria: "Pastelitos", variantes: [{ presentacion: "Bandeja 25", precio: 22, stock: 0, lotes: [] }] },
+  { id: "p8",  nombre: "Pastelito de Carne Molida",                   categoria: "Pastelitos", variantes: [{ presentacion: "Bandeja 25", precio: 22, stock: 0, lotes: [] }] },
+  { id: "p9",  nombre: "Pastelito de Carne Mechada",                  categoria: "Pastelitos", variantes: [{ presentacion: "Bandeja 25", precio: 22, stock: 0, lotes: [] }] },
+  { id: "p10", nombre: "Pastelito de Jamón y Queso",                  categoria: "Pastelitos", variantes: [{ presentacion: "Bandeja 25", precio: 22, stock: 0, lotes: [] }] },
+  { id: "p11", nombre: "Pastelito de Carne Mechada con Queso Amarillo",categoria: "Pastelitos", variantes: [{ presentacion: "Bandeja 25", precio: 22, stock: 0, lotes: [] }] },
+  { id: "p12", nombre: "Pastelito de Pollo con Queso Amarillo",       categoria: "Pastelitos", variantes: [{ presentacion: "Bandeja 25", precio: 22, stock: 0, lotes: [] }] },
+  // ── EMPANADAS ──
+  { id: "p13", nombre: "Empanada de Carne Molida",   categoria: "Empanadas", variantes: [{ presentacion: "Bandeja 25", precio: 21, stock: 0, lotes: [] }] },
+  { id: "p14", nombre: "Empanada de Pollo",          categoria: "Empanadas", variantes: [{ presentacion: "Bandeja 25", precio: 21, stock: 0, lotes: [] }] },
+  { id: "p15", nombre: "Empanada de Carne Mechada",  categoria: "Empanadas", variantes: [{ presentacion: "Bandeja 25", precio: 21, stock: 0, lotes: [] }] },
+  { id: "p16", nombre: "Empanada de Queso",          categoria: "Empanadas", variantes: [{ presentacion: "Bandeja 25", precio: 21, stock: 0, lotes: [] }] },
+  { id: "p17", nombre: "Empanada de Jamón y Queso",  categoria: "Empanadas", variantes: [{ presentacion: "Bandeja 25", precio: 21, stock: 0, lotes: [] }] },
+  // ── CACHITOS ──
+  { id: "p18", nombre: "Cachitos Horneados", categoria: "Otros", variantes: [{ presentacion: "Bandeja 6", precio: 18, stock: 0, lotes: [] }] },
 ];
-const CLIENTES_DEMO = [
-  { id: "c1", nombre: "María González", telefono: "612345678", direccion: "Calle Mayor 12, 3ºA", cp: "28001" },
-  { id: "c2", nombre: "Carlos Rodríguez", telefono: "623456789", direccion: "Av. España 45", cp: "28002" },
-  { id: "c3", nombre: "Ana Martínez", telefono: "634567890", direccion: "C/ Libertad 8, 1ºB", cp: "28003" },
-  { id: "c4", nombre: "Luis Pérez", telefono: "645678901", direccion: "Plaza del Sol 3", cp: "28004" },
-  { id: "c5", nombre: "Sofia López", telefono: "656789012", direccion: "C/ Colón 22, 2ºC", cp: "28005" },
+const CLIENTES_DEMO      = [];
+const PEDIDOS_DEMO       = [];
+const PROVEEDORES_DEMO   = [];
+const COMPRAS_DEMO       = [];
+const GASTOS_DEMO        = [];
+const REPARTIDORES_DEMO  = [
+  { id: "r1", nombre: "Elnison", telefono: "658083047", fijo: false },
+  { id: "r2", nombre: "Saul",    telefono: "722765314", fijo: false },
 ];
-const PEDIDOS_DEMO = [
-  { id: "p1", nombre: "María González", telefono: "612345678", direccion: "Calle Mayor 12, 3ºA", cp: "28001", tipoEntrega: "Domicilio", formaPago: "Bizum", repartidorId: "r1", rangoHorario: "11:00 a 12:00", fecha: hoy(), estado: "Pendiente", envio: 3, items: [{ id: "i1", productoId: "1", nombreProducto: "Tequeños de Queso", presentacion: "Bandeja 25", estado: "Congelado", cantidad: 2, precio: 18, subtotal: 36, comision: 0, recargoFrito: 0 }], total: 39 },
-  { id: "p2", nombre: "Carlos Rodríguez", telefono: "623456789", direccion: "Av. España 45", cp: "28002", tipoEntrega: "Domicilio", formaPago: "Efectivo", repartidorId: "r2", rangoHorario: "12:00 a 13:00", fecha: hoy(), estado: "Confirmado", envio: 0, items: [{ id: "i2", productoId: "3", nombreProducto: "Empanadas de Carne", presentacion: "Bandeja 25", estado: "Frito", cantidad: 1, precio: 22, subtotal: 22, comision: 0, recargoFrito: 5 }], total: 22 },
-  { id: "p3", nombre: "Ana Martínez", telefono: "634567890", direccion: "C/ Libertad 8, 1ºB", cp: "28003", tipoEntrega: "Recogida", formaPago: "Transferencia", repartidorId: "tienda", rangoHorario: "13:00 a 14:00", fecha: hoy(), estado: "En ruta", envio: 0, items: [{ id: "i3", productoId: "2", nombreProducto: "Tequeños de Jamón", presentacion: "Bandeja 50", estado: "Congelado", cantidad: 1, precio: 36, subtotal: 36, comision: 0, recargoFrito: 0 }], total: 36 },
-  { id: "p4", nombre: "Luis Pérez", telefono: "645678901", direccion: "Plaza del Sol 3", cp: "28004", tipoEntrega: "Domicilio", formaPago: "Tarjeta", repartidorId: "r1", rangoHorario: "17:00 a 18:00", fecha: hoy(), estado: "Entregado", envio: 5, items: [{ id: "i4", productoId: "4", nombreProducto: "Pastelitos de Pollo", presentacion: "Bandeja 25", estado: "Frito", cantidad: 2, precio: 20, subtotal: 40, comision: 0, recargoFrito: 5 }], total: 45 },
-  { id: "p5", nombre: "Sofia López", telefono: "656789012", direccion: "C/ Colón 22, 2ºC", cp: "28005", tipoEntrega: "Domicilio", formaPago: "Bizum", repartidorId: "r2", rangoHorario: "18:00 a 19:00", fecha: hoy(), estado: "Pendiente", envio: 3, items: [{ id: "i5", productoId: "5", nombreProducto: "Empanadas de Queso", presentacion: "Bandeja 25", estado: "Congelado", cantidad: 1, precio: 20, subtotal: 20, comision: 0, recargoFrito: 0 }], total: 23 },
-];
-const PROVEEDORES_DEMO = [
-  { id: "pr1", nombre: "Harinas del Sur", contacto: "Antonio Ruiz", telefono: "911234567", producto: "Harina de trigo" },
-  { id: "pr2", nombre: "Lácteos Frescos S.L.", contacto: "Carmen Vega", telefono: "922345678", producto: "Queso blanco" },
-  { id: "pr3", nombre: "Distribuciones López", contacto: "Pedro López", telefono: "933456789", producto: "Aceite de girasol" },
-  { id: "pr4", nombre: "Carnes Premium", contacto: "José García", telefono: "944567890", producto: "Carne molida" },
-  { id: "pr5", nombre: "Empaques y Más", contacto: "Laura Torres", telefono: "955678901", producto: "Bandejas y envases" },
-];
-const COMPRAS_DEMO = [
-  { id: "cp1", proveedorId: "pr1", ingredienteId: "ing1", nombre: "Harina de trigo", cantidad: 10, unidad: "kg", precioUnitario: 1.2, total: 12, fecha: hoy() },
-  { id: "cp2", proveedorId: "pr2", ingredienteId: "ing2", nombre: "Queso blanco", cantidad: 5, unidad: "kg", precioUnitario: 6, total: 30, fecha: hoy() },
-  { id: "cp3", proveedorId: "pr3", ingredienteId: "ing3", nombre: "Aceite de girasol", cantidad: 3, unidad: "litros", precioUnitario: 2.5, total: 7.5, fecha: hoy() },
-  { id: "cp4", proveedorId: "pr4", ingredienteId: "ing4", nombre: "Carne molida", cantidad: 4, unidad: "kg", precioUnitario: 8, total: 32, fecha: hoy() },
-  { id: "cp5", proveedorId: "pr5", ingredienteId: "ing5", nombre: "Bandejas x50", cantidad: 20, unidad: "unidades", precioUnitario: 0.5, total: 10, fecha: hoy() },
-];
-const GASTOS_DEMO = [
-  { id: "g1", descripcion: "Alquiler local julio", categoria: "Alquiler", monto: 400, fecha: hoy() },
-  { id: "g2", descripcion: "Limpieza semanal", categoria: "Limpieza", monto: 30, fecha: hoy() },
-  { id: "g3", descripcion: "Gasolina repartos", categoria: "Transporte", monto: 50, fecha: hoy() },
-  { id: "g4", descripcion: "Luz y agua", categoria: "Servicios", monto: 85, fecha: hoy() },
-  { id: "g5", descripcion: "Bolsas y papel", categoria: "Otros", monto: 15, fecha: hoy() },
-];
-const REPARTIDORES_DEMO = [
-  { id: "r1", nombre: "Miguel Sánchez", telefono: "611000001", fijo: false },
-  { id: "r2", nombre: "David Romero", telefono: "611000002", fijo: false },
-  { id: "r3", nombre: "Elena Castro", telefono: "611000003", fijo: false },
-  { id: "r4", nombre: "Pablo Jiménez", telefono: "611000004", fijo: false },
-  { id: "r5", nombre: "Laura Moreno", telefono: "611000005", fijo: false },
-  { id: "r6", nombre: "Elnison", telefono: "658083047", fijo: false },
-  { id: "r7", nombre: "Saul", telefono: "722765314", fijo: false },
-];
-const TRABAJADORAS_DEMO = [
-  { id: "t1", numero: 1, nombre: "Gabriela Torres" },
-  { id: "t2", numero: 2, nombre: "Valentina Díaz" },
-  { id: "t3", numero: 3, nombre: "Isabel Fernández" },
-  { id: "t4", numero: 4, nombre: "Patricia Ruiz" },
-  { id: "t5", numero: 5, nombre: "Carmen Vázquez" },
-];
-const PRODUCCIONES_DEMO = [
-  // Hace 5 días — todas producen
-  { id: "pd1",  trabajadoraId: "t1", fecha: d(5), items: [{ productoId: "1", presentacion: "Bandeja 25", cantidad: 8 }, { productoId: "1", presentacion: "Bandeja 50", cantidad: 4 }] },
-  { id: "pd2",  trabajadoraId: "t2", fecha: d(5), items: [{ productoId: "2", presentacion: "Bandeja 25", cantidad: 5 }, { productoId: "2", presentacion: "Bandeja 50", cantidad: 4 }] },
-  { id: "pd3",  trabajadoraId: "t3", fecha: d(5), items: [{ productoId: "3", presentacion: "Bandeja 25", cantidad: 6 }] },
-  { id: "pd4",  trabajadoraId: "t4", fecha: d(5), items: [{ productoId: "4", presentacion: "Bandeja 25", cantidad: 4 }] },
-  { id: "pd5",  trabajadoraId: "t5", fecha: d(5), items: [{ productoId: "5", presentacion: "Bandeja 25", cantidad: 5 }] },
-  // Hace 3 días — todas producen
-  { id: "pd6",  trabajadoraId: "t1", fecha: d(3), items: [{ productoId: "1", presentacion: "Bandeja 25", cantidad: 4 }, { productoId: "1", presentacion: "Bandeja 50", cantidad: 2 }] },
-  { id: "pd7",  trabajadoraId: "t2", fecha: d(3), items: [{ productoId: "2", presentacion: "Bandeja 25", cantidad: 3 }, { productoId: "3", presentacion: "Bandeja 25", cantidad: 4 }] },
-  { id: "pd8",  trabajadoraId: "t3", fecha: d(3), items: [{ productoId: "4", presentacion: "Bandeja 25", cantidad: 3 }, { productoId: "5", presentacion: "Bandeja 50", cantidad: 3 }] },
-  { id: "pd9",  trabajadoraId: "t4", fecha: d(3), items: [{ productoId: "5", presentacion: "Bandeja 25", cantidad: 4 }] },
-  { id: "pd10", trabajadoraId: "t5", fecha: d(3), items: [{ productoId: "3", presentacion: "Bandeja 25", cantidad: 4 }, { productoId: "1", presentacion: "Bandeja 25", cantidad: 4 }] },
-  // Ayer — todas producen
-  { id: "pd11", trabajadoraId: "t1", fecha: d(1), items: [{ productoId: "1", presentacion: "Bandeja 25", cantidad: 5 }, { productoId: "2", presentacion: "Bandeja 25", cantidad: 3 }] },
-  { id: "pd12", trabajadoraId: "t2", fecha: d(1), items: [{ productoId: "3", presentacion: "Bandeja 25", cantidad: 4 }, { productoId: "4", presentacion: "Bandeja 25", cantidad: 3 }] },
-  { id: "pd13", trabajadoraId: "t3", fecha: d(1), items: [{ productoId: "5", presentacion: "Bandeja 25", cantidad: 4 }, { productoId: "2", presentacion: "Bandeja 50", cantidad: 2 }] },
-  { id: "pd14", trabajadoraId: "t4", fecha: d(1), items: [{ productoId: "1", presentacion: "Bandeja 50", cantidad: 3 }, { productoId: "3", presentacion: "Bandeja 25", cantidad: 3 }] },
-  { id: "pd15", trabajadoraId: "t5", fecha: d(1), items: [{ productoId: "4", presentacion: "Bandeja 25", cantidad: 3 }, { productoId: "5", presentacion: "Bandeja 50", cantidad: 2 }] },
-];
+const TRABAJADORAS_DEMO  = [];
+const PRODUCCIONES_DEMO  = [];
 
 export default function AppModerno() {
   const [tab, setTab] = useState("inicio");
@@ -1985,7 +1927,7 @@ export default function AppModerno() {
       <div style={{ background: NAVY, padding: "14px 20px", boxShadow: "0 2px 12px #0003" }}>
         <div style={{ maxWidth: 760, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <button onClick={irInicio} style={{ background: "none", border: "none", cursor: "pointer", textAlign: "left", padding: 0 }}>
-            <h1 style={{ color: "#fff", margin: 0, fontSize: 22, fontWeight: 900, letterSpacing: -0.5 }}>🥟 ELNISONG</h1>
+            <h1 style={{ color: "#fff", margin: 0, fontSize: 22, fontWeight: 900, letterSpacing: -0.5 }}>🥟 Don Pepe Sabor</h1>
           </button>
           <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
             {pendientes > 0 && (
