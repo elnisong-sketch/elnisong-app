@@ -1823,6 +1823,9 @@ export default function AppModerno() {
   const irInicio = () => setTab("inicio");
 
   const limpiarTodo = () => {
+    const clave = window.prompt("Introduce la contraseña para borrar todos los datos:");
+    if (clave === null) return;
+    if (clave !== "00001234") { alert("Contraseña incorrecta."); return; }
     if (!window.confirm("¿Borrar TODOS los datos (pedidos, clientes, gastos, etc.) y dejar solo productos y repartidores?")) return;
     const productosLimpios = PRODUCTOS_DEMO.map(p => ({ ...p, variantes: p.variantes.map(v => ({ ...v, stock: 0, lotes: [] })) }));
     const repartidoresLimpios = REPARTIDORES_DEMO;
