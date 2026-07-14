@@ -1589,7 +1589,7 @@ function ModuloProduccion({ producciones, setProducciones, trabajadoras, setTrab
 }
 
 // ─── APP PRINCIPAL (DISEÑO MODERNO) ─────────────────────────────────────────
-function ModuloAdmin({ proveedores, setProveedores, compras, setCompras, gastos, setGastos, ingredientes, setIngredientes, pedidos, producciones, trabajadoras, irInicio, exportarDatos, exportarExcel, cargarDemo }) {
+function ModuloAdmin({ proveedores, setProveedores, compras, setCompras, gastos, setGastos, ingredientes, setIngredientes, pedidos, producciones, trabajadoras, irInicio, exportarDatos, exportarExcel, cargarDemo, limpiarTodo }) {
   const [sub, setSub] = useState("proveedores");
   const [confirmDemo, setConfirmDemo] = useState(false);
   const ac = ACENTOS.admin;
@@ -1981,7 +1981,7 @@ export default function AppModerno() {
         {tab === "stock" && <ModuloStock productos={productos} />}
         {tab === "produccion" && <ModuloProduccion producciones={producciones} setProducciones={setProducciones} trabajadoras={trabajadoras} setTrabajadoras={setTrabajadoras} productos={productos} setProductos={setProductos} />}
         {tab === "personal" && <ModuloPersonal repartidores={repartidores} setRepartidores={setRepartidores} trabajadoras={trabajadoras} setTrabajadoras={setTrabajadoras} />}
-        {tab === "admin" && <ModuloAdmin proveedores={proveedores} setProveedores={setProveedores} compras={compras} setCompras={setCompras} gastos={gastos} setGastos={setGastos} ingredientes={ingredientes} setIngredientes={setIngredientes} pedidos={pedidos} producciones={producciones} trabajadoras={trabajadoras} exportarDatos={exportarDatos} exportarExcel={exportarExcel} cargarDemo={cargarDemo} />}
+        {tab === "admin" && <ModuloAdmin proveedores={proveedores} setProveedores={setProveedores} compras={compras} setCompras={setCompras} gastos={gastos} setGastos={setGastos} ingredientes={ingredientes} setIngredientes={setIngredientes} pedidos={pedidos} producciones={producciones} trabajadoras={trabajadoras} exportarDatos={exportarDatos} exportarExcel={exportarExcel} cargarDemo={cargarDemo} limpiarTodo={limpiarTodo} />}
       </div>
 
       {/* Navegación inferior */}
