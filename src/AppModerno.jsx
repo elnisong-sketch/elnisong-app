@@ -1683,7 +1683,7 @@ function ModuloBienvenida({ setTab, pendientes, hoyEntregas }) {
     <div>
       {/* Cabecera compacta */}
       <div style={{ textAlign: "center", padding: "12px 0 10px" }}>
-        <div style={{ fontSize: 36, marginBottom: 4 }}>🥟</div>
+        <div style={{ fontSize: 36, marginBottom: 4 }}>👨‍🍳</div>
         <h1 style={{ color: NAVY, margin: 0, fontSize: 22, fontWeight: 900 }}>Don Pepe Sabor</h1>
       </div>
 
@@ -1952,7 +1952,7 @@ export default function AppModerno() {
       <div style={{ background: NAVY, padding: "14px 20px", boxShadow: "0 2px 12px #0003" }}>
         <div style={{ maxWidth: 760, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <button onClick={irInicio} style={{ background: "none", border: "none", cursor: "pointer", textAlign: "left", padding: 0 }}>
-            <h1 style={{ color: "#fff", margin: 0, fontSize: 22, fontWeight: 900, letterSpacing: -0.5 }}>🥟 Don Pepe Sabor</h1>
+            <h1 style={{ color: "#fff", margin: 0, fontSize: 22, fontWeight: 900, letterSpacing: -0.5 }}>👨‍🍳 Don Pepe Sabor</h1>
           </button>
           <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
             {pendientes > 0 && (
