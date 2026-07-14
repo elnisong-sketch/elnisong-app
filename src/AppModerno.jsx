@@ -1608,6 +1608,11 @@ function ModuloAdmin({ proveedores, setProveedores, compras, setCompras, gastos,
         color: "#fff", padding: "13px", fontSize: 15, fontWeight: 700,
         cursor: "pointer", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "center", gap: 8
       }}>📊 Exportar Excel</button>
+      <button onClick={limpiarTodo} style={{
+        width: "100%", background: "#dc3545", border: "none", borderRadius: 12,
+        color: "#fff", padding: "13px", fontSize: 15, fontWeight: 700,
+        cursor: "pointer", marginBottom: 16
+      }}>🗑️ Borrar todo y reiniciar</button>
       {!confirmDemo ? (
         <button onClick={() => setConfirmDemo(true)} style={{
           width: "100%", background: BG_CARD, border: `1px dashed ${BORDER}`, borderRadius: 12,
@@ -1816,6 +1821,23 @@ export default function AppModerno() {
   const pendientes = pedidos.filter(p => p.estado === "Pendiente").length;
   const hoyEntregas = pedidos.filter(p => p.fecha === hoy() && p.estado !== "Cancelado").length;
   const irInicio = () => setTab("inicio");
+
+  const limpiarTodo = () => {
+    if (!window.confirm("¿Borrar TODOS los datos (pedidos, clientes, gastos, etc.) y dejar solo productos y repartidores?")) return;
+    const productosLimpios = PRODUCTOS_DEMO.map(p => ({ ...p, variantes: p.variantes.map(v => ({ ...v, stock: 0, lotes: [] })) }));
+    const repartidoresLimpios = REPARTIDORES_DEMO;
+    setPedidos([]);         sync("pedidos", []);
+    setClientes([]);        sync("clientes", []);
+    setProductos(productosLimpios); sync("productos", productosLimpios);
+    setProveedores([]);     sync("proveedores", []);
+    setCompras([]);         sync("compras", []);
+    setGastos([]);          sync("gastos", []);
+    setRepartidores(repartidoresLimpios); sync("repartidores", repartidoresLimpios);
+    setProducciones([]);    sync("producciones", []);
+    setTrabajadoras([]);    sync("trabajadoras", []);
+    setIngredientes([]);    sync("ingredientes", []);
+    alert("Datos borrados. Solo quedan productos y repartidores.");
+  };
 
   const cargarDemo = () => {
     setPedidos(PEDIDOS_DEMO);
