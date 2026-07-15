@@ -313,7 +313,8 @@ function Formulario({ onVolver }) {
 
 // ── RAÍZ ────────────────────────────────────────────────────────────────────
 export default function PedidoPublico() {
-  const [vista, setVista] = useState("landing");
-  if (vista === "formulario") return <Formulario onVolver={() => setVista("landing")} />;
-  return <Landing onPedir={() => setVista("formulario")} />;
+  const path = window.location.pathname;
+  const [vista, setVista] = useState(path === "/pedido" ? "formulario" : "landing");
+  if (vista === "formulario") return <Formulario onVolver={() => { window.history.pushState({}, "", "/"); setVista("landing"); }} />;
+  return <Landing onPedir={() => { window.history.pushState({}, "", "/pedido"); setVista("formulario"); }} />;
 }
