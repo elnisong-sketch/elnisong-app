@@ -35,28 +35,43 @@ const FilaProducto = ({ nombre, cantidad, precio }) => (
 );
 
 // ── LANDING ─────────────────────────────────────────────────────────────────
+// URLs de imágenes de comida venezolana (libres de derechos)
+const IMG_TEQUENOS  = "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=600&q=80";
+const IMG_EMPANADAS = "https://images.unsplash.com/photo-1627308595229-7830a5c91f9f?w=600&q=80";
+const IMG_CACHITOS  = "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=600&q=80";
+
 function Landing({ onPedir }) {
   return (
     <div style={{ minHeight: "100vh", background: CREMA, fontFamily: "Georgia, 'Times New Roman', serif" }}>
 
-      {/* Hero */}
-      <div style={{ background: `linear-gradient(180deg, #3d1a00 0%, ${VINO} 100%)`, padding: "36px 24px 40px", textAlign: "center" }}>
-        <div style={{ fontSize: 56, marginBottom: 4 }}>👨‍🍳</div>
-        <h1 style={{ color: GOLD, margin: "0 0 4px", fontSize: 42, fontWeight: 900, fontStyle: "italic", textShadow: "2px 2px 8px #0008" }}>Don Pepe</h1>
-        <h2 style={{ color: "#fff", margin: "0 0 6px", fontSize: 32, fontWeight: 900, fontStyle: "italic" }}>Sabor</h2>
-        <p style={{ color: "#e5d5b0", fontSize: 13, letterSpacing: 3, margin: "0 0 8px", textTransform: "uppercase" }}>Tequeños · Pasteles · Empanadas</p>
-        <p style={{ color: GOLD, fontSize: 22, fontStyle: "italic", margin: "16px 0 28px" }}>❝ Sabor que te encanta ❞</p>
-        <button onClick={onPedir} style={{ background: GOLD, border: "none", borderRadius: 50, color: "#3d1a00", padding: "16px 44px", fontSize: 18, fontWeight: 900, cursor: "pointer", boxShadow: "0 4px 20px #0005", fontFamily: "inherit" }}>
-          🛒 Haz tu pedido
-        </button>
+      {/* Hero — layout 2 columnas en ancho */}
+      <div style={{ background: `linear-gradient(160deg, #3d1a00 0%, ${VINO} 100%)`, padding: "0" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: 380, alignItems: "center" }}>
+          {/* Texto */}
+          <div style={{ padding: "48px 40px 48px 48px", textAlign: "left" }}>
+            <p style={{ color: "#e5d5b0", fontSize: 12, letterSpacing: 4, margin: "0 0 12px", textTransform: "uppercase" }}>Tequeños · Pasteles · Empanadas</p>
+            <h1 style={{ color: GOLD, margin: "0 0 4px", fontSize: 56, fontWeight: 900, fontStyle: "italic", lineHeight: 1 }}>Don Pepe</h1>
+            <h2 style={{ color: "#fff", margin: "0 0 16px", fontSize: 44, fontWeight: 900, fontStyle: "italic" }}>Sabor</h2>
+            <p style={{ color: GOLD, fontSize: 20, fontStyle: "italic", margin: "0 0 12px" }}>❝ Sabor que te encanta ❞</p>
+            <p style={{ color: "#c8b090", fontSize: 14, margin: "0 0 32px", lineHeight: 1.6 }}>Auténtica comida venezolana hecha con amor.<br/>Pedidos a domicilio en Madrid.</p>
+            <button onClick={onPedir} style={{ background: GOLD, border: "none", borderRadius: 50, color: "#3d1a00", padding: "16px 44px", fontSize: 18, fontWeight: 900, cursor: "pointer", boxShadow: "0 4px 20px #0005", fontFamily: "inherit" }}>
+              🛒 Haz tu pedido
+            </button>
+          </div>
+          {/* Imagen tequeños */}
+          <div style={{ height: "100%", minHeight: 380, overflow: "hidden" }}>
+            <img src={IMG_TEQUENOS} alt="Tequeños Don Pepe Sabor"
+              style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }} />
+          </div>
+        </div>
       </div>
 
-      {/* Menú */}
-      <div style={{ maxWidth: 680, margin: "0 auto", padding: "28px 16px" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+      {/* Menú completo */}
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "40px 24px" }}>
 
-          {/* Tequeños */}
-          <div style={{ background: "#fff8ed", border: "2px solid #e5d5b0", borderRadius: 14, padding: 18 }}>
+        {/* Tequeños + foto */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 24, alignItems: "start" }}>
+          <div style={{ background: "#fff8ed", border: "2px solid #e5d5b0", borderRadius: 14, padding: 20 }}>
             <SeccionTitulo titulo="TEQUEÑOS" />
             <FilaProducto nombre="Tequeños Tradicionales"     cantidad="25 uds" precio={12} />
             <FilaProducto nombre="Tequeños Tradicionales"     cantidad="50 uds" precio={22} />
@@ -66,67 +81,86 @@ function Landing({ onPedir }) {
             <FilaProducto nombre="Tequeños Jamón y Queso"     cantidad="25 uds" precio={22} />
             <FilaProducto nombre="Tequeños de Chocolate"      cantidad="24 uds" precio={22} />
           </div>
+          <div style={{ borderRadius: 14, overflow: "hidden", height: 280 }}>
+            <img src={IMG_TEQUENOS} alt="Tequeños" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+          </div>
+        </div>
 
-          {/* Pastelitos */}
-          <div style={{ background: "#fff8ed", border: "2px solid #e5d5b0", borderRadius: 14, padding: 18 }}>
+        {/* Foto + Pastelitos */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 24, alignItems: "start" }}>
+          <div style={{ borderRadius: 14, overflow: "hidden", height: 280 }}>
+            <img src={IMG_EMPANADAS} alt="Empanadas y Pastelitos" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+          </div>
+          <div style={{ background: "#fff8ed", border: "2px solid #e5d5b0", borderRadius: 14, padding: 20 }}>
             <SeccionTitulo titulo="PASTELITOS" />
-            <FilaProducto nombre="Pastelito de Pollo"                           cantidad="25 uds" precio={22} />
-            <FilaProducto nombre="Pastelito de Carne Molida"                    cantidad="25 uds" precio={22} />
-            <FilaProducto nombre="Pastelito de Carne Mechada"                   cantidad="25 uds" precio={22} />
-            <FilaProducto nombre="Pastelito de Jamón y Queso"                   cantidad="25 uds" precio={22} />
-            <FilaProducto nombre="Pastelito Carne Mechada c/ Queso"             cantidad="25 uds" precio={22} />
-            <FilaProducto nombre="Pastelito de Pollo c/ Queso"                  cantidad="25 uds" precio={22} />
+            <FilaProducto nombre="Pastelito de Pollo"                    cantidad="25 uds" precio={22} />
+            <FilaProducto nombre="Pastelito de Carne Molida"             cantidad="25 uds" precio={22} />
+            <FilaProducto nombre="Pastelito de Carne Mechada"            cantidad="25 uds" precio={22} />
+            <FilaProducto nombre="Pastelito de Jamón y Queso"            cantidad="25 uds" precio={22} />
+            <FilaProducto nombre="Pastelito Carne Mechada c/ Queso"      cantidad="25 uds" precio={22} />
+            <FilaProducto nombre="Pastelito de Pollo c/ Queso"           cantidad="25 uds" precio={22} />
           </div>
+        </div>
 
-          {/* Cachitos */}
-          <div style={{ background: "#fff8ed", border: "2px solid #e5d5b0", borderRadius: 14, padding: 18 }}>
-            <SeccionTitulo titulo="CACHITOS" />
-            <FilaProducto nombre="Cachitos Horneados" cantidad="6 uds" precio={18} />
+        {/* Empanadas + Cachitos lado a lado */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 24 }}>
+          <div>
+            <div style={{ borderRadius: 14, overflow: "hidden", height: 180, marginBottom: 16 }}>
+              <img src={IMG_EMPANADAS} alt="Empanadas" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            </div>
+            <div style={{ background: "#fff8ed", border: "2px solid #e5d5b0", borderRadius: 14, padding: 20 }}>
+              <SeccionTitulo titulo="EMPANADAS" />
+              <FilaProducto nombre="Empanada de Carne Molida"  cantidad="25 uds" precio={21} />
+              <FilaProducto nombre="Empanada de Pollo"         cantidad="25 uds" precio={21} />
+              <FilaProducto nombre="Empanada de Carne Mechada" cantidad="25 uds" precio={21} />
+              <FilaProducto nombre="Empanada de Queso"         cantidad="25 uds" precio={21} />
+              <FilaProducto nombre="Empanada de Jamón y Queso" cantidad="25 uds" precio={21} />
+            </div>
           </div>
-
-          {/* Empanadas */}
-          <div style={{ background: "#fff8ed", border: "2px solid #e5d5b0", borderRadius: 14, padding: 18 }}>
-            <SeccionTitulo titulo="EMPANADAS" />
-            <FilaProducto nombre="Empanada de Carne Molida"  cantidad="25 uds" precio={21} />
-            <FilaProducto nombre="Empanada de Pollo"         cantidad="25 uds" precio={21} />
-            <FilaProducto nombre="Empanada de Carne Mechada" cantidad="25 uds" precio={21} />
-            <FilaProducto nombre="Empanada de Queso"         cantidad="25 uds" precio={21} />
-            <FilaProducto nombre="Empanada de Jamón y Queso" cantidad="25 uds" precio={21} />
+          <div>
+            <div style={{ borderRadius: 14, overflow: "hidden", height: 180, marginBottom: 16 }}>
+              <img src={IMG_CACHITOS} alt="Cachitos" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            </div>
+            <div style={{ background: "#fff8ed", border: "2px solid #e5d5b0", borderRadius: 14, padding: 20 }}>
+              <SeccionTitulo titulo="CACHITOS" />
+              <FilaProducto nombre="Cachitos Horneados" cantidad="6 uds" precio={18} />
+            </div>
           </div>
         </div>
 
         {/* Sellos */}
-        <div style={{ display: "flex", justifyContent: "center", gap: 16, margin: "28px 0", flexWrap: "wrap" }}>
+        <div style={{ background: `linear-gradient(135deg, #3d1a00, ${VINO})`, borderRadius: 16, padding: "28px 32px", display: "flex", justifyContent: "space-around", flexWrap: "wrap", gap: 20, marginBottom: 28 }}>
           {[
             { icon: "🏅", texto: "Ingredientes de calidad" },
             { icon: "❤️", texto: "Hechos con amor para ti" },
-            { icon: "🚚", texto: "Ideales para reuniones y celebraciones" },
+            { icon: "🎉", texto: "Ideales para reuniones y celebraciones" },
+            { icon: "🚚", texto: "Reparto a domicilio en Madrid" },
           ].map(s => (
-            <div key={s.texto} style={{ textAlign: "center", maxWidth: 130 }}>
-              <div style={{ fontSize: 28 }}>{s.icon}</div>
-              <p style={{ color: VINO, fontWeight: 700, fontSize: 12, margin: "4px 0 0", fontFamily: "inherit" }}>{s.texto}</p>
+            <div key={s.texto} style={{ textAlign: "center", color: "#fff", maxWidth: 140 }}>
+              <div style={{ fontSize: 32, marginBottom: 6 }}>{s.icon}</div>
+              <p style={{ color: GOLD, fontWeight: 700, fontSize: 13, margin: 0 }}>{s.texto}</p>
             </div>
           ))}
         </div>
 
-        <p style={{ textAlign: "center", color: VINO, fontStyle: "italic", fontWeight: 700, fontSize: 18, margin: "0 0 28px" }}>
+        <p style={{ textAlign: "center", color: VINO, fontStyle: "italic", fontWeight: 700, fontSize: 20, margin: "0 0 28px" }}>
           ✦ ¡Disfruta el auténtico sabor venezolano! ✦
         </p>
 
-        <button onClick={onPedir} style={{ display: "block", width: "100%", background: VINO, border: "none", borderRadius: 50, color: "#fff", padding: "18px", fontSize: 19, fontWeight: 900, cursor: "pointer", boxShadow: "0 4px 20px #6b1a1a44", fontFamily: "inherit" }}>
-          🛒 Hacer mi pedido
+        <button onClick={onPedir} style={{ display: "block", width: "100%", background: VINO, border: `3px solid ${GOLD}`, borderRadius: 50, color: "#fff", padding: "20px", fontSize: 20, fontWeight: 900, cursor: "pointer", boxShadow: "0 4px 20px #6b1a1a44", fontFamily: "inherit" }}>
+          🛒 Hacer mi pedido ahora
         </button>
       </div>
 
       {/* Pie */}
-      <div style={{ background: "#3d1a00", padding: "24px", textAlign: "center" }}>
-        <div style={{ display: "flex", justifyContent: "center", gap: 24, flexWrap: "wrap", marginBottom: 16 }}>
+      <div style={{ background: "#3d1a00", padding: "28px 24px", textAlign: "center" }}>
+        <div style={{ display: "flex", justifyContent: "center", gap: 32, flexWrap: "wrap", marginBottom: 16 }}>
           <a href="https://wa.me/34600111222" style={{ color: "#4ade80", textDecoration: "none", fontWeight: 700, fontSize: 15 }}>📱 WhatsApp</a>
           <a href="https://instagram.com/donpepesabor" style={{ color: "#f9a8d4", textDecoration: "none", fontWeight: 700, fontSize: 15 }}>📸 Instagram</a>
           <a href="https://facebook.com/donpepesabor" style={{ color: "#93c5fd", textDecoration: "none", fontWeight: 700, fontSize: 15 }}>👥 Facebook</a>
           <a href="tel:+34600111222" style={{ color: "#fde68a", textDecoration: "none", fontWeight: 700, fontSize: 15 }}>📞 600 111 222</a>
         </div>
-        <p style={{ color: "#9a7a5a", fontSize: 12, margin: 0, fontFamily: "inherit" }}>© 2025 Don Pepe Sabor · Madrid, España</p>
+        <p style={{ color: "#9a7a5a", fontSize: 12, margin: 0 }}>© 2025 Don Pepe Sabor · Madrid, España</p>
       </div>
 
       {/* Botón flotante */}
