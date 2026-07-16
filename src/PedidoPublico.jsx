@@ -35,7 +35,12 @@ const FilaProducto = ({ nombre, cantidad, precio }) => (
 );
 
 // ── LANDING ─────────────────────────────────────────────────────────────────
-const IMG_PRODUCTOS = "https://i.ibb.co/q23K0wD/Whats-App-Image-2026-07-15-at-08-45-34.jpg";
+const IMG_TEQUENOS      = "/tequeños.jpg";
+const IMG_EMPANADAS     = "/empanadas.jpg";
+const IMG_PASTEL_POLLO  = "/pastelpollo.jpg";
+const IMG_PASTEL_CARNE  = "/pastelcarne.jpg";
+const IMG_TODOS         = "/todosproductos.jpg";
+const IMG_CHEFS         = "/donpepechefs.jpg";
 
 function Landing({ onPedir }) {
   return (
@@ -54,9 +59,9 @@ function Landing({ onPedir }) {
               🛒 Haz tu pedido
             </button>
           </div>
-          <div style={{ height: "100%", minHeight: 420, overflow: "hidden", background: "#000" }}>
-            <img src={IMG_PRODUCTOS} alt="Productos Don Pepe Sabor"
-              style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top center", display: "block", opacity: 0.95 }} />
+          <div style={{ height: "100%", minHeight: 420, overflow: "hidden", background: CREMA }}>
+            <img src={IMG_CHEFS} alt="Don Pepe Sabor"
+              style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }} />
           </div>
         </div>
       </div>
@@ -76,15 +81,15 @@ function Landing({ onPedir }) {
             <FilaProducto nombre="Tequeños Jamón y Queso"     cantidad="25 uds" precio={22} />
             <FilaProducto nombre="Tequeños de Chocolate"      cantidad="24 uds" precio={22} />
           </div>
-          <div style={{ borderRadius: 14, overflow: "hidden", background: "#000", minHeight: 260 }}>
-            <img src={IMG_PRODUCTOS} alt="Tequeños" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top left", display: "block" }} />
+          <div style={{ borderRadius: 14, overflow: "hidden", background: CREMA, minHeight: 260 }}>
+            <img src={IMG_TEQUENOS} alt="Tequeños" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }} />
           </div>
         </div>
 
         {/* Foto lateral + Pastelitos */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 24, alignItems: "stretch" }}>
-          <div style={{ borderRadius: 14, overflow: "hidden", background: "#000", minHeight: 260 }}>
-            <img src={IMG_PRODUCTOS} alt="Cachitos y Empanadas" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "bottom left", display: "block" }} />
+          <div style={{ borderRadius: 14, overflow: "hidden", background: CREMA, minHeight: 260 }}>
+            <img src={IMG_PASTEL_POLLO} alt="Pastelitos" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }} />
           </div>
           <div style={{ background: "#fff8ed", border: "2px solid #e5d5b0", borderRadius: 14, padding: 20 }}>
             <SeccionTitulo titulo="PASTELITOS" />
@@ -108,8 +113,8 @@ function Landing({ onPedir }) {
             <FilaProducto nombre="Empanada de Jamón y Queso" cantidad="25 uds" precio={21} />
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            <div style={{ borderRadius: 14, overflow: "hidden", background: "#000", flex: 1, minHeight: 160 }}>
-              <img src={IMG_PRODUCTOS} alt="Empanadas" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top right", display: "block" }} />
+            <div style={{ borderRadius: 14, overflow: "hidden", background: CREMA, flex: 1, minHeight: 160 }}>
+              <img src={IMG_EMPANADAS} alt="Empanadas" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }} />
             </div>
             <div style={{ background: "#fff8ed", border: "2px solid #e5d5b0", borderRadius: 14, padding: 20 }}>
               <SeccionTitulo titulo="CACHITOS" />
