@@ -166,18 +166,33 @@ function Landing({ onPedir }) {
   );
 }
 
-// ── FORMULARIO DE PEDIDO ─────────────────────────────────────────────────────
-function calcularEnvio(cp) {
-  if (!cp || cp.length < 5) return null;
-  if (!cp.startsWith("28")) return null; // Solo Madrid
-  const n = parseInt(cp);
-  // Zonas aproximadas por CP de Madrid
-  if (n >= 28001 && n <= 28010) return 8; // Centro
-  if (n >= 28011 && n <= 28029) return 6; // Zona media
-  if (n >= 28030 && n <= 28055) return 8; // Zona exterior
-  return 10; // Municipios limítrofes
+const ORIGEN_LAT = 40.3867;
+const ORIGEN_LON = -3.7112; // Berrocal 56, 28021 Madrid
+
+function tarifaPorKm(km) {
+  if (km <= 10) return 6;
+  if (km <= 12) return 8;
+  return 10;
 }
 
+async function calcularDistanciaOSRM(direccion, cp) {
+  try {
+    const query = encodeURIComponent(`${direccion}, ${cp}, Madrid, España`);
+    const geo = await fetch(`https://nominatim.openstreetmap.org/search?q=${query}&format=json&limit=1`, {
+      headers: { "Accept-Language": "es" }
+    });
+    const geoData = await geo.json();
+    if (!geoData.length) return null;
+    const { lat, lon } = geoData[0];
+    const ruta = await fetch(`https://router.project-osrm.org/route/v1/driving/${ORIGEN_LON},${ORIGEN_LAT};${lon},${lat}?overview=false`);
+    const rutaData = await ruta.json();
+    if (rutaData.code !== "Ok") return null;
+    const km = rutaData.routes[0].distance / 1000;
+    return { km: Math.round(km * 10) / 10, tarifa: tarifaPorKm(km) };
+  } catch { return null; }
+}
+
+// ── FORMULARIO DE PEDIDO ─────────────────────────────────────────────────────
 function Formulario({ onVolver }) {
   const [productos, setProductos] = useState([]);
   const [lineas, setLineas]       = useState([{ productoId: "", presentacion: "", cantidad: 1 }]);
@@ -185,12 +200,28 @@ function Formulario({ onVolver }) {
   const [paso, setPaso]           = useState("form"); // form | enviando | confirmado
   const [error, setError]         = useState("");
   const [costoEnvio, setCostoEnvio] = useState(6);
+  const [distanciaInfo, setDistanciaInfo] = useState(null); // { km, tarifa }
+  const [calculando, setCalculando] = useState(false);
 
   useEffect(() => {
     getDoc(doc(db, "datos", "productos")).then(snap => {
       if (snap.exists()) setProductos(JSON.parse(snap.data().valor));
     });
   }, []);
+
+  useEffect(() => {
+    if (!form.cp.startsWith("28") || form.cp.length < 5 || form.direccion.length < 5) return;
+    const timer = setTimeout(async () => {
+      setCalculando(true);
+      const resultado = await calcularDistanciaOSRM(form.direccion, form.cp);
+      if (resultado) {
+        setDistanciaInfo(resultado);
+        setCostoEnvio(resultado.tarifa);
+      }
+      setCalculando(false);
+    }, 1000); // espera 1s después de que el usuario deje de escribir
+    return () => clearTimeout(timer);
+  }, [form.direccion, form.cp]);
 
   const addLinea = () => setLineas(l => [...l, { productoId: "", presentacion: "", cantidad: 1 }]);
   const removeLinea = i => setLineas(l => l.filter((_, idx) => idx !== i));
@@ -370,19 +401,21 @@ function Formulario({ onVolver }) {
               {!form.cp.startsWith("28") && <span style={{ color: "#ef4444", fontSize: 13, fontWeight: 600 }}>Solo entregamos en Madrid</span>}
             </div>
             {form.cp.startsWith("28") && (
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <div style={{ flex: 1, background: "#f8fafc", borderRadius: 10, padding: "10px 14px", border: "1.5px solid #e2e8f0", fontSize: 13, color: "#64748b" }}>
-                  Estimado por CP {form.cp}
+              <>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                  <div style={{ flex: 1, background: "#f8fafc", borderRadius: 10, padding: "10px 14px", border: "1.5px solid #e2e8f0", fontSize: 13, color: "#64748b" }}>
+                    {calculando ? "📍 Calculando distancia..." : distanciaInfo ? `📍 ${distanciaInfo.km} km desde Berrocal 56` : "Introduce tu dirección completa"}
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, background: VINO, borderRadius: 10, padding: "8px 14px" }}>
+                    <input type="number" min="0" max="30" step="0.5" value={costoEnvio}
+                      onChange={e => setCostoEnvio(Number(e.target.value))}
+                      style={{ width: 52, background: "transparent", border: "none", color: "#fff", fontWeight: 900, fontSize: 18, textAlign: "center", outline: "none", fontFamily: "inherit" }} />
+                    <span style={{ color: "#fde68a", fontWeight: 900, fontSize: 18 }}>€</span>
+                  </div>
                 </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 6, background: VINO, borderRadius: 10, padding: "8px 14px" }}>
-                  <input type="number" min="0" max="30" step="0.5" value={costoEnvio}
-                    onChange={e => setCostoEnvio(Number(e.target.value))}
-                    style={{ width: 52, background: "transparent", border: "none", color: "#fff", fontWeight: 900, fontSize: 18, textAlign: "center", outline: "none", fontFamily: "inherit" }} />
-                  <span style={{ color: "#fde68a", fontWeight: 900, fontSize: 18 }}>€</span>
-                </div>
-              </div>
+                <p style={{ color: "#94a3b8", fontSize: 11, margin: 0 }}>≤10 km: 6€ · 10-12 km: 8€ · &gt;12 km: 10€ · Puedes ajustarlo manualmente</p>
+              </>
             )}
-            <p style={{ color: "#94a3b8", fontSize: 11, margin: "8px 0 0" }}>≤10 km: 6€ · 10-12 km: 8€ · &gt;12 km: 10€ · Puedes modificarlo si es necesario</p>
           </div>
         )}
 
