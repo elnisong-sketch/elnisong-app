@@ -208,7 +208,18 @@ function Formulario({ onVolver }) {
         const vari = prod?.variantes.find(v => v.presentacion === l.presentacion);
         return { id: "item-" + idx, productoId: l.productoId, nombreProducto: prod?.nombre, presentacion: l.presentacion, estado: "Congelado", cantidad: Number(l.cantidad), precio: vari?.precio || 0, subtotal: (vari?.precio || 0) * Number(l.cantidad), comision: 0, recargoFrito: 0 };
       });
-      await setDoc(doc(db, "datos", "pedidos"), { valor: JSON.stringify([...actuales, { id: "web-" + Date.now(), ...form, tipoEntrega: "Domicilio", fecha: hoy(), estado: "Pendiente", envio: 0, repartidorId: "", notas: "", items, total }]) });
+      const nuevoPedido = { id: "web-" + Date.now(), ...form, tipoEntrega: "Domicilio", fecha: hoy(), estado: "Pendiente", envio: 0, repartidorId: "", notas: "", items, total };
+      await setDoc(doc(db, "datos", "pedidos"), { valor: JSON.stringify([...actuales, nuevoPedido]) });
+
+      // Enviar a Google Sheets
+      const productosTexto = items.map(i => `${i.nombreProducto} (${i.presentacion}) x${i.cantidad}`).join(", ");
+      fetch("https://script.google.com/macros/s/AKfycbySjQNlkoTT_Wo28xxCKRgk41QvXaECsItCooxiqmwxdn5xNqUORVtHWCX7hhAC8gSY/exec", {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: nuevoPedido.id, fecha: nuevoPedido.fecha, nombreCliente: form.nombre, telefonoCliente: form.telefono, direccionCliente: form.direccion + ", CP " + form.cp, productosTexto, total: total.toFixed(2) + " €", notas: form.notas || "" })
+      }).catch(() => {});
+
       setPaso("confirmado");
     } catch { setError("Error al enviar. Inténtalo de nuevo."); setPaso("form"); }
   };
