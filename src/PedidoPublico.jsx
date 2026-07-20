@@ -256,7 +256,7 @@ function Formulario({ onVolver }) {
       await setDoc(doc(db, "datos", "pedidos"), { valor: JSON.stringify([...actuales, nuevoPedido]) });
 
       // Enviar a Google Sheets via GET
-      const productosTexto = items.map(i => `${i.nombreProducto} (${i.presentacion}) x${i.cantidad}`).join(", ");
+      const productosTexto = items.map(i => `• ${i.nombreProducto} (${i.presentacion}) x${i.cantidad}`).join("\n");
       const params = new URLSearchParams({
         id: nuevoPedido.id,
         fecha: nuevoPedido.fecha,
