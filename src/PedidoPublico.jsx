@@ -403,16 +403,16 @@ function Formulario({ onVolver }) {
             {form.cp.startsWith("28") && (
               <>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ background: "#f8fafc", borderRadius: 10, padding: "10px 14px", border: "1.5px solid #e2e8f0", fontSize: 13, color: "#64748b", marginBottom: 6 }}>
-                      {calculando ? "📍 Calculando distancia..." : distanciaInfo ? "Distancia calculada" : "Introduce tu dirección completa"}
-                    </div>
-                    {distanciaInfo && !calculando && (
-                      <div style={{ background: "#eef2ff", borderRadius: 10, padding: "9px 14px", border: "1.5px solid #c7d2fe", fontSize: 14, color: "#3730a3", fontWeight: 700, textAlign: "center", letterSpacing: 0.5 }}>
-                        📍 {distanciaInfo.km} km desde el origen
-                      </div>
-                    )}
+                  {/* KM informativo */}
+                  <div style={{ flex: 1, background: calculando ? "#fff7ed" : distanciaInfo ? "#eef2ff" : "#f8fafc", borderRadius: 10, padding: "12px 14px", border: `1.5px solid ${calculando ? "#fed7aa" : distanciaInfo ? "#c7d2fe" : "#e2e8f0"}`, textAlign: "center" }}>
+                    {calculando
+                      ? <span style={{ fontSize: 13, color: "#c2410c" }}>📍 Calculando...</span>
+                      : distanciaInfo
+                        ? <><span style={{ fontSize: 22, fontWeight: 900, color: "#3730a3" }}>{distanciaInfo.km}</span><span style={{ fontSize: 13, color: "#6366f1", fontWeight: 600 }}> km</span></>
+                        : <span style={{ fontSize: 12, color: "#94a3b8" }}>Escribe tu dirección</span>
+                    }
                   </div>
+                  {/* Precio editable */}
                   <div style={{ display: "flex", alignItems: "center", gap: 6, background: VINO, borderRadius: 10, padding: "8px 14px" }}>
                     <input type="number" min="0" max="30" step="0.5" value={costoEnvio}
                       onChange={e => setCostoEnvio(Number(e.target.value))}
