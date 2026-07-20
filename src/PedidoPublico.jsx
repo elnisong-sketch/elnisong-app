@@ -229,10 +229,14 @@ function Formulario({ onVolver }) {
       const params = new URLSearchParams({
         id: nuevoPedido.id,
         fecha: nuevoPedido.fecha,
+        horario: form.rangoHorario,
         cliente: form.nombre,
         telefono: form.telefono,
-        direccion: form.direccion + ", CP " + form.cp,
+        cp: form.cp,
+        direccion: form.direccion,
         productos: productosTexto,
+        pago: form.formaPago,
+        subtotal: total.toFixed(2) + " €",
         envio: envio.toFixed(2) + " €",
         total: (total + envio).toFixed(2) + " €",
         notas: form.notas || ""
