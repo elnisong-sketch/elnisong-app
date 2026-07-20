@@ -403,8 +403,15 @@ function Formulario({ onVolver }) {
             {form.cp.startsWith("28") && (
               <>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                  <div style={{ flex: 1, background: "#f8fafc", borderRadius: 10, padding: "10px 14px", border: "1.5px solid #e2e8f0", fontSize: 13, color: "#64748b" }}>
-                    {calculando ? "📍 Calculando distancia..." : distanciaInfo ? `📍 ${distanciaInfo.km} km desde Berrocal 56` : "Introduce tu dirección completa"}
+                  <div style={{ flex: 1 }}>
+                    <div style={{ background: "#f8fafc", borderRadius: 10, padding: "10px 14px", border: "1.5px solid #e2e8f0", fontSize: 13, color: "#64748b", marginBottom: 6 }}>
+                      {calculando ? "📍 Calculando distancia..." : distanciaInfo ? "Distancia calculada" : "Introduce tu dirección completa"}
+                    </div>
+                    {distanciaInfo && !calculando && (
+                      <div style={{ background: "#eef2ff", borderRadius: 10, padding: "9px 14px", border: "1.5px solid #c7d2fe", fontSize: 14, color: "#3730a3", fontWeight: 700, textAlign: "center", letterSpacing: 0.5 }}>
+                        📍 {distanciaInfo.km} km desde el origen
+                      </div>
+                    )}
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 6, background: VINO, borderRadius: 10, padding: "8px 14px" }}>
                     <input type="number" min="0" max="30" step="0.5" value={costoEnvio}
