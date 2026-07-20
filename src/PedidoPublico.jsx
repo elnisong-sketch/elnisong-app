@@ -167,12 +167,24 @@ function Landing({ onPedir }) {
 }
 
 // ── FORMULARIO DE PEDIDO ─────────────────────────────────────────────────────
+function calcularEnvio(cp) {
+  if (!cp || cp.length < 5) return null;
+  if (!cp.startsWith("28")) return null; // Solo Madrid
+  const n = parseInt(cp);
+  // Zonas aproximadas por CP de Madrid
+  if (n >= 28001 && n <= 28010) return 8; // Centro
+  if (n >= 28011 && n <= 28029) return 6; // Zona media
+  if (n >= 28030 && n <= 28055) return 8; // Zona exterior
+  return 10; // Municipios limítrofes
+}
+
 function Formulario({ onVolver }) {
   const [productos, setProductos] = useState([]);
   const [lineas, setLineas]       = useState([{ productoId: "", presentacion: "", cantidad: 1 }]);
   const [form, setForm]           = useState({ nombre: "", telefono: "", direccion: "", cp: "", formaPago: "", rangoHorario: "" });
   const [paso, setPaso]           = useState("form"); // form | enviando | confirmado
   const [error, setError]         = useState("");
+  const [costoEnvio, setCostoEnvio] = useState(6);
 
   useEffect(() => {
     getDoc(doc(db, "datos", "productos")).then(snap => {
@@ -208,7 +220,8 @@ function Formulario({ onVolver }) {
         const vari = prod?.variantes.find(v => v.presentacion === l.presentacion);
         return { id: "item-" + idx, productoId: l.productoId, nombreProducto: prod?.nombre, presentacion: l.presentacion, estado: "Congelado", cantidad: Number(l.cantidad), precio: vari?.precio || 0, subtotal: (vari?.precio || 0) * Number(l.cantidad), comision: 0, recargoFrito: 0 };
       });
-      const nuevoPedido = { id: "web-" + Date.now(), ...form, tipoEntrega: "Domicilio", fecha: hoy(), estado: "Pendiente", envio: 0, repartidorId: "", notas: "", items, total };
+      const envio = form.cp.startsWith("28") ? costoEnvio : 0;
+      const nuevoPedido = { id: "web-" + Date.now(), ...form, tipoEntrega: "Domicilio", fecha: hoy(), estado: "Pendiente", envio, repartidorId: "", notas: "", items, total };
       await setDoc(doc(db, "datos", "pedidos"), { valor: JSON.stringify([...actuales, nuevoPedido]) });
 
       // Enviar a Google Sheets via GET
@@ -220,7 +233,8 @@ function Formulario({ onVolver }) {
         telefono: form.telefono,
         direccion: form.direccion + ", CP " + form.cp,
         productos: productosTexto,
-        total: total.toFixed(2) + " €",
+        envio: envio.toFixed(2) + " €",
+        total: (total + envio).toFixed(2) + " €",
         notas: form.notas || ""
       });
       fetch("https://script.google.com/macros/s/AKfycbySjQNlkoTT_Wo28xxCKRgk41QvXaECsItCooxiqmwxdn5xNqUORVtHWCX7hhAC8gSY/exec?" + params.toString(), {
@@ -236,7 +250,7 @@ function Formulario({ onVolver }) {
       <div style={{ fontSize: 72 }}>✅</div>
       <h2 style={{ color: NAVY, marginTop: 16, fontSize: 26 }}>¡Pedido recibido!</h2>
       <p style={{ color: "#64748b", maxWidth: 320, fontSize: 15 }}>Nos pondremos en contacto contigo para confirmar la entrega.</p>
-      <p style={{ color: ORANGE, fontWeight: 900, fontSize: 24, margin: "8px 0 24px" }}>Total: {total.toFixed(2)} €</p>
+      <p style={{ color: ORANGE, fontWeight: 900, fontSize: 24, margin: "8px 0 24px" }}>Total: {(total + (form.cp.startsWith("28") ? costoEnvio : 0)).toFixed(2)} €</p>
       <button onClick={onVolver} style={{ background: NAVY, border: "none", borderRadius: 50, color: "#fff", padding: "14px 32px", fontSize: 16, fontWeight: 700, cursor: "pointer" }}>← Volver al inicio</button>
     </div>
   );
@@ -312,7 +326,12 @@ function Formulario({ onVolver }) {
           ].map(f => (
             <div key={f.key} style={{ marginBottom: 14 }}>
               <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#475569", marginBottom: 4 }}>{f.label}</label>
-              <input type={f.type} placeholder={f.placeholder} value={form[f.key]} onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))}
+              <input type={f.type} placeholder={f.placeholder} value={form[f.key]}
+                onChange={e => {
+                  const val = e.target.value;
+                  setForm(p => ({ ...p, [f.key]: val }));
+                  if (f.key === "cp") { const e2 = calcularEnvio(val); if (e2 !== null) setCostoEnvio(e2); }
+                }}
                 style={{ width: "100%", padding: "11px 14px", border: "1.5px solid #e2e8f0", borderRadius: 10, fontSize: 15, fontFamily: "inherit", boxSizing: "border-box", outline: "none" }} />
             </div>
           ))}
@@ -339,11 +358,49 @@ function Formulario({ onVolver }) {
           </div>
         </div>
 
+        {/* Coste de envío */}
+        {form.cp.length >= 5 && (
+          <div style={{ background: "#fff", borderRadius: 16, padding: "16px 20px", marginBottom: 16, boxShadow: "0 1px 6px #0001" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+              <span style={{ fontWeight: 700, color: NAVY, fontSize: 15 }}>🚚 Coste de envío</span>
+              {!form.cp.startsWith("28") && <span style={{ color: "#ef4444", fontSize: 13, fontWeight: 600 }}>Solo entregamos en Madrid</span>}
+            </div>
+            {form.cp.startsWith("28") && (
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{ flex: 1, background: "#f8fafc", borderRadius: 10, padding: "10px 14px", border: "1.5px solid #e2e8f0", fontSize: 13, color: "#64748b" }}>
+                  Estimado por CP {form.cp}
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, background: VINO, borderRadius: 10, padding: "8px 14px" }}>
+                  <input type="number" min="0" max="30" step="0.5" value={costoEnvio}
+                    onChange={e => setCostoEnvio(Number(e.target.value))}
+                    style={{ width: 52, background: "transparent", border: "none", color: "#fff", fontWeight: 900, fontSize: 18, textAlign: "center", outline: "none", fontFamily: "inherit" }} />
+                  <span style={{ color: "#fde68a", fontWeight: 900, fontSize: 18 }}>€</span>
+                </div>
+              </div>
+            )}
+            <p style={{ color: "#94a3b8", fontSize: 11, margin: "8px 0 0" }}>≤10 km: 6€ · 10-12 km: 8€ · &gt;12 km: 10€ · Puedes modificarlo si es necesario</p>
+          </div>
+        )}
+
         {/* Total */}
         {total > 0 && (
-          <div style={{ background: NAVY, borderRadius: 16, padding: "16px 20px", marginBottom: 16, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ color: "#94b4d4", fontWeight: 700, fontSize: 15 }}>Total estimado</span>
-            <span style={{ color: "#fff", fontWeight: 900, fontSize: 22 }}>{total.toFixed(2)} €</span>
+          <div style={{ background: NAVY, borderRadius: 16, padding: "16px 20px", marginBottom: 16 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: form.cp.startsWith("28") ? 8 : 0 }}>
+              <span style={{ color: "#94b4d4", fontWeight: 700, fontSize: 15 }}>Productos</span>
+              <span style={{ color: "#fff", fontWeight: 700, fontSize: 18 }}>{total.toFixed(2)} €</span>
+            </div>
+            {form.cp.startsWith("28") && (
+              <>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                  <span style={{ color: "#94b4d4", fontWeight: 700, fontSize: 15 }}>Envío</span>
+                  <span style={{ color: "#fff", fontWeight: 700, fontSize: 18 }}>{costoEnvio.toFixed(2)} €</span>
+                </div>
+                <div style={{ borderTop: "1px solid #2d5a8e", paddingTop: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ color: "#fff", fontWeight: 900, fontSize: 15 }}>TOTAL</span>
+                  <span style={{ color: "#fff", fontWeight: 900, fontSize: 22 }}>{(total + costoEnvio).toFixed(2)} €</span>
+                </div>
+              </>
+            )}
           </div>
         )}
 
