@@ -412,12 +412,10 @@ function Formulario({ onVolver }) {
                         : <span style={{ fontSize: 12, color: "#94a3b8" }}>Escribe tu dirección</span>
                     }
                   </div>
-                  {/* Precio editable */}
-                  <div style={{ display: "flex", alignItems: "center", gap: 6, background: VINO, borderRadius: 10, padding: "8px 14px" }}>
-                    <input type="number" min="0" max="30" step="0.5" value={costoEnvio}
-                      onChange={e => setCostoEnvio(Number(e.target.value))}
-                      style={{ width: 52, background: "transparent", border: "none", color: "#fff", fontWeight: 900, fontSize: 18, textAlign: "center", outline: "none", fontFamily: "inherit" }} />
-                    <span style={{ color: "#fde68a", fontWeight: 900, fontSize: 18 }}>€</span>
+                  {/* Precio fijo no editable */}
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, background: VINO, borderRadius: 10, padding: "12px 18px" }}>
+                    <span style={{ color: "#fff", fontWeight: 900, fontSize: 22 }}>{costoEnvio}</span>
+                    <span style={{ color: "#fde68a", fontWeight: 900, fontSize: 22 }}>€</span>
                   </div>
                 </div>
                 <p style={{ color: "#94a3b8", fontSize: 11, margin: 0 }}>≤10 km: 6€ · 10-12 km: 8€ · &gt;12 km: 10€ · Puedes ajustarlo manualmente</p>
