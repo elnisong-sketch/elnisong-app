@@ -237,6 +237,7 @@ function Formulario({ onVolver }) {
 
   const lineasValidas = lineas.filter(l => l.productoId && l.presentacion && l.cantidad > 0);
   const hayFrito = lineasValidas.some(l => l.preparacion === "Frito");
+  const cantidadFritos = lineasValidas.filter(l => l.preparacion === "Frito").length;
   const total = lineasValidas.reduce((s, l) => {
     const prod = productos.find(p => p.id === l.productoId);
     const vari = prod?.variantes.find(v => v.presentacion === l.presentacion);
@@ -261,7 +262,7 @@ function Formulario({ onVolver }) {
         return { id: "item-" + idx, productoId: l.productoId, nombreProducto: prod?.nombre, presentacion: l.presentacion, preparacion: l.preparacion || "Congelado", estado: "Congelado", cantidad: Number(l.cantidad), precio: vari?.precio || 0, subtotal: (vari?.precio || 0) * Number(l.cantidad), comision: 0, recargoFrito: 0 };
       });
       const envio = form.tipoEntrega === "Domicilio" && form.cp.startsWith("28") ? costoEnvio : 0;
-      const servicio = hayFrito ? COSTO_FRITO : 0;
+      const servicio = cantidadFritos * COSTO_FRITO;
       const nuevoPedido = { id: "web-" + Date.now(), ...form, tipoEntrega: "Domicilio", fecha: hoy(), estado: "Pendiente", envio, servicio, repartidorId: "", notas: "", items, total };
       await setDoc(doc(db, "datos", "pedidos"), { valor: JSON.stringify([...actuales, nuevoPedido]) });
 
@@ -298,7 +299,7 @@ function Formulario({ onVolver }) {
       <div style={{ fontSize: 72 }}>✅</div>
       <h2 style={{ color: NAVY, marginTop: 16, fontSize: 26 }}>¡Pedido recibido!</h2>
       <p style={{ color: "#64748b", maxWidth: 320, fontSize: 15 }}>Nos pondremos en contacto contigo para confirmar la entrega.</p>
-      <p style={{ color: ORANGE, fontWeight: 900, fontSize: 24, margin: "8px 0 24px" }}>Total: {(total + (form.cp.startsWith("28") ? costoEnvio : 0) + (hayFrito ? COSTO_FRITO : 0)).toFixed(2)} €</p>
+      <p style={{ color: ORANGE, fontWeight: 900, fontSize: 24, margin: "8px 0 24px" }}>Total: {(total + (form.cp.startsWith("28") ? costoEnvio : 0) + (cantidadFritos * COSTO_FRITO)).toFixed(2)} €</p>
       <button onClick={onVolver} style={{ background: NAVY, border: "none", borderRadius: 50, color: "#fff", padding: "14px 32px", fontSize: 16, fontWeight: 700, cursor: "pointer" }}>← Volver al inicio</button>
     </div>
   );
@@ -450,10 +451,10 @@ function Formulario({ onVolver }) {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div>
                 <span style={{ fontWeight: 700, color: NAVY, fontSize: 15 }}>🔥 Servicio de preparación</span>
-                <p style={{ color: "#94a3b8", fontSize: 11, margin: "4px 0 0" }}>Cargo por fritura de los productos seleccionados</p>
+                <p style={{ color: "#94a3b8", fontSize: 11, margin: "4px 0 0" }}>{cantidadFritos} producto{cantidadFritos > 1 ? "s" : ""} × {COSTO_FRITO}€ por fritura</p>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 6, background: ORANGE, borderRadius: 10, padding: "10px 18px" }}>
-                <span style={{ color: "#fff", fontWeight: 900, fontSize: 22 }}>{COSTO_FRITO}</span>
+                <span style={{ color: "#fff", fontWeight: 900, fontSize: 22 }}>{cantidadFritos * COSTO_FRITO}</span>
                 <span style={{ color: "#fff", fontWeight: 900, fontSize: 22 }}>€</span>
               </div>
             </div>
@@ -500,8 +501,8 @@ function Formulario({ onVolver }) {
             </div>
             {hayFrito && (
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                <span style={{ color: "#94b4d4", fontWeight: 700, fontSize: 15 }}>🔥 Servicio fritura</span>
-                <span style={{ color: "#fff", fontWeight: 700, fontSize: 18 }}>{COSTO_FRITO.toFixed(2)} €</span>
+                <span style={{ color: "#94b4d4", fontWeight: 700, fontSize: 15 }}>🔥 Fritura ({cantidadFritos} × {COSTO_FRITO}€)</span>
+                <span style={{ color: "#fff", fontWeight: 700, fontSize: 18 }}>{(cantidadFritos * COSTO_FRITO).toFixed(2)} €</span>
               </div>
             )}
             {form.tipoEntrega === "Domicilio" && form.cp.startsWith("28") && (
@@ -513,7 +514,7 @@ function Formulario({ onVolver }) {
             <div style={{ borderTop: "1px solid #2d5a8e", paddingTop: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span style={{ color: "#fff", fontWeight: 900, fontSize: 15 }}>TOTAL</span>
               <span style={{ color: "#fff", fontWeight: 900, fontSize: 22 }}>
-                {(total + (hayFrito ? COSTO_FRITO : 0) + (form.tipoEntrega === "Domicilio" && form.cp.startsWith("28") ? costoEnvio : 0)).toFixed(2)} €
+                {(total + (cantidadFritos * COSTO_FRITO) + (form.tipoEntrega === "Domicilio" && form.cp.startsWith("28") ? costoEnvio : 0)).toFixed(2)} €
               </span>
             </div>
           </div>
