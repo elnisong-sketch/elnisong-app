@@ -183,10 +183,11 @@ function tarifaPorKm(km) {
 
 async function calcularDistanciaOSRM(direccion, cp) {
   try {
-    const query = encodeURIComponent(`${direccion}, ${cp}, Madrid, España`);
-    const geo = await fetch(`https://nominatim.openstreetmap.org/search?q=${query}&format=json&limit=1`, {
-      headers: { "Accept-Language": "es" }
-    });
+    const query = encodeURIComponent(`${direccion}, ${cp}, Madrid`);
+    const geo = await fetch(
+      `https://nominatim.openstreetmap.org/search?q=${query}&format=json&limit=1&countrycodes=es&viewbox=-3.9,40.55,-3.5,40.28&bounded=1`,
+      { headers: { "Accept-Language": "es" } }
+    );
     const geoData = await geo.json();
     if (!geoData.length) return null;
     const { lat, lon } = geoData[0];
