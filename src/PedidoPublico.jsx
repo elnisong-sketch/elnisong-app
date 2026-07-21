@@ -229,11 +229,14 @@ function Formulario({ onVolver }) {
     return () => clearTimeout(timer);
   }, [form.direccion, form.cp]);
 
-  const addLinea = () => setLineas(l => [...l, { productoId: "", presentacion: "", cantidad: 1 }]);
+  const COSTO_FRITO = 5;
+
+  const addLinea = () => setLineas(l => [...l, { productoId: "", presentacion: "", cantidad: 1, preparacion: "Congelado" }]);
   const removeLinea = i => setLineas(l => l.filter((_, idx) => idx !== i));
   const updateLinea = (i, key, val) => setLineas(l => l.map((li, idx) => idx === i ? { ...li, [key]: val, ...(key === "productoId" ? { presentacion: "" } : {}) } : li));
 
   const lineasValidas = lineas.filter(l => l.productoId && l.presentacion && l.cantidad > 0);
+  const hayFrito = lineasValidas.some(l => l.preparacion === "Frito");
   const total = lineasValidas.reduce((s, l) => {
     const prod = productos.find(p => p.id === l.productoId);
     const vari = prod?.variantes.find(v => v.presentacion === l.presentacion);
@@ -255,14 +258,16 @@ function Formulario({ onVolver }) {
       const items = lineasValidas.map((l, idx) => {
         const prod = productos.find(p => p.id === l.productoId);
         const vari = prod?.variantes.find(v => v.presentacion === l.presentacion);
-        return { id: "item-" + idx, productoId: l.productoId, nombreProducto: prod?.nombre, presentacion: l.presentacion, estado: "Congelado", cantidad: Number(l.cantidad), precio: vari?.precio || 0, subtotal: (vari?.precio || 0) * Number(l.cantidad), comision: 0, recargoFrito: 0 };
+        return { id: "item-" + idx, productoId: l.productoId, nombreProducto: prod?.nombre, presentacion: l.presentacion, preparacion: l.preparacion || "Congelado", estado: "Congelado", cantidad: Number(l.cantidad), precio: vari?.precio || 0, subtotal: (vari?.precio || 0) * Number(l.cantidad), comision: 0, recargoFrito: 0 };
       });
       const envio = form.cp.startsWith("28") ? costoEnvio : 0;
-      const nuevoPedido = { id: "web-" + Date.now(), ...form, tipoEntrega: "Domicilio", fecha: hoy(), estado: "Pendiente", envio, repartidorId: "", notas: "", items, total };
+      const servicio = hayFrito ? COSTO_FRITO : 0;
+      const nuevoPedido = { id: "web-" + Date.now(), ...form, tipoEntrega: "Domicilio", fecha: hoy(), estado: "Pendiente", envio, servicio, repartidorId: "", notas: "", items, total };
       await setDoc(doc(db, "datos", "pedidos"), { valor: JSON.stringify([...actuales, nuevoPedido]) });
 
       // Enviar a Google Sheets via GET
-      const productosTexto = items.map(i => `• ${i.nombreProducto} (${i.presentacion}) x${i.cantidad}`).join("\n");
+      const productosTexto = items.map(i => `• ${i.nombreProducto} (${i.presentacion}) x${i.cantidad} [${i.preparacion}]`).join("\n");
+      const totalFinal = total + envio + servicio;
       const params = new URLSearchParams({
         id: nuevoPedido.id,
         fecha: nuevoPedido.fecha,
@@ -274,8 +279,9 @@ function Formulario({ onVolver }) {
         productos: productosTexto,
         pago: form.formaPago,
         subtotal: total.toFixed(2) + " €",
+        servicio: servicio.toFixed(2) + " €",
         envio: envio.toFixed(2) + " €",
-        total: (total + envio).toFixed(2) + " €",
+        total: totalFinal.toFixed(2) + " €",
         notas: form.notas || ""
       });
       fetch("https://script.google.com/macros/s/AKfycbySjQNlkoTT_Wo28xxCKRgk41QvXaECsItCooxiqmwxdn5xNqUORVtHWCX7hhAC8gSY/exec?" + params.toString(), {
@@ -291,7 +297,7 @@ function Formulario({ onVolver }) {
       <div style={{ fontSize: 72 }}>✅</div>
       <h2 style={{ color: NAVY, marginTop: 16, fontSize: 26 }}>¡Pedido recibido!</h2>
       <p style={{ color: "#64748b", maxWidth: 320, fontSize: 15 }}>Nos pondremos en contacto contigo para confirmar la entrega.</p>
-      <p style={{ color: ORANGE, fontWeight: 900, fontSize: 24, margin: "8px 0 24px" }}>Total: {(total + (form.cp.startsWith("28") ? costoEnvio : 0)).toFixed(2)} €</p>
+      <p style={{ color: ORANGE, fontWeight: 900, fontSize: 24, margin: "8px 0 24px" }}>Total: {(total + (form.cp.startsWith("28") ? costoEnvio : 0) + (hayFrito ? COSTO_FRITO : 0)).toFixed(2)} €</p>
       <button onClick={onVolver} style={{ background: NAVY, border: "none", borderRadius: 50, color: "#fff", padding: "14px 32px", fontSize: 16, fontWeight: 700, cursor: "pointer" }}>← Volver al inicio</button>
     </div>
   );
@@ -334,17 +340,27 @@ function Formulario({ onVolver }) {
                 </select>
 
                 {prod && (
-                  <div style={{ display: "flex", gap: 8 }}>
-                    <select value={linea.presentacion} onChange={e => updateLinea(i, "presentacion", e.target.value)}
-                      style={{ flex: 2, padding: "10px 12px", border: "1.5px solid #e2e8f0", borderRadius: 10, fontSize: 14, fontFamily: "inherit", background: "#fff", boxSizing: "border-box" }}>
-                      <option value="">— Presentación —</option>
-                      {prod.variantes.map(v => (
-                        <option key={v.presentacion} value={v.presentacion}>{v.presentacion} — {v.precio} €</option>
+                  <>
+                    <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+                      <select value={linea.presentacion} onChange={e => updateLinea(i, "presentacion", e.target.value)}
+                        style={{ flex: 2, padding: "10px 12px", border: "1.5px solid #e2e8f0", borderRadius: 10, fontSize: 14, fontFamily: "inherit", background: "#fff", boxSizing: "border-box" }}>
+                        <option value="">— Presentación —</option>
+                        {prod.variantes.map(v => (
+                          <option key={v.presentacion} value={v.presentacion}>{v.presentacion} — {v.precio} €</option>
+                        ))}
+                      </select>
+                      <input type="number" min="1" max="99" value={linea.cantidad} onChange={e => updateLinea(i, "cantidad", e.target.value)}
+                        style={{ flex: 1, padding: "10px 12px", border: "1.5px solid #e2e8f0", borderRadius: 10, fontSize: 14, fontFamily: "inherit", textAlign: "center", boxSizing: "border-box" }} />
+                    </div>
+                    <div style={{ display: "flex", gap: 8 }}>
+                      {["Congelado", "Frito"].map(op => (
+                        <button key={op} onClick={() => updateLinea(i, "preparacion", op)}
+                          style={{ flex: 1, padding: "8px", borderRadius: 10, border: `1.5px solid ${linea.preparacion === op ? (op === "Frito" ? ORANGE : NAVY) : "#e2e8f0"}`, background: linea.preparacion === op ? (op === "Frito" ? ORANGE : NAVY) : "#fff", color: linea.preparacion === op ? "#fff" : "#64748b", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
+                          {op === "Frito" ? "🔥 Frito" : "❄️ Congelado"}
+                        </button>
                       ))}
-                    </select>
-                    <input type="number" min="1" max="99" value={linea.cantidad} onChange={e => updateLinea(i, "cantidad", e.target.value)}
-                      style={{ flex: 1, padding: "10px 12px", border: "1.5px solid #e2e8f0", borderRadius: 10, fontSize: 14, fontFamily: "inherit", textAlign: "center", boxSizing: "border-box" }} />
-                  </div>
+                    </div>
+                  </>
                 )}
               </div>
             );
@@ -399,6 +415,22 @@ function Formulario({ onVolver }) {
           </div>
         </div>
 
+        {/* Servicio de preparación (frito) */}
+        {hayFrito && (
+          <div style={{ background: "#fff", borderRadius: 16, padding: "16px 20px", marginBottom: 16, boxShadow: "0 1px 6px #0001" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div>
+                <span style={{ fontWeight: 700, color: NAVY, fontSize: 15 }}>🔥 Servicio de preparación</span>
+                <p style={{ color: "#94a3b8", fontSize: 11, margin: "4px 0 0" }}>Cargo por fritura de los productos seleccionados</p>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, background: ORANGE, borderRadius: 10, padding: "10px 18px" }}>
+                <span style={{ color: "#fff", fontWeight: 900, fontSize: 22 }}>{COSTO_FRITO}</span>
+                <span style={{ color: "#fff", fontWeight: 900, fontSize: 22 }}>€</span>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Coste de envío */}
         {form.cp.length >= 5 && (
           <div style={{ background: "#fff", borderRadius: 16, padding: "16px 20px", marginBottom: 16, boxShadow: "0 1px 6px #0001" }}>
@@ -439,13 +471,19 @@ function Formulario({ onVolver }) {
             </div>
             {form.cp.startsWith("28") && (
               <>
+                {hayFrito && (
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                    <span style={{ color: "#94b4d4", fontWeight: 700, fontSize: 15 }}>🔥 Servicio fritura</span>
+                    <span style={{ color: "#fff", fontWeight: 700, fontSize: 18 }}>{COSTO_FRITO.toFixed(2)} €</span>
+                  </div>
+                )}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
                   <span style={{ color: "#94b4d4", fontWeight: 700, fontSize: 15 }}>Envío</span>
                   <span style={{ color: "#fff", fontWeight: 700, fontSize: 18 }}>{costoEnvio.toFixed(2)} €</span>
                 </div>
                 <div style={{ borderTop: "1px solid #2d5a8e", paddingTop: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <span style={{ color: "#fff", fontWeight: 900, fontSize: 15 }}>TOTAL</span>
-                  <span style={{ color: "#fff", fontWeight: 900, fontSize: 22 }}>{(total + costoEnvio).toFixed(2)} €</span>
+                  <span style={{ color: "#fff", fontWeight: 900, fontSize: 22 }}>{(total + costoEnvio + (hayFrito ? COSTO_FRITO : 0)).toFixed(2)} €</span>
                 </div>
               </>
             )}
