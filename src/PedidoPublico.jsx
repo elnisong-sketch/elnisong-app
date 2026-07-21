@@ -202,7 +202,7 @@ async function calcularDistanciaOSRM(direccion, cp) {
 function Formulario({ onVolver }) {
   const [productos, setProductos] = useState([]);
   const [lineas, setLineas]       = useState([{ productoId: "", presentacion: "", cantidad: 1 }]);
-  const [form, setForm]           = useState({ nombre: "", telefono: "", direccion: "", cp: "", formaPago: "", rangoHorario: "" });
+  const [form, setForm]           = useState({ nombre: "", telefono: "", direccion: "", cp: "", formaPago: "", rangoHorario: "", tipoEntrega: "Domicilio" });
   const [paso, setPaso]           = useState("form"); // form | enviando | confirmado
   const [error, setError]         = useState("");
   const [costoEnvio, setCostoEnvio] = useState(6);
@@ -246,8 +246,8 @@ function Formulario({ onVolver }) {
   const enviar = async () => {
     if (!form.nombre.trim())       return setError("Introduce tu nombre.");
     if (!form.telefono.trim())     return setError("Introduce tu teléfono.");
-    if (!form.direccion.trim())    return setError("Introduce tu dirección.");
-    if (!form.cp.trim())           return setError("Introduce el código postal.");
+    if (form.tipoEntrega === "Domicilio" && !form.direccion.trim()) return setError("Introduce tu dirección.");
+    if (form.tipoEntrega === "Domicilio" && !form.cp.trim())        return setError("Introduce el código postal.");
     if (!form.formaPago)           return setError("Selecciona la forma de pago.");
     if (!form.rangoHorario)        return setError("Selecciona el horario.");
     if (lineasValidas.length === 0) return setError("Añade al menos un producto.");
@@ -260,7 +260,7 @@ function Formulario({ onVolver }) {
         const vari = prod?.variantes.find(v => v.presentacion === l.presentacion);
         return { id: "item-" + idx, productoId: l.productoId, nombreProducto: prod?.nombre, presentacion: l.presentacion, preparacion: l.preparacion || "Congelado", estado: "Congelado", cantidad: Number(l.cantidad), precio: vari?.precio || 0, subtotal: (vari?.precio || 0) * Number(l.cantidad), comision: 0, recargoFrito: 0 };
       });
-      const envio = form.cp.startsWith("28") ? costoEnvio : 0;
+      const envio = form.tipoEntrega === "Domicilio" && form.cp.startsWith("28") ? costoEnvio : 0;
       const servicio = hayFrito ? COSTO_FRITO : 0;
       const nuevoPedido = { id: "web-" + Date.now(), ...form, tipoEntrega: "Domicilio", fecha: hoy(), estado: "Pendiente", envio, servicio, repartidorId: "", notas: "", items, total };
       await setDoc(doc(db, "datos", "pedidos"), { valor: JSON.stringify([...actuales, nuevoPedido]) });
@@ -272,6 +272,7 @@ function Formulario({ onVolver }) {
         id: nuevoPedido.id,
         fecha: nuevoPedido.fecha,
         horario: form.rangoHorario,
+        entrega: form.tipoEntrega,
         cliente: form.nombre,
         telefono: form.telefono,
         cp: form.cp,
@@ -375,9 +376,37 @@ function Formulario({ onVolver }) {
         <div style={{ background: "#fff", borderRadius: 16, padding: 20, marginBottom: 16, boxShadow: "0 1px 6px #0001" }}>
           <h3 style={{ color: NAVY, margin: "0 0 16px", fontSize: 17, fontWeight: 800 }}>📋 Tus datos</h3>
 
+          {/* Tipo de entrega */}
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#475569", marginBottom: 8 }}>Tipo de entrega *</label>
+            <div style={{ display: "flex", gap: 10 }}>
+              {["Domicilio", "Recogida"].map(op => (
+                <button key={op} onClick={() => setForm(f => ({ ...f, tipoEntrega: op }))}
+                  style={{ flex: 1, padding: "12px", borderRadius: 12, border: `2px solid ${form.tipoEntrega === op ? VINO : "#e2e8f0"}`, background: form.tipoEntrega === op ? VINO : "#fff", color: form.tipoEntrega === op ? "#fff" : "#64748b", fontWeight: 800, fontSize: 15, cursor: "pointer" }}>
+                  {op === "Domicilio" ? "🚚 Domicilio" : "🏪 Recogida"}
+                </button>
+              ))}
+            </div>
+            {form.tipoEntrega === "Recogida" && (
+              <p style={{ color: "#64748b", fontSize: 12, margin: "8px 0 0", textAlign: "center" }}>Recogida en Berrocal 56, 28021 Madrid</p>
+            )}
+          </div>
+
+          {/* Campos básicos */}
           {[
             { label: "Nombre completo *", key: "nombre", type: "text", placeholder: "Ej: María García" },
             { label: "Teléfono *", key: "telefono", type: "tel", placeholder: "Ej: 612345678" },
+          ].map(f => (
+            <div key={f.key} style={{ marginBottom: 14 }}>
+              <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#475569", marginBottom: 4 }}>{f.label}</label>
+              <input type={f.type} placeholder={f.placeholder} value={form[f.key]}
+                onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))}
+                style={{ width: "100%", padding: "11px 14px", border: "1.5px solid #e2e8f0", borderRadius: 10, fontSize: 15, fontFamily: "inherit", boxSizing: "border-box", outline: "none" }} />
+            </div>
+          ))}
+
+          {/* Campos solo para Domicilio */}
+          {form.tipoEntrega === "Domicilio" && [
             { label: "Dirección de entrega *", key: "direccion", type: "text", placeholder: "Calle, número, piso..." },
             { label: "Código postal *", key: "cp", type: "text", placeholder: "Ej: 28001" },
           ].map(f => (
@@ -431,8 +460,8 @@ function Formulario({ onVolver }) {
           </div>
         )}
 
-        {/* Coste de envío */}
-        {form.cp.length >= 5 && (
+        {/* Coste de envío — solo Domicilio */}
+        {form.tipoEntrega === "Domicilio" && form.cp.length >= 5 && (
           <div style={{ background: "#fff", borderRadius: 16, padding: "16px 20px", marginBottom: 16, boxShadow: "0 1px 6px #0001" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
               <span style={{ fontWeight: 700, color: NAVY, fontSize: 15 }}>🚚 Coste de envío</span>
@@ -465,28 +494,28 @@ function Formulario({ onVolver }) {
         {/* Total */}
         {total > 0 && (
           <div style={{ background: NAVY, borderRadius: 16, padding: "16px 20px", marginBottom: 16 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: form.cp.startsWith("28") ? 8 : 0 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
               <span style={{ color: "#94b4d4", fontWeight: 700, fontSize: 15 }}>Productos</span>
               <span style={{ color: "#fff", fontWeight: 700, fontSize: 18 }}>{total.toFixed(2)} €</span>
             </div>
-            {form.cp.startsWith("28") && (
-              <>
-                {hayFrito && (
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                    <span style={{ color: "#94b4d4", fontWeight: 700, fontSize: 15 }}>🔥 Servicio fritura</span>
-                    <span style={{ color: "#fff", fontWeight: 700, fontSize: 18 }}>{COSTO_FRITO.toFixed(2)} €</span>
-                  </div>
-                )}
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                  <span style={{ color: "#94b4d4", fontWeight: 700, fontSize: 15 }}>Envío</span>
-                  <span style={{ color: "#fff", fontWeight: 700, fontSize: 18 }}>{costoEnvio.toFixed(2)} €</span>
-                </div>
-                <div style={{ borderTop: "1px solid #2d5a8e", paddingTop: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ color: "#fff", fontWeight: 900, fontSize: 15 }}>TOTAL</span>
-                  <span style={{ color: "#fff", fontWeight: 900, fontSize: 22 }}>{(total + costoEnvio + (hayFrito ? COSTO_FRITO : 0)).toFixed(2)} €</span>
-                </div>
-              </>
+            {hayFrito && (
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                <span style={{ color: "#94b4d4", fontWeight: 700, fontSize: 15 }}>🔥 Servicio fritura</span>
+                <span style={{ color: "#fff", fontWeight: 700, fontSize: 18 }}>{COSTO_FRITO.toFixed(2)} €</span>
+              </div>
             )}
+            {form.tipoEntrega === "Domicilio" && form.cp.startsWith("28") && (
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                <span style={{ color: "#94b4d4", fontWeight: 700, fontSize: 15 }}>🚚 Envío</span>
+                <span style={{ color: "#fff", fontWeight: 700, fontSize: 18 }}>{costoEnvio.toFixed(2)} €</span>
+              </div>
+            )}
+            <div style={{ borderTop: "1px solid #2d5a8e", paddingTop: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ color: "#fff", fontWeight: 900, fontSize: 15 }}>TOTAL</span>
+              <span style={{ color: "#fff", fontWeight: 900, fontSize: 22 }}>
+                {(total + (hayFrito ? COSTO_FRITO : 0) + (form.tipoEntrega === "Domicilio" && form.cp.startsWith("28") ? costoEnvio : 0)).toFixed(2)} €
+              </span>
+            </div>
           </div>
         )}
 
