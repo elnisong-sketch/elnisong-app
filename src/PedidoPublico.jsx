@@ -102,8 +102,8 @@ function Landing({ onPedir }) {
           </div>
         </div>
 
-        {/* Empanadas + Cachitos */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 24, alignItems: "stretch" }}>
+        {/* Empanadas */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 24, alignItems: "start" }}>
           <div style={{ background: "#fff8ed", border: "2px solid #e5d5b0", borderRadius: 14, padding: 20 }}>
             <SeccionTitulo titulo="EMPANADAS" />
             <FilaProducto nombre="Empanada de Carne Molida"  cantidad="25 uds" precio={21} />
@@ -112,14 +112,19 @@ function Landing({ onPedir }) {
             <FilaProducto nombre="Empanada de Queso"         cantidad="25 uds" precio={21} />
             <FilaProducto nombre="Empanada de Jamón y Queso" cantidad="25 uds" precio={21} />
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            <div style={{ borderRadius: 14, overflow: "hidden", background: CREMA, flex: 1, minHeight: 160 }}>
-              <img src={IMG_EMPANADAS} alt="Empanadas" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }} />
-            </div>
-            <div style={{ background: "#fff8ed", border: "2px solid #e5d5b0", borderRadius: 14, padding: 20 }}>
-              <SeccionTitulo titulo="CACHITOS" />
-              <FilaProducto nombre="Cachitos Horneados" cantidad="6 uds" precio={18} />
-            </div>
+          <div style={{ borderRadius: 14, overflow: "hidden" }}>
+            <img src={IMG_EMPANADAS} alt="Empanadas" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block", borderRadius: 14 }} />
+          </div>
+        </div>
+
+        {/* Cachitos */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 24, alignItems: "start" }}>
+          <div style={{ background: "#fff8ed", border: "2px solid #e5d5b0", borderRadius: 14, padding: 20 }}>
+            <SeccionTitulo titulo="CACHITOS" />
+            <FilaProducto nombre="Cachitos Horneados" cantidad="6 uds" precio={18} />
+          </div>
+          <div style={{ borderRadius: 14, overflow: "hidden" }}>
+            <img src={IMG_TODOS} alt="Cachitos" style={{ width: "100%", height: "220px", objectFit: "cover", objectPosition: "center", display: "block", borderRadius: 14 }} />
           </div>
         </div>
 
