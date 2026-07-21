@@ -183,14 +183,39 @@ function tarifaPorKm(km) {
 
 async function calcularDistanciaOSRM(direccion, cp) {
   try {
-    // Buscar solo por CP en España — mucho más fiable que texto libre
+    // Intentar primero con dirección completa restringida a Madrid
+    const query = encodeURIComponent(`${direccion}, ${cp}, Madrid, España`);
     const geo = await fetch(
-      `https://nominatim.openstreetmap.org/search?postalcode=${cp}&country=es&format=json&limit=1`,
+      `https://nominatim.openstreetmap.org/search?q=${query}&format=json&limit=5&countrycodes=es`,
       { headers: { "Accept-Language": "es" } }
     );
     const geoData = await geo.json();
     if (!geoData.length) return null;
-    const { lat, lon } = geoData[0];
+
+    // Filtrar solo resultados dentro del área de Madrid (lat 40.2-40.7, lon -4.0 a -3.4)
+    const enMadrid = geoData.filter(r =>
+      parseFloat(r.lat) > 40.2 && parseFloat(r.lat) < 40.7 &&
+      parseFloat(r.lon) > -4.0 && parseFloat(r.lon) < -3.4
+    );
+
+    // Si no hay ninguno en Madrid, fallback a centroide del CP
+    const resultado = enMadrid.length ? enMadrid[0] : null;
+    if (!resultado) {
+      const geoCP = await fetch(
+        `https://nominatim.openstreetmap.org/search?postalcode=${cp}&country=es&format=json&limit=1`,
+        { headers: { "Accept-Language": "es" } }
+      );
+      const cpData = await geoCP.json();
+      if (!cpData.length) return null;
+      const { lat, lon } = cpData[0];
+      const ruta2 = await fetch(`https://router.project-osrm.org/route/v1/driving/${ORIGEN_LON},${ORIGEN_LAT};${lon},${lat}?overview=false`);
+      const rutaData2 = await ruta2.json();
+      if (rutaData2.code !== "Ok") return null;
+      const km2 = rutaData2.routes[0].distance / 1000;
+      return { km: Math.round(km2 * 10) / 10, tarifa: tarifaPorKm(km2) };
+    }
+
+    const { lat, lon } = resultado;
     const ruta = await fetch(`https://router.project-osrm.org/route/v1/driving/${ORIGEN_LON},${ORIGEN_LAT};${lon},${lat}?overview=false`);
     const rutaData = await ruta.json();
     if (rutaData.code !== "Ok") return null;
