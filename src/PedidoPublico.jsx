@@ -241,7 +241,7 @@ function Formulario({ onVolver }) {
   }, []);
 
   useEffect(() => {
-    if (!form.cp.startsWith("28") || form.cp.length < 5 || form.direccion.length < 5) return;
+    if (!form.cp.startsWith("28") || form.cp.length < 5 || form.direccion.length < 5 || form.tipoEntrega !== "Domicilio") return;
     const timer = setTimeout(async () => {
       setCalculando(true);
       const resultado = await calcularDistanciaOSRM(form.direccion, form.cp);
@@ -439,11 +439,7 @@ function Formulario({ onVolver }) {
             <div key={f.key} style={{ marginBottom: 14 }}>
               <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#475569", marginBottom: 4 }}>{f.label}</label>
               <input type={f.type} placeholder={f.placeholder} value={form[f.key]}
-                onChange={e => {
-                  const val = e.target.value;
-                  setForm(p => ({ ...p, [f.key]: val }));
-                  if (f.key === "cp") { const e2 = calcularEnvio(val); if (e2 !== null) setCostoEnvio(e2); }
-                }}
+                onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))}
                 style={{ width: "100%", padding: "11px 14px", border: "1.5px solid #e2e8f0", borderRadius: 10, fontSize: 15, fontFamily: "inherit", boxSizing: "border-box", outline: "none" }} />
             </div>
           ))}
