@@ -262,8 +262,9 @@ function Formulario({ onVolver }) {
   const updateLinea = (i, key, val) => setLineas(l => l.map((li, idx) => idx === i ? { ...li, [key]: val, ...(key === "productoId" ? { presentacion: "" } : {}) } : li));
 
   const lineasValidas = lineas.filter(l => l.productoId && l.presentacion && l.cantidad > 0);
-  const hayFrito = lineasValidas.some(l => l.preparacion === "Frito");
-  const cantidadFritos = lineasValidas.filter(l => l.preparacion === "Frito").length;
+  const lineasFrito = lineas.filter(l => l.productoId && l.preparacion === "Frito");
+  const hayFrito = lineasFrito.length > 0;
+  const cantidadFritos = lineasFrito.length;
   const total = lineasValidas.reduce((s, l) => {
     const prod = productos.find(p => p.id === l.productoId);
     const vari = prod?.variantes.find(v => v.presentacion === l.presentacion);
