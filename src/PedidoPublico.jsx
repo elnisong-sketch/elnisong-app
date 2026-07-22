@@ -272,13 +272,26 @@ function Formulario({ onVolver }) {
   }, 0);
 
   const enviar = async () => {
-    if (!form.nombre.trim())       return setError("Introduce tu nombre.");
-    if (!form.telefono.trim())     return setError("Introduce tu teléfono.");
-    if (form.tipoEntrega === "Domicilio" && !form.direccion.trim()) return setError("Introduce tu dirección.");
-    if (form.tipoEntrega === "Domicilio" && !form.cp.trim())        return setError("Introduce el código postal.");
-    if (!form.formaPago)           return setError("Selecciona la forma de pago.");
-    if (!form.horaDesde || !form.horaHasta) return setError("Indica la franja horaria de entrega.");
-    if (lineasValidas.length === 0) return setError("Añade al menos un producto.");
+    // Validar productos
+    if (lineas.every(l => !l.productoId)) return setError("⚠️ Debes añadir al menos un producto.");
+    const sinPresentacion = lineas.filter(l => l.productoId && !l.presentacion);
+    if (sinPresentacion.length > 0) return setError("⚠️ Hay productos sin presentación seleccionada. Por favor, completa todos los productos.");
+    if (lineasValidas.length === 0) return setError("⚠️ Añade al menos un producto válido.");
+
+    // Validar datos personales
+    if (!form.nombre.trim())   return setError("⚠️ Por favor, introduce tu nombre completo.");
+    if (!form.telefono.trim()) return setError("⚠️ Por favor, introduce tu número de teléfono.");
+
+    // Validar dirección solo si es domicilio
+    if (form.tipoEntrega === "Domicilio") {
+      if (!form.direccion.trim()) return setError("⚠️ Por favor, introduce tu dirección de entrega.");
+      if (!form.cp.trim())        return setError("⚠️ Por favor, introduce el código postal.");
+      if (!form.cp.startsWith("28")) return setError("⚠️ Solo realizamos entregas en Madrid (CP que empiece por 28).");
+    }
+
+    // Validar pago y horario
+    if (!form.formaPago)                    return setError("⚠️ Por favor, selecciona una forma de pago.");
+    if (!form.horaDesde || !form.horaHasta) return setError("⚠️ Por favor, indica la franja horaria en la que deseas recibir el pedido.");
     setError(""); setPaso("enviando");
     try {
       const snap = await getDoc(doc(db, "datos", "pedidos"));
