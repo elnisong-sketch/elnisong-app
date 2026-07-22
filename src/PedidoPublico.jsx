@@ -9,7 +9,6 @@ const VINO   = "#6b1a1a";
 const CREMA  = "#fdf3e0";
 const GOLD   = "#c8920a";
 
-const RANGOS = ["10:00 a 11:00","11:00 a 12:00","12:00 a 13:00","13:00 a 14:00","17:00 a 18:00","18:00 a 19:00","19:00 a 20:00","20:00 a 21:00"];
 const PAGOS  = ["Bizum","Efectivo","Transferencia","Tarjeta"];
 
 function hoy() { return new Date().toISOString().slice(0, 10); }
@@ -228,7 +227,7 @@ async function calcularDistanciaOSRM(direccion, cp) {
 function Formulario({ onVolver }) {
   const [productos, setProductos] = useState([]);
   const [lineas, setLineas]       = useState([{ productoId: "", presentacion: "", cantidad: 1 }]);
-  const [form, setForm]           = useState({ nombre: "", telefono: "", direccion: "", cp: "", formaPago: "", rangoHorario: "", tipoEntrega: "Domicilio" });
+  const [form, setForm]           = useState({ nombre: "", telefono: "", direccion: "", cp: "", formaPago: "", horaDesde: "", horaHasta: "", tipoEntrega: "Domicilio" });
   const [paso, setPaso]           = useState("form"); // form | enviando | confirmado
   const [error, setError]         = useState("");
   const [costoEnvio, setCostoEnvio] = useState(6);
@@ -276,7 +275,7 @@ function Formulario({ onVolver }) {
     if (form.tipoEntrega === "Domicilio" && !form.direccion.trim()) return setError("Introduce tu dirección.");
     if (form.tipoEntrega === "Domicilio" && !form.cp.trim())        return setError("Introduce el código postal.");
     if (!form.formaPago)           return setError("Selecciona la forma de pago.");
-    if (!form.rangoHorario)        return setError("Selecciona el horario.");
+    if (!form.horaDesde || !form.horaHasta) return setError("Indica la franja horaria de entrega.");
     if (lineasValidas.length === 0) return setError("Añade al menos un producto.");
     setError(""); setPaso("enviando");
     try {
@@ -298,7 +297,7 @@ function Formulario({ onVolver }) {
       const params = new URLSearchParams({
         id: nuevoPedido.id,
         fecha: nuevoPedido.fecha,
-        horario: form.rangoHorario,
+        horario: form.horaDesde + " a " + form.horaHasta,
         entrega: form.tipoEntrega,
         cliente: form.nombre,
         telefono: form.telefono,
@@ -462,12 +461,19 @@ function Formulario({ onVolver }) {
           </div>
 
           <div>
-            <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#475569", marginBottom: 4 }}>Horario de entrega *</label>
-            <select value={form.rangoHorario} onChange={e => setForm(f => ({ ...f, rangoHorario: e.target.value }))}
-              style={{ width: "100%", padding: "11px 14px", border: "1.5px solid #e2e8f0", borderRadius: 10, fontSize: 15, fontFamily: "inherit", background: "#fff", boxSizing: "border-box" }}>
-              <option value="">Selecciona un horario</option>
-              {RANGOS.map(r => <option key={r} value={r}>{r}</option>)}
-            </select>
+            <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#475569", marginBottom: 8 }}>Franja horaria para recibir el pedido *</label>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <input type="time" value={form.horaDesde} onChange={e => setForm(f => ({ ...f, horaDesde: e.target.value }))}
+                style={{ flex: 1, padding: "11px 14px", border: "1.5px solid #e2e8f0", borderRadius: 10, fontSize: 15, fontFamily: "inherit", boxSizing: "border-box", outline: "none" }} />
+              <span style={{ color: "#64748b", fontWeight: 700, fontSize: 14 }}>a</span>
+              <input type="time" value={form.horaHasta} onChange={e => setForm(f => ({ ...f, horaHasta: e.target.value }))}
+                style={{ flex: 1, padding: "11px 14px", border: "1.5px solid #e2e8f0", borderRadius: 10, fontSize: 15, fontFamily: "inherit", boxSizing: "border-box", outline: "none" }} />
+            </div>
+            {form.horaDesde && form.horaHasta && (
+              <p style={{ color: "#475569", fontSize: 12, margin: "6px 0 0", textAlign: "center" }}>
+                Entrega entre las <strong>{form.horaDesde}</strong> y las <strong>{form.horaHasta}</strong>
+              </p>
+            )}
           </div>
         </div>
 
