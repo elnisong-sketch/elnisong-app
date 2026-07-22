@@ -241,7 +241,8 @@ function Formulario({ onVolver }) {
   }, []);
 
   useEffect(() => {
-    if (!form.cp.startsWith("28") || form.cp.length < 5 || form.direccion.length < 5 || form.tipoEntrega !== "Domicilio") return;
+    if (form.tipoEntrega !== "Domicilio") { setDistanciaInfo(null); return; }
+    if (!form.cp.startsWith("28") || form.cp.length < 5 || form.direccion.length < 5) return;
     const timer = setTimeout(async () => {
       setCalculando(true);
       const resultado = await calcularDistanciaOSRM(form.direccion, form.cp);
@@ -252,7 +253,7 @@ function Formulario({ onVolver }) {
       setCalculando(false);
     }, 1000); // espera 1s después de que el usuario deje de escribir
     return () => clearTimeout(timer);
-  }, [form.direccion, form.cp]);
+  }, [form.direccion, form.cp, form.tipoEntrega]);
 
   const COSTO_FRITO = 5;
 
